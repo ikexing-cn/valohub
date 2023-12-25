@@ -1,67 +1,69 @@
+/* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable no-console */
-import { parse } from 'node:url'
-import { cFetch } from './utils'
+import { question } from 'readline-sync'
+import { createRequest } from './fetch'
+import {
+  type InGameApiInstance,
+  createInGameApi,
+  replacePlaceholder,
+} from './api/in-game'
+import {
+  APIS,
+  getAuthBody,
+  getMultiFactorBody,
+  getPingBody,
+  parseRSOAuthResUri,
+} from './utils/rso'
 import type { PutAuthRequestResponse } from './types'
 
-enum API {
-  AUTH_COOKIES = 'https://auth.riotgames.com/api/v1/authorization',
-  REGION_URL = 'https://riot-geo.pas.si.riotgames.com/pas/v1/product/valorant',
-  ENTITLEMENT_URL = 'https://entitlements.auth.riotgames.com/api/token/v1/',
-  PLAYER_INFO = 'https://auth.riotgames.com/userinfo',
-}
+import 'dotenv/config'
 
-const genEndpointServerBaseAPI = (server: string, url: string) =>
-  `https://pd.${server}.a.pvp.net${url}`
+const request = createRequest()
 
-async function fetchGetAuthCookies(cookies: string[]) {
-  const result = await cFetch(API.AUTH_COOKIES, {
+async function fetchGetAuthCookies() {
+  await request(APIS.AUTH_URL, {
     method: 'POST',
-    body: {
-      client_id: 'play-valorant-web-prod',
-      nonce: '1',
-      redirect_uri: 'https://playvalorant.com/opt_in',
-      response_type: 'token id_token',
-      scope: 'account openid',
-    },
+    body: getPingBody(),
   })
-
-  cookies.push(...result.headers.getSetCookie())
 }
 
-async function fetchAuthLogin(
-  cookies: string[],
-  accountInfo: {
-    remember?: boolean
-    username: string
-    password: string
-  },
-) {
-  const { username, password, remember = true } = accountInfo
-  const result = await cFetch(API.AUTH_COOKIES, {
-    headers: {
-      Cookie: cookies.join('; '),
-    },
+async function fetchAuthLogin(accountInfo: {
+  username: string
+  password: string
+  remember: boolean
+}) {
+  const result = await request(APIS.AUTH_URL, {
     method: 'PUT',
-    body: {
-      type: 'auth',
-      language: 'en_US',
-      username,
-      password,
-      remember,
-    },
+    body: getAuthBody(accountInfo),
   })
 
   return result.json() as Promise<PutAuthRequestResponse>
 }
 
-async function fetchGetRegion(accessToken: string, idToken: string) {
-  const result = await cFetch(API.REGION_URL, {
+function fetchMultiFactorAuth(mfaInfo: {
+  code: string
+  rememberDevice: boolean
+}) {
+  return request(APIS.AUTH_URL, {
+    method: 'PUT',
+    body: getMultiFactorBody(mfaInfo),
+  })
+}
+
+async function fetchGetRegion(
+  rsoAuthResUri: ReturnType<typeof parseRSOAuthResUri>,
+) {
+  if (!rsoAuthResUri) {
+    throw new Error('rsoAuthResUri is undefined')
+  }
+
+  const result = await request(APIS.REGION_URL, {
     method: 'PUT',
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `${rsoAuthResUri.tokenType} ${rsoAuthResUri.accessToken}`,
     },
     body: {
-      id_token: idToken,
+      id_token: rsoAuthResUri.idToken,
     },
   })
   return result.json() as Promise<{
@@ -73,11 +75,17 @@ async function fetchGetRegion(accessToken: string, idToken: string) {
   }>
 }
 
-async function fetchGetEntitlementToken(accessToken: string) {
-  const result = await cFetch(API.ENTITLEMENT_URL, {
+async function fetchGetEntitlementToken(
+  rsoAuthResUri: ReturnType<typeof parseRSOAuthResUri>,
+) {
+  if (!rsoAuthResUri) {
+    throw new Error('rsoAuthResUri is undefined')
+  }
+
+  const result = await request(APIS.ENTITLEMENTS_URL, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `${rsoAuthResUri.tokenType} ${rsoAuthResUri.accessToken}`,
     },
   })
   return result.json() as Promise<{
@@ -85,34 +93,40 @@ async function fetchGetEntitlementToken(accessToken: string) {
   }>
 }
 
-async function fetchGetPlayerInfo(entitlementsToken: string) {
-  const result = await cFetch(API.PLAYER_INFO, {
-    method: 'GET',
+async function fetchGetPlayerInfo(
+  rsoAuthResUri: ReturnType<typeof parseRSOAuthResUri>,
+) {
+  if (!rsoAuthResUri) {
+    throw new Error('rsoAuthResUri is undefined')
+  }
+
+  const result = await request(APIS.PLAYER_INFO_URL, {
     headers: {
-      Authorization: `Bearer ${entitlementsToken}`,
+      Authorization: `${rsoAuthResUri.tokenType} ${rsoAuthResUri.accessToken}`,
     },
   })
   return result.json()
 }
 
 async function fetchGetStoreFrontInfo({
-  server,
+  inGame,
   userId,
-  accessToken,
+  rsoAuthResUri,
   entitlementsToken,
 }: {
-  server: string
   userId: string
-  accessToken: string
   entitlementsToken: string
+  inGame: InGameApiInstance
+  rsoAuthResUri: ReturnType<typeof parseRSOAuthResUri>
 }) {
-  const baseUrl = `/store/v2/storefront/${userId}`
-  const fullUrl = genEndpointServerBaseAPI(server, baseUrl)
-  console.log({ fullUrl })
-  const result = await cFetch(fullUrl, {
+  if (!rsoAuthResUri) {
+    throw new Error('rsoAuthResUri is undefined')
+  }
+
+  const result = await request(replacePlaceholder(inGame.StoreFront, userId), {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `${rsoAuthResUri.tokenType} ${rsoAuthResUri.accessToken}`,
       'X-Riot-Entitlements-JWT': entitlementsToken,
     },
   })
@@ -122,65 +136,72 @@ async function fetchGetStoreFrontInfo({
 
 // =================
 
-const cookies = [] as string[]
-await fetchGetAuthCookies(cookies)
-const result = await fetchAuthLogin(cookies, {
-  username: 'kqrTist',
-  password: 'QE1c]WU123',
-})
+async function getResultUri() {
+  let resultUri
+  if (process.env.RSO_URI) {
+    resultUri = {
+      response: {
+        parameters: {
+          uri: process.env.RSO_URI,
+        },
+      },
+    }
+  } else {
+    await fetchGetAuthCookies()
+    const authLoginResult = await fetchAuthLogin({
+      username: process.env.RSO_USERNAME!,
+      password: process.env.RSO_PASSWORD!,
+      remember: true,
+    })
 
-if (result.type !== 'response') {
-  // TODO
-  console.log('需要二步验证')
+    if (authLoginResult.type !== 'response') {
+      console.log('需要二步验证', authLoginResult)
+      const code = question('请输入二步验证的code:')
+      const resultMFA = await fetchMultiFactorAuth({
+        code,
+        rememberDevice: true,
+      })
+      resultUri = await resultMFA.json()
+    } else {
+      resultUri = authLoginResult
+    }
+  }
+  return resultUri
+}
+
+const resultUri = await getResultUri()
+console.log(resultUri)
+
+const rsoAuthResUri = parseRSOAuthResUri(resultUri)
+if (rsoAuthResUri == null) {
+  console.log('parse 失败')
   process.exit(1)
 }
 
-const uri = result.response.parameters.uri
+// 获取地域
+const resultRegion = await fetchGetRegion(rsoAuthResUri)
+console.log(resultRegion)
 
-function parseUri(uri: string) {
-  const tokens =
-    /access_token=((?:[A-Za-z]|\d|\.|-|_)*).*id_token=((?:[A-Za-z]|\d|\.|-|_)*).*expires_in=(\d*)/.exec(
-      uri,
-    )
+// 获取 entitlementsToken
+const { entitlements_token } = await fetchGetEntitlementToken(rsoAuthResUri)
 
-  return {
-    accessToken: tokens![1],
-    idToken: tokens![2],
-    expiresIn: tokens![3],
-  }
-}
-
-const { accessToken, idToken } = parseUri(uri)
-
-const {
-  affinities: { live },
-} = await fetchGetRegion(accessToken, idToken)
-
-console.log({ live })
-
-const { entitlements_token } = await fetchGetEntitlementToken(accessToken)
-console.log({ entitlements_token })
-
-const playerInfo = await fetchGetPlayerInfo(accessToken)
-console.log(playerInfo)
-// sub -> user id
+// 获取 playerInfo
+const playerInfo = await fetchGetPlayerInfo(rsoAuthResUri)
 
 const {
   SkinsPanelLayout: { SingleItemOffers },
 } = await fetchGetStoreFrontInfo({
-  accessToken,
-  server: live,
+  inGame: createInGameApi(resultRegion.affinities.live),
+  rsoAuthResUri,
   userId: playerInfo.sub,
   entitlementsToken: entitlements_token,
 })
 
-// console.log(SingleItemOffers)
-
+// 根据皮肤 id 查询出皮肤名称（valorant-api -> 繁体）
 const resultSkins = []
 for (const item of SingleItemOffers) {
-  // https://valorant-api.com/v1/weapons/skinlevels/0767c288-4ac6-4a8c-6f76-be8ca91e2991?language=zh-CN
-  const result = await cFetch(
-    `https://valorant-api.com/v1/weapons/skinlevels/${item}?language=zh-CN`,
+  const result = await request(
+    `https://valorant-api.com/v1/weapons/skinlevels/${item}?language=zh-TW`,
   )
 
   resultSkins.push((await result.json()).data.displayName)
