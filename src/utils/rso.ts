@@ -1,3 +1,5 @@
+import type { NotNull } from '../types'
+
 export enum APIS {
   AUTH_URL = 'https://auth.riotgames.com/api/v1/authorization',
   REGION_URL = 'https://riot-geo.pas.si.riotgames.com/pas/v1/product/valorant',
@@ -53,6 +55,7 @@ export function getMultiFactorBody(config: {
   return multiFactorBody
 }
 
+export type ParsedRSOAuthResUri = NotNull<ReturnType<typeof parseRSOAuthResUri>>
 export function parseRSOAuthResUri(authResult: {
   response: { parameters: { uri: string } }
 }) {

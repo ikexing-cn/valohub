@@ -5,7 +5,7 @@ export interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: object
 }
 
-export type TRequest = typeof createRequest
+export type Request = typeof createRequest
 export function createRequest() {
   const sessionCookieJar: { [key: string]: string[] } = {}
 

@@ -1,3 +1,9 @@
+export type NotNull<T extends unknown | null | undefined> = T extends
+  | null
+  | undefined
+  ? never
+  : T
+
 interface Multifactor {
   type: 'multifactor'
   multifactor: {
