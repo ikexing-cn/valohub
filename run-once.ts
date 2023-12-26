@@ -12,11 +12,26 @@ import {
   fetchGetStoreFrontInfo,
   fetchMultiFactorAuth,
 } from './src'
+import type { AuthResponse } from './src/types'
+
+async function tryMFA() {
+  const code = question('请输入二步验证的code:')
+  const resultMFA = await fetchMultiFactorAuth({
+    code,
+    rememberDevice: true,
+  })
+  if (resultMFA.type !== 'response') {
+    console.log('二步验证码错误，请重试！\n')
+    return tryMFA()
+  }
+  return resultMFA
+}
 
 async function getResultUri() {
-  let resultUri
+  let resultUri: AuthResponse
   if (process.env.RSO_URI) {
     resultUri = {
+      type: 'response',
       response: {
         parameters: {
           uri: process.env.RSO_URI,
@@ -31,16 +46,13 @@ async function getResultUri() {
       remember: true,
     })
 
-    if (authLoginResult.type !== 'response') {
+    if (authLoginResult.type === 'multifactor') {
       console.log('需要二步验证', authLoginResult)
-      const code = question('请输入二步验证的code:')
-      const resultMFA = await fetchMultiFactorAuth({
-        code,
-        rememberDevice: true,
-      })
-      resultUri = await resultMFA.json()
-    } else {
+      resultUri = await tryMFA()
+    } else if (authLoginResult.type === 'response') {
       resultUri = authLoginResult
+    } else {
+      throw new Error('获取登录结果失败')
     }
   }
   return resultUri
@@ -57,21 +69,21 @@ if (rsoAuthResUri == null) {
 
 // 获取地域
 const resultRegion = await fetchGetRegion(rsoAuthResUri)
-console.log(resultRegion)
 
 // 获取 entitlementsToken
 const { entitlements_token } = await fetchGetEntitlementToken(rsoAuthResUri)
 
 // 获取 playerInfo
 const playerInfo = await fetchGetPlayerInfo(rsoAuthResUri)
+console.log(playerInfo)
 
 const {
   SkinsPanelLayout: { SingleItemOffers },
 } = await fetchGetStoreFrontInfo({
-  inGame: createInGameApi(resultRegion.affinities.live),
-  rsoAuthResUri,
   userId: playerInfo.sub,
+  parsedRSOAuthResult: rsoAuthResUri,
   entitlementsToken: entitlements_token,
+  inGame: createInGameApi(resultRegion.affinities.live),
 })
 
 // 根据皮肤 id 查询出皮肤名称（valorant-api -> 繁体）
