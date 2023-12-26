@@ -1,18 +1,18 @@
 import type { NotNull } from '../types'
 
 export enum APIS {
-  AUTH_URL = 'https://auth.riotgames.com/api/v1/authorization',
-  REGION_URL = 'https://riot-geo.pas.si.riotgames.com/pas/v1/product/valorant',
-  ENTITLEMENTS_URL = 'https://entitlements.auth.riotgames.com/api/token/v1/',
   PLAYER_INFO_URL = 'https://auth.riotgames.com/userinfo',
+  AUTH_URL = 'https://auth.riotgames.com/api/v1/authorization',
+  ENTITLEMENTS_URL = 'https://entitlements.auth.riotgames.com/api/token/v1/',
+  REGION_URL = 'https://riot-geo.pas.si.riotgames.com/pas/v1/product/valorant',
 }
 
 const PING_BODY = {
-  client_id: 'play-valorant-web-prod',
   nonce: '1',
-  redirect_uri: 'https://playvalorant.com/opt_in',
-  response_type: 'token id_token',
   scope: 'account openid',
+  response_type: 'token id_token',
+  client_id: 'play-valorant-web-prod',
+  redirect_uri: 'https://playvalorant.com/opt_in',
 }
 
 const AUTH_BODY = {
