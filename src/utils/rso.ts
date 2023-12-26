@@ -1,4 +1,4 @@
-import type { NotNull } from '../types'
+import type { AuthResponse, NotNull } from '../types'
 
 export enum APIS {
   PLAYER_INFO_URL = 'https://auth.riotgames.com/userinfo',
@@ -45,6 +45,20 @@ export function getAuthBody(config: {
   return authBody
 }
 
+export function getRegionBody(parsedRSOAuthResult: ParsedRSOAuthResult) {
+  return {
+    id_token: parsedRSOAuthResult.idToken,
+  }
+}
+
+export function getAuthorizationHeader(
+  parsedRSOAuthResult: ParsedRSOAuthResult,
+) {
+  return {
+    Authorization: `${parsedRSOAuthResult.tokenType} ${parsedRSOAuthResult.accessToken}`,
+  }
+}
+
 export function getMultiFactorBody(config: {
   code: string
   rememberDevice: boolean
@@ -55,10 +69,8 @@ export function getMultiFactorBody(config: {
   return multiFactorBody
 }
 
-export type ParsedRSOAuthResUri = NotNull<ReturnType<typeof parseRSOAuthResUri>>
-export function parseRSOAuthResUri(authResult: {
-  response: { parameters: { uri: string } }
-}) {
+export type ParsedRSOAuthResult = NotNull<ReturnType<typeof parseRSOAuthResUri>>
+export function parseRSOAuthResUri(authResult: AuthResponse) {
   const regex =
     /^http(s)?:\/\/.*(#|\?)access_token=(.*)&scope=(.*)&iss=(.*)&id_token=(.*)&token_type=(\w+)&session_state=(.*)&expires_in=(\d+)$/
   const parseResult = regex.exec(authResult.response.parameters.uri)
