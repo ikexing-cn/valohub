@@ -94,7 +94,7 @@ export async function fetchGetStoreFrontInfo({
   inGame: InGameApiInstance
   rsoAuthResUri: ParsedRSOAuthResUri
 }) {
-  const result = await request(replacePlaceholder(inGame.StoreFront, userId), {
+  const result = await request(inGame.StoreFront(userId), {
     method: 'GET',
     headers: {
       Authorization: `${rsoAuthResUri.tokenType} ${rsoAuthResUri.accessToken}`,
