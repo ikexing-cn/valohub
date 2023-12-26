@@ -6,7 +6,8 @@
   "license": "MIT",
   "author": "ikx <ikexing.cn@gmail.com>",
   "scripts": {
-    "dev": "esno run-once.ts"
+    "lint": "eslint . --cache && prettier --cache -c .",
+    "lint:fix": "eslint . --cache --fix && prettier --cache -w ."
   },
   "dependencies": {
     "https-proxy-agent": "^7.0.2",
@@ -22,7 +23,8 @@
     "esno": "^4.0.0",
     "prettier": "^3.1.0",
     "readline-sync": "^1.4.10",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "unbuild": "^2.0.0"
   },
   "prettier": "@sxzz/prettier-config"
 }

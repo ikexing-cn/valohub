@@ -1,6 +1,6 @@
 import { fetch as fetchWithProrxy } from 'node-fetch-native/proxy'
-import { objectOmit } from './utils/internal'
-import type { ApiAuthFailure } from './types'
+import { objectOmit } from './internal'
+import type { ApiAuthFailure } from '../types/request'
 
 export interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: object
@@ -36,9 +36,10 @@ export function createRequest() {
     })
 
     if (response.status === 401) {
-      throw new Error('Authentication Failure', {
-        cause: (await response.json()) as Promise<ApiAuthFailure>,
-      })
+      const responseJson = (await response.json()) as ApiAuthFailure
+      throw new Error(
+        `Authentication Failure: ${JSON.stringify(responseJson, null, 2)}`,
+      )
     }
 
     const cookie = response.headers.getSetCookie()

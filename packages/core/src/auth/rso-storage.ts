@@ -1,7 +1,7 @@
-import { type ParsedRSOAuthResult, parseRSOAuthResUri } from '../utils/rso'
-import type { AuthResponse } from '../types'
+import { parseRSOAuthResultUri } from '../utils/rso'
+import type { AuthResponse, ParsedRSOAuthResult } from '../types'
 
-export class RSO {
+export class RSOStorage {
   private entitlementsToken: string
 
   private parsedRSOAuthResult: ParsedRSOAuthResult
@@ -14,8 +14,8 @@ export class RSO {
   private static riotClientVersion = 'release-07.12-shipping-15-2164217'
 
   public static updateRiotClientInfo(info: { version: string; build: string }) {
-    RSO.riotClientBuild = info.build
-    RSO.riotClientVersion = info.version
+    RSOStorage.riotClientBuild = info.build
+    RSOStorage.riotClientVersion = info.version
   }
 
   // public static get getRiotClientAgent() {
@@ -23,7 +23,7 @@ export class RSO {
   // }
 
   public static get getRiotClientVersion() {
-    return RSO.riotClientVersion
+    return RSOStorage.riotClientVersion
   }
 
   constructor(entitlementsToken: string, authResult: AuthResponse) {
@@ -32,7 +32,7 @@ export class RSO {
   }
 
   public updateParsedRSOAuthResult(authResult: AuthResponse) {
-    const parsedRSOAuthResult = parseRSOAuthResUri(authResult)
+    const parsedRSOAuthResult = parseRSOAuthResultUri(authResult)
     if (parsedRSOAuthResult == null) {
       throw new Error('Failed to parse RSO authorization results')
     }
@@ -47,7 +47,7 @@ export class RSO {
 
   public getRequestHeader() {
     return {
-      'X-Riot-ClientVersion': RSO.getRiotClientVersion,
+      'X-Riot-ClientVersion': RSOStorage.getRiotClientVersion,
       'X-Riot-ClientPlatform': this.riotClientPlatform,
       'X-Riot-Entitlements-JWT': this.entitlementsToken,
       Authorization: `${this.parsedRSOAuthResult.tokenType} ${this.parsedRSOAuthResult.accessToken}`,

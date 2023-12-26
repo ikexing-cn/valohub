@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "customConditions": ["dev"],
+    "module": "ESNext",
     "moduleResolution": "Bundler",
     "strict": true,
     "isolatedModules": true,

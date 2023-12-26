@@ -1,21 +1,20 @@
-import { createRequest } from './request'
+import { createRequest } from '../utils/request'
 import {
   APIS,
-  type ParsedRSOAuthResult,
   getAuthBody,
   getAuthorizationHeader,
   getMultiFactorBody,
   getPingBody,
   getRegionBody,
-} from './utils/rso'
-import type { InGameApiInstance } from './api/in-game'
+} from '../utils/rso'
+import type { InGameApiInstance, ParsedRSOAuthResult } from '../types'
 import type {
   AuthLoginResponse,
   AuthResponseOrFailure,
   EntitlementTokenResponse,
   PlayerInfoResponse,
   RegionResponse,
-} from './types'
+} from '../types/request'
 
 const request = createRequest()
 
@@ -70,6 +69,7 @@ export function fetchGetPlayerInfo(parsedRSOAuthResult: ParsedRSOAuthResult) {
   })
 }
 
+// TODO: remove later
 export function fetchGetStoreFrontInfo({
   inGame,
   userId,

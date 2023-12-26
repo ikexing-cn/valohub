@@ -7,8 +7,6 @@ function genInGameApi(endPoint: string, server: string, restUrl: string) {
   )
 }
 
-export type InGameApiInstance = ReturnType<typeof createInGameApi>
-
 export function replacePlaceholder(url: string, ...values: string[]) {
   let index = 0
   return url.replaceAll(/{(.+?)}/g, () => {

@@ -1,9 +1,3 @@
-export type NotNull<T extends unknown | null | undefined> = T extends
-  | null
-  | undefined
-  ? never
-  : T
-
 export interface ApiAuthFailure {
   httpStatus: 401
   errorCode: 'not-authorized'

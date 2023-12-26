@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
 import 'dotenv/config'
+
 import { question } from 'readline-sync'
 import { createInGameApi } from './src/api/in-game'
-import { parseRSOAuthResUri } from './src/utils/rso'
+import { parseRSOAuthResultUri } from './src/utils/rso'
 import {
   fetchAuthLogin,
   fetchGetAuthCookies,
@@ -12,7 +13,7 @@ import {
   fetchGetStoreFrontInfo,
   fetchMultiFactorAuth,
 } from './src'
-import type { AuthResponse } from './src/types'
+import type { AuthResponse } from './src/types/request'
 
 async function tryMFA() {
   const code = question('请输入二步验证的code:')
@@ -61,7 +62,7 @@ async function getResultUri() {
 const resultUri = await getResultUri()
 console.log(resultUri)
 
-const rsoAuthResUri = parseRSOAuthResUri(resultUri)
+const rsoAuthResUri = parseRSOAuthResultUri(resultUri)
 if (rsoAuthResUri == null) {
   console.log('parse 失败')
   process.exit(1)
@@ -93,7 +94,7 @@ for (const item of SingleItemOffers) {
     `https://valorant-api.com/v1/weapons/skinlevels/${item}?language=zh-TW`,
   )
 
-  resultSkins.push((await result.json()).data.displayName)
+  resultSkins.push(((await result.json()) as any).data.displayName)
 }
 
 console.log(
