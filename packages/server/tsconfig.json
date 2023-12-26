@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  // nitro options
+  "compilerOptions": {
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "paths": {
+      "#imports": ["./.nitro/types/nitro-imports"]
+    },
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["./**/*", "./.nitro/types/nitro.d.ts"]
+}
