@@ -1,5 +1,4 @@
 import { createRequest } from './request'
-import { type InGameApiInstance, replacePlaceholder } from './api/in-game'
 import {
   APIS,
   type ParsedRSOAuthResUri,
@@ -7,6 +6,7 @@ import {
   getMultiFactorBody,
   getPingBody,
 } from './utils/rso'
+import type { InGameApiInstance } from './api/in-game'
 import type { PutAuthRequestResponse } from './types'
 
 const request = createRequest()
