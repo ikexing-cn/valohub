@@ -1,0 +1,11 @@
+{
+  "name": "@valorant-bot/bot",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "esno watch index"
+  },
+  "dependencies": {
+    "go-cqwebsocket": "^6.2.14"
+  }
+}
