@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id Int @id @default(autoincrement())
+
+  qq             Int @unique
+  verifyPassword String
+
+  valorantInfo ValorantInfo[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Region {
+  NA // North America
+  EU // Europe
+  AP // Asia Pacific
+  KO // Korea
+}
+
+model ValorantInfo {
+  id Int @id @default(autoincrement())
+
+  accountId Int
+  account   Account @relation(fields: [accountId], references: [id])
+
+  riotUsername String @unique
+  riotPassword String
+
+  region Region
+
+  entitlementsToken String
+
+  gameName String
+  tagLine  String
+  coutry   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
