@@ -1,9 +1,11 @@
 /* eslint-disable no-console */
 
 import { CQ, CQWebSocket } from 'go-cqwebsocket'
+import 'dotenv/config'
 
 const client = new CQWebSocket({
-  port: 8080,
+  host: process.env.VALORANT_BOT_HOST || 'localhost',
+  port: Number(process.env.VALORANT_BOT_PORT) || 3000,
 })
 
 client.on('message.group', (event) => {

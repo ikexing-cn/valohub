@@ -4,7 +4,11 @@ import 'dotenv/config'
 import { question } from 'readline-sync'
 import { createInGameApi } from './src/api/in-game'
 import { parseRSOAuthResultUri } from './src/utils/rso'
-import {
+import { createRSOApi, createRequest } from './src'
+import type { AuthResponse } from './src/types/request'
+
+const request = createRequest()
+const {
   fetchAuthLogin,
   fetchGetAuthCookies,
   fetchGetEntitlementToken,
@@ -12,8 +16,7 @@ import {
   fetchGetRegion,
   fetchGetStoreFrontInfo,
   fetchMultiFactorAuth,
-} from './src'
-import type { AuthResponse } from './src/types/request'
+} = createRSOApi(request)
 
 async function tryMFA() {
   const code = question('请输入二步验证的code:')
@@ -68,6 +71,8 @@ if (rsoAuthResUri == null) {
   process.exit(1)
 }
 
+console.log(rsoAuthResUri)
+
 // 获取地域
 const resultRegion = await fetchGetRegion(rsoAuthResUri)
 
@@ -98,7 +103,7 @@ for (const item of SingleItemOffers) {
 }
 
 console.log(
-  `${playerInfo.acct.game_name} 今日刷新的皮肤为：${resultSkins.map(
-    (item) => `\n${item}`,
-  )}`,
+  `${playerInfo.acct.game_name}#${
+    playerInfo.acct.tag_line
+  } 今日刷新的皮肤为：${resultSkins.map((item) => `\n${item}`)}`,
 )

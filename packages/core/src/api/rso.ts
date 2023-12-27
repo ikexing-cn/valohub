@@ -1,4 +1,3 @@
-import { createRequest } from '../utils/request'
 import {
   APIS,
   getAuthBody,
@@ -7,6 +6,7 @@ import {
   getPingBody,
   getRegionBody,
 } from '../utils/rso'
+import type { RequestFunction } from '../utils/request'
 import type { InGameApiInstance, ParsedRSOAuthResult } from '../types'
 import type {
   AuthLoginResponse,
@@ -16,76 +16,84 @@ import type {
   RegionResponse,
 } from '../types/request'
 
-const request = createRequest()
+export function createRSOApi(request: RequestFunction) {
+  async function fetchGetAuthCookies() {
+    await request(APIS.AUTH_URL, {
+      method: 'POST',
+      body: getPingBody(),
+    })
+  }
 
-export async function fetchGetAuthCookies() {
-  await request(APIS.AUTH_URL, {
-    method: 'POST',
-    body: getPingBody(),
-  })
-}
+  function fetchAuthLogin(accountInfo: {
+    username: string
+    password: string
+    remember: boolean
+  }) {
+    return request<AuthLoginResponse>(APIS.AUTH_URL, {
+      method: 'PUT',
+      body: getAuthBody(accountInfo),
+    })
+  }
 
-export function fetchAuthLogin(accountInfo: {
-  username: string
-  password: string
-  remember: boolean
-}) {
-  return request<AuthLoginResponse>(APIS.AUTH_URL, {
-    method: 'PUT',
-    body: getAuthBody(accountInfo),
-  })
-}
+  function fetchMultiFactorAuth(mfaInfo: {
+    code: string
+    rememberDevice: boolean
+  }) {
+    return request<AuthResponseOrFailure>(APIS.AUTH_URL, {
+      method: 'PUT',
+      body: getMultiFactorBody(mfaInfo),
+    })
+  }
 
-export function fetchMultiFactorAuth(mfaInfo: {
-  code: string
-  rememberDevice: boolean
-}) {
-  return request<AuthResponseOrFailure>(APIS.AUTH_URL, {
-    method: 'PUT',
-    body: getMultiFactorBody(mfaInfo),
-  })
-}
+  function fetchGetRegion(parsedRSOAuthResult: ParsedRSOAuthResult) {
+    return request<RegionResponse>(APIS.REGION_URL, {
+      method: 'PUT',
+      body: getRegionBody(parsedRSOAuthResult),
+      headers: getAuthorizationHeader(parsedRSOAuthResult),
+    })
+  }
 
-export function fetchGetRegion(parsedRSOAuthResult: ParsedRSOAuthResult) {
-  return request<RegionResponse>(APIS.REGION_URL, {
-    method: 'PUT',
-    body: getRegionBody(parsedRSOAuthResult),
-    headers: getAuthorizationHeader(parsedRSOAuthResult),
-  })
-}
+  function fetchGetEntitlementToken(parsedRSOAuthResult: ParsedRSOAuthResult) {
+    return request<EntitlementTokenResponse>(APIS.ENTITLEMENTS_URL, {
+      method: 'POST',
+      headers: getAuthorizationHeader(parsedRSOAuthResult),
+    })
+  }
 
-export function fetchGetEntitlementToken(
-  parsedRSOAuthResult: ParsedRSOAuthResult,
-) {
-  return request<EntitlementTokenResponse>(APIS.ENTITLEMENTS_URL, {
-    method: 'POST',
-    headers: getAuthorizationHeader(parsedRSOAuthResult),
-  })
-}
+  function fetchGetPlayerInfo(parsedRSOAuthResult: ParsedRSOAuthResult) {
+    return request<PlayerInfoResponse>(APIS.PLAYER_INFO_URL, {
+      headers: getAuthorizationHeader(parsedRSOAuthResult),
+    })
+  }
 
-export function fetchGetPlayerInfo(parsedRSOAuthResult: ParsedRSOAuthResult) {
-  return request<PlayerInfoResponse>(APIS.PLAYER_INFO_URL, {
-    headers: getAuthorizationHeader(parsedRSOAuthResult),
-  })
-}
+  // TODO: remove later
+  function fetchGetStoreFrontInfo({
+    inGame,
+    userId,
+    parsedRSOAuthResult,
+    entitlementsToken,
+  }: {
+    userId: string
+    entitlementsToken: string
+    inGame: InGameApiInstance
+    parsedRSOAuthResult: ParsedRSOAuthResult
+  }) {
+    return request(inGame.StoreFront(userId), {
+      method: 'GET',
+      headers: {
+        Authorization: `${parsedRSOAuthResult.tokenType} ${parsedRSOAuthResult.accessToken}`,
+        'X-Riot-Entitlements-JWT': entitlementsToken,
+      },
+    })
+  }
 
-// TODO: remove later
-export function fetchGetStoreFrontInfo({
-  inGame,
-  userId,
-  parsedRSOAuthResult,
-  entitlementsToken,
-}: {
-  userId: string
-  entitlementsToken: string
-  inGame: InGameApiInstance
-  parsedRSOAuthResult: ParsedRSOAuthResult
-}) {
-  return request(inGame.StoreFront(userId), {
-    method: 'GET',
-    headers: {
-      Authorization: `${parsedRSOAuthResult.tokenType} ${parsedRSOAuthResult.accessToken}`,
-      'X-Riot-Entitlements-JWT': entitlementsToken,
-    },
-  })
+  return {
+    fetchGetAuthCookies,
+    fetchAuthLogin,
+    fetchMultiFactorAuth,
+    fetchGetRegion,
+    fetchGetEntitlementToken,
+    fetchGetPlayerInfo,
+    fetchGetStoreFrontInfo,
+  }
 }
