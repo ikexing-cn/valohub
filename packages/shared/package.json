@@ -1,0 +1,23 @@
+{
+  "name": "@valorant-bot/shared",
+  "version": "0.0.1",
+  "type": "module",
+  "license": "MIT",
+  "author": "ikx <ikexing.cn@gmail.com>",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "dev": "./src/index.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "dev": "unbuild --stub",
+    "build": "unbuild"
+  }
+}
