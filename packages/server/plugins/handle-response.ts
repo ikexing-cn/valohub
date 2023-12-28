@@ -4,23 +4,20 @@ function createResponse<
 >(status: Status, errorOrBody: Result) {
   const result =
     status !== 200
-      ? { type: 'Error', message: (errorOrBody as Error).message }
-      : typeof errorOrBody === 'string'
-        ? { type: 'Message', message: errorOrBody }
-        : errorOrBody
+      ? {
+          success: false,
+          message: (errorOrBody as Error).message,
+          cause: (errorOrBody as Error).cause,
+          stack: (errorOrBody as Error).stack,
+        }
+      : errorOrBody
 
-  return new Response(
-    JSON.stringify({
-      success: status === 200,
-      ...result,
-    }),
-    {
-      status,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+  return new Response(JSON.stringify(result), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
     },
-  )
+  })
 }
 
 export default defineNitroPlugin((nitro) => {

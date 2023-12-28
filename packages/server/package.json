@@ -12,6 +12,7 @@
     "nitropack": "latest"
   },
   "devDependencies": {
+    "@valorant-bot/core": "workspace:^",
     "@valorant-bot/shared": "workspace:^",
     "prisma": "^5.7.1"
   }

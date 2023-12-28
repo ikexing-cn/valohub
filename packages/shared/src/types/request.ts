@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const signUpSchema = z.object({
+export const accountSchema = z.object({
   qq: z
     .number({
       required_error: 'QQ号不能为空',
@@ -17,5 +17,8 @@ export const signUpSchema = z.object({
     .min(6, {
       message: '密码长度必须大于6',
     })
-    .trim(),
+    .trim()
+    .optional(),
 })
+
+export type AccountVerifyRequest = typeof accountSchema._type

@@ -13,7 +13,7 @@ datasource db {
 model Account {
   id Int @id @default(autoincrement())
 
-  qq             Int @unique
+  qq             Int    @unique
   verifyPassword String
 
   valorantInfo ValorantInfo[]
@@ -35,6 +35,7 @@ model ValorantInfo {
   accountId Int
   account   Account @relation(fields: [accountId], references: [id])
 
+  uuid         String @unique
   riotUsername String @unique
   riotPassword String
 
