@@ -43,10 +43,31 @@ model ValorantInfo {
   entitlementsToken String
 
   uuid     String @unique
-  coutry   String
+  country  String
   gameName String
   tagLine  String
 
+  bonusStore     StoreItems[] @relation("BonusStoreRelation")
+  dailyStores    StoreItems[] @relation("DailyStoresRelation")
+  accessoryStore StoreItems[] @relation("AccessoryStoreRelation")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model StoreItems {
+  id Int @id @default(autoincrement())
+
+  bonusValorantInfoId Int?
+  ValorantInfoBonus   ValorantInfo? @relation("BonusStoreRelation", fields: [bonusValorantInfoId], references: [id])
+
+  dailyValorantInfoId Int?
+  ValorantInfoDaily   ValorantInfo? @relation("DailyStoresRelation", fields: [dailyValorantInfoId], references: [id])
+
+  accessoryValorantInfoId Int?
+  AccessoryStoreRelation  ValorantInfo? @relation("AccessoryStoreRelation", fields: [accessoryValorantInfoId], references: [id])
+
+  items Json[]
+
+  createdAt DateTime @default(now())
 }
