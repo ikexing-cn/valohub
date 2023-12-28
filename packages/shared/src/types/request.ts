@@ -11,7 +11,7 @@ const qq = z
 
 export const accountSchema = z.object({
   qq,
-  password: z
+  verifyPassword: z
     .string({
       invalid_type_error: '密码必须是字符串',
     })

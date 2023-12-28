@@ -6,7 +6,7 @@ export default sxzz(
       ignores: ['packages/server/.nitro'],
     },
     {
-      files: ['packages/server/{routes,plugins,middlewares}/**/*.ts'],
+      files: ['packages/server/{routes,plugins,middleware}/**/*.ts'],
       rules: {
         'import/no-default-export': 'off',
       },

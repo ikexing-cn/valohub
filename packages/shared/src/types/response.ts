@@ -14,6 +14,14 @@ export type AccountVerifyResponse = IResponse<{
   needBind?: boolean
 }>
 
-export type AccountBindResponse = IResponse<{
+// ===== with middleware =====
+
+export type VerifiedResponseWith<T extends object> = IResponse<
+  AccountVerifyResponse['data'] & T
+>
+
+// =====
+
+export type AccountBindResponse = VerifiedResponseWith<{
   needMFA: boolean
 }>

@@ -90,7 +90,7 @@ export default defineEventHandler(async (event) => {
       riotPassword: parsedBody.password,
 
       uuid: playerInfo.sub,
-      coutry: playerInfo.country,
+      country: playerInfo.country,
       tagLine: playerInfo.acct.tag_line,
       gameName: playerInfo.acct.game_name,
 
