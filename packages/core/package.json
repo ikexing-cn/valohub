@@ -18,8 +18,7 @@
   },
   "scripts": {
     "dev": "unbuild --stub",
-    "build": "unbuild",
-    "once": "esno run-once.ts"
+    "build": "unbuild"
   },
   "devDependencies": {
     "@valorant-bot/shared": "workspace:^"
