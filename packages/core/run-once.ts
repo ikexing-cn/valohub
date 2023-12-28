@@ -2,25 +2,26 @@
 import 'dotenv/config'
 
 import { question } from 'readline-sync'
+import { createRequest } from '@valorant-bot/shared'
 import { createInGameApi } from './src/api/in-game'
 import { parseRSOAuthResultUri } from './src/utils/rso'
-import { createRSOApi, createRequest } from './src'
+import { createRSOApi } from './src'
 import type { AuthResponse } from './src/types/request'
 
 const request = createRequest()
 const {
+  fetchAuthPing,
   fetchAuthLogin,
-  fetchGetAuthCookies,
   fetchGetEntitlementToken,
   fetchGetPlayerInfo,
   fetchGetRegion,
   fetchGetStoreFrontInfo,
-  fetchMultiFactorAuth,
+  fetchAuthMultiFactor,
 } = createRSOApi(request)
 
 async function tryMFA() {
   const code = question('请输入二步验证的code:')
-  const resultMFA = await fetchMultiFactorAuth({
+  const resultMFA = await fetchAuthMultiFactor({
     code,
     rememberDevice: true,
   })
@@ -43,7 +44,7 @@ async function getResultUri() {
       },
     }
   } else {
-    await fetchGetAuthCookies()
+    await fetchAuthPing()
     const authLoginResult = await fetchAuthLogin({
       username: process.env.RSO_USERNAME!,
       password: process.env.RSO_PASSWORD!,

@@ -6,7 +6,7 @@ import {
   getPingBody,
   getRegionBody,
 } from '../utils/rso'
-import type { RequestFunction } from '../utils/request'
+import type { RequestFunction } from '@valorant-bot/shared'
 import type { InGameApiInstance, ParsedRSOAuthResult } from '../types'
 import type {
   AuthLoginResponse,
@@ -16,8 +16,9 @@ import type {
   RegionResponse,
 } from '../types/request'
 
+export type RSOApis = ReturnType<typeof createRSOApi>
 export function createRSOApi(request: RequestFunction) {
-  async function fetchGetAuthCookies() {
+  async function fetchAuthPing() {
     await request(APIS.AUTH_URL, {
       method: 'POST',
       body: getPingBody(),
@@ -35,7 +36,7 @@ export function createRSOApi(request: RequestFunction) {
     })
   }
 
-  function fetchMultiFactorAuth(mfaInfo: {
+  function fetchAuthMultiFactor(mfaInfo: {
     code: string
     rememberDevice: boolean
   }) {
@@ -88,9 +89,9 @@ export function createRSOApi(request: RequestFunction) {
   }
 
   return {
-    fetchGetAuthCookies,
+    fetchAuthPing,
     fetchAuthLogin,
-    fetchMultiFactorAuth,
+    fetchAuthMultiFactor,
     fetchGetRegion,
     fetchGetEntitlementToken,
     fetchGetPlayerInfo,
