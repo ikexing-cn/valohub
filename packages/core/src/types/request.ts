@@ -1,10 +1,3 @@
-export interface ApiAuthFailure {
-  httpStatus: 401
-  errorCode: 'not-authorized'
-  message: 'User not authenticated'
-  implementationDetails: ''
-}
-
 interface AuthMultifactorResponse {
   type: 'multifactor'
   country: string

@@ -1,6 +1,12 @@
 import { fetch as fetchWithProrxy } from 'node-fetch-native/proxy'
 import { objectOmit } from './internal'
-import type { ApiAuthFailure } from '../types/request'
+
+export interface ApiAuthFailure {
+  httpStatus: 401
+  errorCode: 'not-authorized'
+  message: 'User not authenticated'
+  implementationDetails: ''
+}
 
 export interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: object
