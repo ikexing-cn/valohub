@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
   if (!accountExist) {
     if (!parsedBody.password) {
       return response(false, '此 qq 号需要初始化', {
-        isInit: false,
+        needInit: true,
       })
     }
 
@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
       },
     })
     return response(true, '初始化成功！接下来请绑定你的 Valorant 账号', {
-      isInit: true,
+      needBind: true,
     })
   }
 
@@ -46,6 +46,14 @@ export default defineEventHandler(async (event) => {
     if (accountExist.verifyPassword !== dMd5(parsedBody.password)) {
       return response(false, '验证失败，你输入的密码不正确')
     }
+  }
+
+  if (accountExist.valorantInfo.length <= 0) {
+    return response(
+      true,
+      '此 qq 号还未绑定 Valorant 账号, 请先绑定至少一个 Valorant  账号！',
+      { needBind: true },
+    )
   }
 
   prisma.account.update({

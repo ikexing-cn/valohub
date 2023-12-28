@@ -10,6 +10,6 @@ export interface IResponse<
 }
 
 export type AccountVerifyResponse = IResponse<{
-  isInit?: boolean
-  isBind?: boolean
+  needInit?: boolean
+  needBind?: boolean
 }>
