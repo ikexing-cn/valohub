@@ -7,14 +7,18 @@ import {
   getRegionBody,
 } from '../utils/rso'
 import type { RequestFunction } from '@valorant-bot/shared'
-import type { InGameApiInstance, ParsedRSOAuthResult } from '../types'
+import type {
+  InGameApiInstance,
+  ParsedRSOAuthResult,
+  StoreFrontResponse,
+} from '../types'
 import type {
   AuthLoginResponse,
   AuthResponseOrFailure,
   EntitlementTokenResponse,
   PlayerInfoResponse,
   RegionResponse,
-} from '../types/request'
+} from '../types/response'
 
 export type RSOApis = ReturnType<typeof createRSOApi>
 export function createRSOApi(request: RequestFunction) {
@@ -79,7 +83,7 @@ export function createRSOApi(request: RequestFunction) {
     inGame: InGameApiInstance
     parsedRSOAuthResult: ParsedRSOAuthResult
   }) {
-    return request(inGame.StoreFront(userId), {
+    return request<StoreFrontResponse>(inGame.StoreFront(userId), {
       method: 'GET',
       headers: {
         Authorization: `${parsedRSOAuthResult.tokenType} ${parsedRSOAuthResult.accessToken}`,

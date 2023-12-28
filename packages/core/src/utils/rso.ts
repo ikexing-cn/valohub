@@ -1,5 +1,5 @@
 import type { ParsedRSOAuthResult } from '../types'
-import type { AuthResponse } from '../types/request'
+import type { AuthResponse } from '../types/response'
 
 export enum APIS {
   PLAYER_INFO_URL = 'https://auth.riotgames.com/userinfo',
