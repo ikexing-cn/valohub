@@ -4,6 +4,14 @@ import {
   accountSchema,
 } from '@valorant-bot/shared'
 
+import type { Prisma } from '@prisma/client'
+
+declare module 'h3' {
+  interface H3EventContext {
+    account: Prisma.$AccountPayload['scalars']
+  }
+}
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const parsedBody = zodParse<AccountVerifyRequest>(accountSchema, body)
@@ -17,7 +25,7 @@ export default defineEventHandler(async (event) => {
 
   if (!accountExist) {
     if (!parsedBody.verifyPassword) {
-      return response(false, '此 qq 号需要初始化, 请输入你的初始化密码！', {
+      return response(false, '此 qq 号需要初始化, 请先设置你的初始化密码！', {
         needInit: true,
       })
     }
@@ -25,12 +33,12 @@ export default defineEventHandler(async (event) => {
     accountExist = await prisma.account.create({
       data: {
         qq: body.qq,
-        verifyPassword: dMd5(body.password),
+        verifyPassword: dMd5(parsedBody.verifyPassword),
       },
     })
   }
 
-  // check verify password per 10 day
+  // check verify password per 10 da
   const updateTime = accountExist.updatedAt.getTime() + 1000 * 60 * 60 * 10
   if (updateTime < Date.now()) {
     if (!parsedBody.verifyPassword) {
