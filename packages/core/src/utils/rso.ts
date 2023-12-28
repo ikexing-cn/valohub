@@ -61,11 +61,11 @@ export function getAuthorizationHeader(
 }
 
 export function getMultiFactorBody(config: {
-  code: string
+  code: number
   rememberDevice: boolean
 }) {
   const multiFactorBody = { ...MULTI_FACTOR_BODY }
-  multiFactorBody.code = config.code
+  multiFactorBody.code = String(config.code)
   multiFactorBody.rememberDevice = config.rememberDevice
   return multiFactorBody
 }
@@ -73,8 +73,15 @@ export function getMultiFactorBody(config: {
 export function parseRSOAuthResultUri(authResult: AuthResponse) {
   const regex =
     /^http(s)?:\/\/.*(#|\?)access_token=(.*)&scope=(.*)&iss=(.*)&id_token=(.*)&token_type=(\w+)&session_state=(.*)&expires_in=(\d+)$/
-  const parseResult = regex.exec(authResult.response.parameters.uri)
-  if (!parseResult) return null
+  const toReadyParseUri = authResult.response.parameters.uri
+  const parseResult = regex.exec(toReadyParseUri)
+  if (parseResult == null) {
+    throw new Error('RSO 解析失败', {
+      cause: {
+        uri: toReadyParseUri,
+      },
+    })
+  }
 
   return {
     accessToken: parseResult[3],

@@ -37,7 +37,7 @@ export function createRSOApi(request: RequestFunction) {
   }
 
   function fetchAuthMultiFactor(mfaInfo: {
-    code: string
+    code: number
     rememberDevice: boolean
   }) {
     return request<AuthResponseOrFailure>(APIS.AUTH_URL, {

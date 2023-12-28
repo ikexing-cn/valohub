@@ -66,9 +66,11 @@ async function getResultUri() {
 const resultUri = await getResultUri()
 console.log(resultUri)
 
-const rsoAuthResUri = parseRSOAuthResultUri(resultUri)
-if (rsoAuthResUri == null) {
-  console.log('parse 失败')
+let rsoAuthResUri
+try {
+  rsoAuthResUri = parseRSOAuthResultUri(resultUri)
+} catch (error) {
+  console.log('parse 失败', error)
   process.exit(1)
 }
 

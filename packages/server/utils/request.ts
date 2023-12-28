@@ -1,25 +1,34 @@
 import { type RequestFunction, createRequest } from '@valorant-bot/shared'
 
-const requestMap: Map<string, RequestFunction> = new Map()
+export const requestMap: Map<number, RequestFunction> = new Map()
 
-export function useRequest(qq?: string) {
+function $createRequest(qq: number) {
+  return createRequest(
+    (res, cookieJar) => {
+      const cookie = res.headers.getSetCookie()
+      cookie && (cookieJar[qq] = cookie)
+    },
+    (cookieJar) => {
+      return cookieJar[qq] || []
+    },
+  )
+}
+
+export function useRequest(qq?: number) {
   if (!qq) {
     return createRequest()
   }
 
   if (!requestMap.has(qq)) {
-    requestMap.set(
-      qq,
-      createRequest((res, cookieJar) => {
-        const cookie = res.headers.getSetCookie()
-        cookie && (cookieJar[qq] = cookie)
-      }),
-    )
+    requestMap.set(qq, $createRequest(qq))
   }
 
   return requestMap.get(qq)!
 }
 
-export function cleanRequest(qq?: string) {
-  qq && requestMap.has(qq) && requestMap.delete(qq)
+export function useCleanRequest(qq: number) {
+  if (requestMap.get(qq)) {
+    requestMap.delete(qq)
+  }
+  return useRequest(qq)
 }

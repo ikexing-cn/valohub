@@ -13,3 +13,7 @@ export type AccountVerifyResponse = IResponse<{
   needInit?: boolean
   needBind?: boolean
 }>
+
+export type AccountBindResponse = IResponse<{
+  needMFA: boolean
+}>

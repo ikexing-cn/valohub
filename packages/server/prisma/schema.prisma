@@ -32,10 +32,9 @@ enum Region {
 model ValorantInfo {
   id Int @id @default(autoincrement())
 
-  accountId Int
-  account   Account @relation(fields: [accountId], references: [id])
+  accountQQ Int
+  account   Account @relation(fields: [accountQQ], references: [qq])
 
-  uuid         String @unique
   riotUsername String @unique
   riotPassword String
 
@@ -43,9 +42,10 @@ model ValorantInfo {
 
   entitlementsToken String
 
+  uuid     String @unique
+  coutry   String
   gameName String
   tagLine  String
-  coutry   String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

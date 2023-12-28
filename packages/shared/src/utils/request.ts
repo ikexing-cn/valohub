@@ -18,6 +18,7 @@ export function createRequest(
     response: Response,
     cookieJar: Record<string, string[]>,
   ) => void,
+  getCookies?: (cookieJar: Record<string, string[]>) => string[],
 ) {
   const cookieJar: Record<string, string[]> = {}
 
@@ -32,9 +33,17 @@ export function createRequest(
   }
 
   async function request<T = any>(url: string, options: RequestOptions = {}) {
+    const cookies = () => {
+      if (getCookies == null) {
+        return cookieJar[url]?.join('; ') || undefined
+      } else {
+        return getCookies(cookieJar)?.join('; ') || undefined
+      }
+    }
+
     const headers = generateHeaders({
       ...options.headers,
-      cookie: cookieJar[url] ? cookieJar[url].join('; ') : undefined,
+      cookie: cookies(),
     })
 
     const response = await fetchWithProrxy(url, {
@@ -44,21 +53,20 @@ export function createRequest(
       credentials: 'include',
     })
 
-    if (response.status === 401) {
-      const responseJson = (await response.json()) as ApiAuthFailure
-      throw new Error(
-        `Authentication Failure: ${JSON.stringify(responseJson, null, 2)}`,
-      )
-    }
-
-    if (!response.ok && response.status !== 401) {
+    if (!response.ok) {
       const responseJson = await response.json()
       throw new Error(
-        `Error, status ${response.status}: ${JSON.stringify(
-          responseJson,
-          null,
-          2,
-        )}`,
+        `Error, status ${response.status}: ${JSON.stringify(responseJson)}`,
+        {
+          cause: {
+            url,
+            method: options.method,
+            body: options.body,
+            headers,
+            status: response.status,
+            statusText: response.statusText,
+          },
+        },
       )
     }
 
