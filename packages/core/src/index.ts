@@ -1,7 +1,6 @@
 export * from './api/rso'
 export * from './api/in-game'
-
-export * from './auth/rso-storage'
+export * from './api/valorant-api'
 
 export * from './types'
 
