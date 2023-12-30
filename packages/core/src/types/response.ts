@@ -8,6 +8,7 @@ interface AuthMultifactorResponse {
     type: 'email'
     multiFactorCodeLength: number
   }
+  error?: string
 }
 
 export interface AuthResponse {
@@ -19,14 +20,16 @@ export interface AuthResponse {
   }
 }
 
-export interface AuthFailureResponse {
+export interface AuthRetryResponse {
   type: 'auth'
   error: string
   country: string
 }
 
-export type AuthResponseOrFailure = AuthResponse | AuthFailureResponse
-export type AuthLoginResponse = AuthMultifactorResponse | AuthResponseOrFailure
+export type AuthResponseOrRetry =
+  | AuthResponse
+  | AuthRetryResponse
+  | AuthMultifactorResponse
 
 export interface RegionResponse {
   token: string

@@ -24,7 +24,9 @@ async function loginRiot(
       code: mfaCode,
     })
     if (authLoginResult.type === 'auth') {
-      return [false, response(false, '此邮箱验证码错误！')] as const
+      return [false, response(false, '邮箱验证码错误，请重试！')] as const
+    } else if (authLoginResult.type === 'multifactor') {
+      return [false, response(false, '邮箱验证码错误，请重试！')] as const
     }
   } else {
     // 重复请求时，需要清空之前的 session
@@ -35,18 +37,21 @@ async function loginRiot(
       remember,
     })
     if (authLoginResult.type === 'auth') {
-      return [false, response(false, '此 Valorant 账号密码错误！')] as const
-    }
-    if (authLoginResult.type === 'multifactor') {
+      return [false, response(false, '此 Valorant 账号或密码错误！')] as const
+    } else if (authLoginResult.type === 'multifactor') {
       return [
         false,
         response(
           false,
-          '检查到此 Valorant 账号已启用二步验证，请输入邮箱验证码',
+          '检测到此 Valorant 账号已启用二步验证，请输入邮箱验证码',
           { needMFA: true },
         ),
       ] as const
     }
+  }
+
+  if (authLoginResult.type !== 'response') {
+    return [false, response(false, '未知错误！')] as const
   }
 
   return [true, authLoginResult] as const
@@ -65,21 +70,26 @@ export default defineEventHandler(async (event) => {
     where: { riotUsername: parsedBody.username },
   })
   if (valorantAccountExists) {
-    return response(false, '此 Valorant 账号已被其他 qq 绑定！')
+    return response(false, '此 Valorant 账号已被其他 qq 绑定！', {
+      isBinded: true,
+    })
   }
+
+  const valorantInfoExists = await prisma.valorantInfo.findFirst({
+    where: { accountQQ: account.qq, alias: parsedBody.alias },
+  })
+  if (valorantInfoExists) {
+    return response(false, '默认别名已绑定其他 Valorant 账号，请更换别名！', {
+      isBinded: true,
+    })
+  }
+
   const [isSuccess, authResult] = await loginRiot(
     account.qq,
     parsedBody,
     response,
   )
   if (!isSuccess) return authResult
-
-  const valorantInfoExists = await prisma.valorantInfo.findFirst({
-    where: { accountQQ: account.qq, alias: parsedBody.alias },
-  })
-  if (valorantInfoExists) {
-    return response(false, '默认别名已绑定其他 Valorant 账号，请更换别名！')
-  }
 
   const rsoApis = createRSOApi(useRequest())
   const parsedAuthResult = parseRSOAuthResultUri(authResult)

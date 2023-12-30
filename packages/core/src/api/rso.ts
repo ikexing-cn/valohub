@@ -9,8 +9,7 @@ import {
 import type { RequestFunction } from '@valorant-bot/shared'
 import type { ParsedRSOAuthResult } from '../types'
 import type {
-  AuthLoginResponse,
-  AuthResponseOrFailure,
+  AuthResponseOrRetry,
   EntitlementTokenResponse,
   PlayerInfoResponse,
   RegionResponse,
@@ -30,7 +29,7 @@ export function createRSOApi(request: RequestFunction) {
     password: string
     remember: boolean
   }) {
-    return request<AuthLoginResponse>(APIS.AUTH_URL, {
+    return request<AuthResponseOrRetry>(APIS.AUTH_URL, {
       method: 'PUT',
       body: getAuthBody(accountInfo),
     })
@@ -40,7 +39,7 @@ export function createRSOApi(request: RequestFunction) {
     code: number
     rememberDevice: boolean
   }) {
-    return request<AuthResponseOrFailure>(APIS.AUTH_URL, {
+    return request<AuthResponseOrRetry>(APIS.AUTH_URL, {
       method: 'PUT',
       body: getMultiFactorBody(mfaInfo),
     })

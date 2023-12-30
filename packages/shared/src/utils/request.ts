@@ -12,6 +12,16 @@ export interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: object
 }
 
+export function generateHeaders(otherHeaders: object = {}) {
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+    ...Object.fromEntries(
+      Object.entries(otherHeaders).filter(([, value]) => value),
+    ),
+  })
+  return headers
+}
+
 export type RequestFunction = ReturnType<typeof createRequest>
 export function createRequest(
   handleCookies?: (
@@ -21,16 +31,6 @@ export function createRequest(
   getCookies?: (cookieJar: Record<string, string[]>) => string[],
 ) {
   const cookieJar: Record<string, string[]> = {}
-
-  function generateHeaders(otherHeaders: object = {}) {
-    const headers = new Headers({
-      'Content-Type': 'application/json',
-      ...Object.fromEntries(
-        Object.entries(otherHeaders).filter(([, value]) => value),
-      ),
-    })
-    return headers
-  }
 
   async function request<T = any>(url: string, options: RequestOptions = {}) {
     const cookies = () => {
