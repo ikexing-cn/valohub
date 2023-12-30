@@ -85,6 +85,7 @@ export default defineEventHandler(async (event) => {
     data: {
       accountQQ: parsedBody.qq,
 
+      parsedAuthResult: JSON.stringify(parsedAuthResult),
       entitlementsToken: entitlementToken.entitlements_token,
       riotUsername: parsedBody.username,
       riotPassword: parsedBody.password,

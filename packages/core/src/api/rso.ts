@@ -7,11 +7,7 @@ import {
   getRegionBody,
 } from '../utils/rso'
 import type { RequestFunction } from '@valorant-bot/shared'
-import type {
-  InGameApiInstance,
-  ParsedRSOAuthResult,
-  StoreFrontResponse,
-} from '../types'
+import type { ParsedRSOAuthResult } from '../types'
 import type {
   AuthLoginResponse,
   AuthResponseOrFailure,
@@ -71,27 +67,6 @@ export function createRSOApi(request: RequestFunction) {
     })
   }
 
-  // TODO: remove later
-  function fetchGetStoreFrontInfo({
-    inGame,
-    userId,
-    parsedRSOAuthResult,
-    entitlementsToken,
-  }: {
-    userId: string
-    entitlementsToken: string
-    inGame: InGameApiInstance
-    parsedRSOAuthResult: ParsedRSOAuthResult
-  }) {
-    return request<StoreFrontResponse>(inGame.StoreFront(userId), {
-      method: 'GET',
-      headers: {
-        Authorization: `${parsedRSOAuthResult.tokenType} ${parsedRSOAuthResult.accessToken}`,
-        'X-Riot-Entitlements-JWT': entitlementsToken,
-      },
-    })
-  }
-
   return {
     fetchAuthPing,
     fetchAuthLogin,
@@ -99,6 +74,5 @@ export function createRSOApi(request: RequestFunction) {
     fetchGetRegion,
     fetchGetEntitlementToken,
     fetchGetPlayerInfo,
-    fetchGetStoreFrontInfo,
   }
 }

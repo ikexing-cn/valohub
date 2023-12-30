@@ -1,3 +1,5 @@
+import type { StoreFrontResponse } from './in-game/store-front'
+
 interface AuthMultifactorResponse {
   type: 'multifactor'
   country: string
@@ -87,4 +89,18 @@ export interface PlayerInfoResponse {
     pp: string
   }
   player_plocale: string | null
+}
+
+// TODO: replace null
+export interface InGameApiResponse {
+  getContracts: null
+  getContent: null
+  getAccountXP: null
+  getMMR: null
+  getPlayerLoadout: null
+  getStoreOffers: null
+  getStoreFront: StoreFrontResponse
+  getStoreWallet: null
+  getStoreOrder: null
+  getStoreEntitlements: null
 }

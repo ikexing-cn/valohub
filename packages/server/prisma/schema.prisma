@@ -35,11 +35,15 @@ model ValorantInfo {
   accountQQ Int
   account   Account @relation(fields: [accountQQ], references: [qq])
 
+  alias String @default("default")
+
   riotUsername String @unique
   riotPassword String
 
   region Region
 
+  // JSON
+  parsedAuthResult  String
   entitlementsToken String
 
   uuid     String @unique
@@ -65,9 +69,10 @@ model StoreItems {
   ValorantInfoDaily   ValorantInfo? @relation("DailyStoresRelation", fields: [dailyValorantInfoId], references: [id])
 
   accessoryValorantInfoId Int?
-  AccessoryStoreRelation  ValorantInfo? @relation("AccessoryStoreRelation", fields: [accessoryValorantInfoId], references: [id])
+  ValorantInfoAccessory  ValorantInfo? @relation("AccessoryStoreRelation", fields: [accessoryValorantInfoId], references: [id])
 
-  items Json[]
+  items String[]
 
   createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
 }

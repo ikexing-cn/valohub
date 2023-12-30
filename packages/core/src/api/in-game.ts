@@ -1,3 +1,5 @@
+import type { ParsedRSOAuthResult } from '../types'
+
 const BASE_DOMAIN = 'https://{endPoint}.{server}.a.pvp.net'
 
 function genInGameApi(endPoint: string, server: string, restUrl: string) {
@@ -33,31 +35,31 @@ export enum ItemType {
 export function createInGameApi(server: string) {
   return {
     // 获取合约、任务列表及进度
-    Contracts: (userId: string) =>
+    getContracts: (userId: string) =>
       replacePlaceholder(
         genInGameApi('pd', server, '/contracts/v1/contracts/{userId}'),
         userId,
       ),
 
     // 获取游戏内的物品信息及其ID
-    Content: genInGameApi('pd', server, '/content-service/v3/content'),
+    getContent: () => genInGameApi('pd', server, '/content-service/v3/content'),
 
     // 获取账户等级、经验
-    AccountXP: (userId: string) =>
+    getAccountXP: (userId: string) =>
       replacePlaceholder(
         genInGameApi('pd', server, '/account-xp/v1/players/{userId}'),
         userId,
       ),
 
     // 获取玩家的汇总信息
-    MMR: (userId: string) =>
+    getMMR: (userId: string) =>
       replacePlaceholder(
         genInGameApi('pd', server, '/mmr/v1/players/{userId}'),
         userId,
       ),
 
     // 获取玩家当前的装备信息
-    PlayerLoadout: (userId: string) =>
+    getPlayerLoadout: (userId: string) =>
       replacePlaceholder(
         genInGameApi(
           'pd',
@@ -68,10 +70,10 @@ export function createInGameApi(server: string) {
       ),
 
     // 获取商城中所有的物品
-    StoreOffers: genInGameApi('pd', server, '/store/v1/offers'),
+    getStoreOffers: () => genInGameApi('pd', server, '/store/v1/offers'),
 
     // 获取商城中当前出售的物品
-    StoreFront: (userId: string) =>
+    getStoreFront: (userId: string) =>
       replacePlaceholder(
         genInGameApi('pd', server, '/store/v2/storefront/{userId}'),
         userId,
@@ -80,21 +82,21 @@ export function createInGameApi(server: string) {
     // 获取玩家的VP点数、RP点数
     // 85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741: VP
     // e59aa87c-4cbf-517a-5983-6e81511be9b7: RP
-    StoreWallet: (userId: string) =>
+    getStoreWallet: (userId: string) =>
       replacePlaceholder(
         genInGameApi('pd', server, '/store/v1/wallet/{userId}'),
         userId,
       ),
 
     // 获取商店订单信息（orderID可以在创建订单时获取）
-    StoreOrder: (orderId: string) =>
+    getStoreOrder: (orderId: string) =>
       replacePlaceholder(
         genInGameApi('pd', server, '/store/v1/order/{orderId}'),
         orderId,
       ),
 
     // 获取玩家已拥有的物品
-    StoreEntitlements: (userId: string, itemType: ItemType) =>
+    getStoreEntitlements: (userId: string, itemType: ItemType) =>
       replacePlaceholder(
         genInGameApi(
           'pd',
@@ -105,4 +107,23 @@ export function createInGameApi(server: string) {
         itemType,
       ),
   } as const
+}
+
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
+export class InGameRequestHeader {
+  public static riotClientVersion = 'release-07.12-shipping-15-2164217'
+  public static riotClientPlatform =
+    'ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9'
+}
+
+export function getInGameRequestHeader(
+  entitlementsToken: string,
+  authResult: ParsedRSOAuthResult,
+) {
+  return {
+    'X-Riot-ClientVersion': InGameRequestHeader.riotClientVersion,
+    'X-Riot-ClientPlatform': InGameRequestHeader.riotClientPlatform,
+    'X-Riot-Entitlements-JWT': entitlementsToken,
+    Authorization: `${authResult.tokenType} ${authResult.accessToken}`,
+  }
 }

@@ -1,4 +1,4 @@
-import type { IResponse } from '@valorant-bot/shared'
+import type { AccountVerifyResponse, IResponse } from '@valorant-bot/shared'
 
 export function getResponse<T extends object>(
   dataOrMessage: T | string,
@@ -49,4 +49,6 @@ export function getResponse<T extends object>(
   return { success, message, data }
 }
 
-export const useResponse = <T extends object>() => getResponse<T>
+export const useResponse = <
+  T extends object = AccountVerifyResponse['data'],
+>() => getResponse<T>
