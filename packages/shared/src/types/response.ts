@@ -16,7 +16,7 @@ export type AccountVerifyResponse = IResponse<{
 
 // ===== with middleware =====
 
-export type VerifiedResponseWith<T extends object> = IResponse<
+export type VerifiedResponseWith<T extends object = {}> = IResponse<
   AccountVerifyResponse['data'] & T
 >
 

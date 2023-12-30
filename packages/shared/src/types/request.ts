@@ -15,7 +15,6 @@ const alias = z
   })
   .trim()
   .default('default')
-  .optional()
 
 export const accountSchema = z.object({
   qq,
@@ -30,7 +29,7 @@ export const accountSchema = z.object({
     .optional(),
 })
 
-export type AccountVerifyRequest = typeof accountSchema._type
+export type AccountVerifyRequest = typeof accountSchema._input
 
 export const bindSchema = z.object({
   alias,
@@ -58,8 +57,8 @@ export const bindSchema = z.object({
     .optional(),
 })
 
-export type AccountBindSchema = typeof bindSchema._type
+export type AccountBindSchema = typeof bindSchema._input
 
 export const selectValoInfoSchema = z.object({ alias })
 
-export type InGameStoreFrontSchema = typeof selectValoInfoSchema._type
+export type InGameStoreFrontSchema = typeof selectValoInfoSchema._input
