@@ -7,7 +7,6 @@
     "paths": {
       "#imports": ["./.nitro/types/nitro-imports"]
     },
-    "types": ["./index.d.ts"],
     "allowSyntheticDefaultImports": true
   },
   "include": ["./**/*", "./.nitro/types/nitro.d.ts"]

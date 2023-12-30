@@ -1,8 +1,4 @@
-import {
-  type AccountVerifyRequest,
-  type AccountVerifyResponse,
-  accountSchema,
-} from '@valorant-bot/shared'
+import { type AccountVerifyRequest, accountSchema } from '@valorant-bot/shared'
 
 import type { Prisma } from '@prisma/client'
 

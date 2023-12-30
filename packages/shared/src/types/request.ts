@@ -52,7 +52,7 @@ export const bindSchema = z.object({
 
 export type AccountBindSchema = typeof bindSchema._type
 
-export const storeFrontSchema = z.object({
+export const selectValoInfoSchema = z.object({
   alias: z
     .string({
       invalid_type_error: '别名必须是字符串',
@@ -61,4 +61,4 @@ export const storeFrontSchema = z.object({
     .optional(),
 })
 
-export type InGameStoreFrontSchema = typeof storeFrontSchema._type
+export type InGameStoreFrontSchema = typeof selectValoInfoSchema._type
