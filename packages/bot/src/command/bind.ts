@@ -1,5 +1,4 @@
 import {
-  type MessageContext,
   clearMsgCtx,
   createMsgCtx,
   forwardMsgCtx,

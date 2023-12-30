@@ -1,5 +1,3 @@
-import type { Commands } from '.'
-
 interface HelpItem {
   name: string
   description: string

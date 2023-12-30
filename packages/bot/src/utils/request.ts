@@ -1,5 +1,4 @@
 import {
-  type RequestOptions,
   type VerifiedResponseWith,
   generateHeaders,
   objectOmit,
