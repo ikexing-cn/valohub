@@ -62,7 +62,7 @@ export function createRequest(
             url,
             method: options.method,
             body: options.body,
-            headers,
+            headers: Object.fromEntries(headers.entries()),
             status: response.status,
             statusText: response.statusText,
           },
