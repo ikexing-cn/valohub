@@ -54,6 +54,9 @@ importers:
 
   packages/bot:
     dependencies:
+      '@valorant-bot/shared':
+        specifier: workspace:^
+        version: link:../shared
       go-cqwebsocket:
         specifier: ^6.2.14
         version: 6.2.14

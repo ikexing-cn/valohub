@@ -1,31 +1,29 @@
-import type { IsNull } from '..'
-
-export interface IResponse<
-  Data = undefined,
-  Message = Data extends IsNull<Data> ? string : string | undefined,
-> {
-  success: boolean
-  message: Message
+export interface IResponse<Data extends object> {
   data: Data
+  success: boolean
+  message: string
 }
 
-export type AccountVerifyResponse = IResponse<{
-  needInit?: boolean
-  needBind?: boolean
-}>
+export type AccountVerifyResponse = IResponse<
+  Partial<{
+    needInit: boolean
+    needBind: boolean
+  }>
+>
 
 // ===== with middleware =====
 
 export type VerifiedResponseWith<T extends object = {}> = IResponse<
-  AccountVerifyResponse['data'] & T
+  AccountVerifyResponse['data'] & Partial<T>
 >
 
 // =====
 
 export type AccountBindResponse = VerifiedResponseWith<{
   needMFA: boolean
+  isBinded: boolean
 }>
 
 export type InGameStoreFrontResponse = VerifiedResponseWith<{
-  skinItems?: string[]
+  skinItems: string[]
 }>

@@ -3,9 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "esno watch index"
+    "dev": "esno watch src/main"
   },
   "dependencies": {
+    "@valorant-bot/shared": "workspace:^",
     "go-cqwebsocket": "^6.2.14"
   }
 }
