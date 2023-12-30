@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   const parsedBody = zodParse<AccountVerifyRequest>(accountSchema, body)
 
   const prisma = usePrisma()
-  const response = useResponse<AccountVerifyResponse['data']>()
+  const response = useResponse()
 
   let accountExist = await prisma.account.findFirst({
     where: { qq: body.qq },
@@ -53,7 +53,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  prisma.account.update({
+  await prisma.account.update({
     where: { id: accountExist.id },
     data: { updatedAt: new Date() },
   })
