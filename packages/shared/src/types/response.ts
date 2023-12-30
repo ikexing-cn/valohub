@@ -20,7 +20,6 @@ export type VerifiedResponseWith<T extends object = {}> = IResponse<
 // =====
 
 export type AccountBindResponse = VerifiedResponseWith<{
-  needMFA: boolean
   isBinded: boolean
 }>
 

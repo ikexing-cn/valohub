@@ -37,14 +37,16 @@ async function loginRiot(
       remember,
     })
     if (authLoginResult.type === 'auth') {
-      return [false, response(false, '此 Valorant 账号或密码错误！')] as const
+      return [
+        false,
+        response(false, '此 Valorant 账号或密码错误，请重试！'),
+      ] as const
     } else if (authLoginResult.type === 'multifactor') {
       return [
         false,
         response(
           false,
           '检测到此 Valorant 账号已启用二步验证，请输入邮箱验证码',
-          { needMFA: true },
         ),
       ] as const
     }

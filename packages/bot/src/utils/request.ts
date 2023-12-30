@@ -1,29 +1,43 @@
 import {
+  type RequestOptions,
   type VerifiedResponseWith,
   generateHeaders,
   objectOmit,
 } from '@valorant-bot/shared'
 
-export const baseUrl = 'http://localhost:3000'
+export const baseUrl =
+  process.env.VALORANT_BOT_API_URL ?? 'http://localhost:3000'
 
-export async function request<T extends VerifiedResponseWith>(
-  url: string,
-  qq: number,
-  options: Omit<RequestInit, 'body'> & {
-    body?: Record<string, any>
-  } = {},
-) {
-  const response = await fetch(`${baseUrl}${url}`, {
-    ...objectOmit(options, ['headers', 'body']),
-    method: 'POST',
-    body: JSON.stringify({
-      ...options.body,
-      qq,
-    }),
-    headers: generateHeaders(options.headers),
-  })
+export type RequestFunction = ReturnType<typeof createRequest>
+export function createRequest(qq: number, sendMsg: (msg: string) => void) {
+  async function request<
+    Request extends object,
+    Response extends VerifiedResponseWith,
+  >(url: string, options: Omit<RequestInit, 'body'> & { body?: Request } = {}) {
+    const response = await fetch(`${baseUrl}${url}`, {
+      ...objectOmit(options, ['headers', 'body']),
+      method: 'POST',
+      headers: generateHeaders(options.headers),
+      body: JSON.stringify({
+        qq,
+        ...options.body,
+      }),
+    })
 
-  const json = (await response.json()) as T
+    const result = (await response.json()) as Response
 
-  return json
+    if (!result.success) {
+      if (result.data?.needBind) {
+        sendMsg(result.message)
+      } else if (result.data?.needInit) {
+        sendMsg(result.message)
+      }
+    }
+
+    return result as Omit<Response, 'data'> & {
+      data: Omit<Response['data'], 'needBind' | 'needInit'>
+    }
+  }
+
+  return request
 }
