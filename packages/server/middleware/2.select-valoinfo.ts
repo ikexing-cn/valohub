@@ -12,22 +12,31 @@ export default defineEventHandler(async (event) => {
   if (account && !getRequestURL(event).pathname.startsWith('/account')) {
     const body = await readBody(event)
     const parsedBody = zodParse(selectValoInfoSchema, body)
-    const alias = parsedBody.alias || 'default'
 
     const prisma = usePrisma()
     const response = useResponse()
 
     const valorantInfo = await prisma.valorantInfo.findFirst({
       where: {
-        alias,
+        alias: parsedBody.alias,
         accountQQ: account.qq,
       },
     })
 
     if (!valorantInfo) {
-      return response(false, '请先绑定你的 Valorant 账号', {
-        needBind: true,
-      })
+      if (parsedBody.alias === 'default') {
+        return response(false, '请先绑定 Valorant 账号', {
+          needBind: true,
+        })
+      } else {
+        return response(
+          false,
+          `未找到 「${parsedBody.alias}」 绑定的 Valorant 账号`,
+          {
+            needBind: false,
+          },
+        )
+      }
     }
 
     event.context.valorantInfo = valorantInfo

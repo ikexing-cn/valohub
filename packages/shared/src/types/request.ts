@@ -9,6 +9,14 @@ const qq = z
     message: 'QQ号长度必须大于5',
   })
 
+const alias = z
+  .string({
+    invalid_type_error: '别名必须是字符串',
+  })
+  .trim()
+  .default('default')
+  .optional()
+
 export const accountSchema = z.object({
   qq,
   verifyPassword: z
@@ -25,7 +33,7 @@ export const accountSchema = z.object({
 export type AccountVerifyRequest = typeof accountSchema._type
 
 export const bindSchema = z.object({
-  qq,
+  alias,
   username: z
     .string({
       required_error: 'Riot用户名不能为空',
@@ -52,13 +60,6 @@ export const bindSchema = z.object({
 
 export type AccountBindSchema = typeof bindSchema._type
 
-export const selectValoInfoSchema = z.object({
-  alias: z
-    .string({
-      invalid_type_error: '别名必须是字符串',
-    })
-    .trim()
-    .optional(),
-})
+export const selectValoInfoSchema = z.object({ alias })
 
 export type InGameStoreFrontSchema = typeof selectValoInfoSchema._type

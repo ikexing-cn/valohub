@@ -7,10 +7,11 @@ import { createRSOApi, parseRSOAuthResultUri } from '@valorant-bot/core'
 import type { $Enums } from '@prisma/client'
 
 async function loginRiot(
+  qq: number,
   parsedBody: AccountBindSchema,
   response: ReturnType<typeof useResponse<AccountBindResponse['data']>>,
 ) {
-  const { qq, username, password, mfaCode, remember = true } = parsedBody
+  const { username, password, mfaCode, remember = true } = parsedBody
 
   const request = mfaCode != null ? useRequest(qq) : useCleanRequest(qq)
   const rsoApis = createRSOApi(request)
@@ -55,6 +56,8 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const parsedBody = zodParse<AccountBindSchema>(bindSchema, body)
 
+  const account = event.context.account
+
   const prisma = usePrisma()
   const response = useResponse<AccountBindResponse['data']>()
 
@@ -64,9 +67,19 @@ export default defineEventHandler(async (event) => {
   if (valorantAccountExists) {
     return response(false, '此 Valorant 账号已被其他 qq 绑定！')
   }
-
-  const [isSuccess, authResult] = await loginRiot(parsedBody, response)
+  const [isSuccess, authResult] = await loginRiot(
+    account.qq,
+    parsedBody,
+    response,
+  )
   if (!isSuccess) return authResult
+
+  const valorantInfoExists = await prisma.valorantInfo.findFirst({
+    where: { accountQQ: account.qq, alias: parsedBody.alias },
+  })
+  if (valorantInfoExists) {
+    return response(false, '默认别名已绑定其他 Valorant 账号，请更换别名！')
+  }
 
   const rsoApis = createRSOApi(useRequest())
   const parsedAuthResult = parseRSOAuthResultUri(authResult)
@@ -83,8 +96,9 @@ export default defineEventHandler(async (event) => {
   await prisma.valorantInfo.create({
     include: { account: true },
     data: {
-      accountQQ: parsedBody.qq,
+      accountQQ: account.qq,
 
+      alias: parsedBody.alias,
       parsedAuthResult: JSON.stringify(parsedAuthResult),
       entitlementsToken: entitlementToken.entitlements_token,
       riotUsername: parsedBody.username,
