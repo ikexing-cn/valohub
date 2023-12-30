@@ -6,6 +6,7 @@
     "dev": "esno watch src/main"
   },
   "dependencies": {
+    "@valorant-bot/core": "workspace:^",
     "@valorant-bot/shared": "workspace:^",
     "go-cqwebsocket": "^6.2.14"
   }

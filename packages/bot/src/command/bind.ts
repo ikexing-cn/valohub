@@ -5,7 +5,6 @@ import {
   getMsgCtx,
 } from '../utils/mesage-context'
 import { createRequest } from '../utils/request'
-import type { message } from 'go-cqwebsocket'
 import type { ExecuteCommandPraviteOptions } from './index'
 import type {
   AccountBindResponse,
@@ -68,7 +67,7 @@ export async function bindWithCtx(options: ExecuteCommandPraviteOptions) {
 async function sendFetch(
   messages: string[],
   config: Parameters<typeof createRequest>,
-): Promise<[boolean, message]> {
+): Promise<[boolean, string]> {
   const body: AccountBindSchema = {
     remember: true,
     alias: messages[0],

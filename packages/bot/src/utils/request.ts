@@ -8,7 +8,7 @@ export const baseUrl =
   process.env.VALORANT_BOT_API_URL ?? 'http://localhost:3000'
 
 export type RequestFunction = ReturnType<typeof createRequest>
-export function createRequest(qq: number, sendMsg: (msg: string) => void) {
+export function createRequest(qq: number, sendMsg?: (msg: string) => void) {
   async function request<
     Request extends object,
     Response extends VerifiedResponseWith,
@@ -27,9 +27,9 @@ export function createRequest(qq: number, sendMsg: (msg: string) => void) {
 
     if (!result.success) {
       if (result.data?.needBind) {
-        sendMsg(result.message)
+        sendMsg?.(result.message)
       } else if (result.data?.needInit) {
-        sendMsg(result.message)
+        sendMsg?.(result.message)
       }
     }
 

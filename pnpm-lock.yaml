@@ -54,6 +54,9 @@ importers:
 
   packages/bot:
     dependencies:
+      '@valorant-bot/core':
+        specifier: workspace:^
+        version: link:../core
       '@valorant-bot/shared':
         specifier: workspace:^
         version: link:../shared

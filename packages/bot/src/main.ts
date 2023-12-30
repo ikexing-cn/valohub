@@ -25,7 +25,7 @@ function verifyCommand(message: string) {
   return [name, ...args] as const
 }
 
-client.on('message.group', (event) => {
+client.on('message.group', async (event) => {
   const context = event.context
   const message = context.raw_message
   if (context.group_id !== 833851946 || !message.startsWith('/')) return
@@ -36,7 +36,7 @@ client.on('message.group', (event) => {
   }
   const [command, ...args] = verifyCmdResult
 
-  const result = executeCommandWithGroup({
+  const result = await executeCommandWithGroup({
     args,
     command,
     sender: context.user_id,

@@ -1,5 +1,6 @@
 /* eslint-disable no-return-await */
 import { bind, bindWithCtx, bindWithCtxStart } from './bind'
+import { dailyStore } from './daily-store'
 import { help, helpItems } from './help'
 
 export type Commands = 'ping' | 'help' | 'bind' | 'unbind' | 'dailystore'
@@ -42,7 +43,7 @@ export function executeCommandWithGroup(options: ExecuteCommandGroupOptions) {
     case 'unbind':
       return 'unbind'
     case 'dailystore':
-      return 'dailystore'
+      return dailyStore(options.sender)
     default:
       return 'unknown command'
   }
@@ -63,7 +64,7 @@ export async function executeCommandWithPravite(
     case 'unbind':
       return 'unbind'
     case 'dailystore':
-      return 'dailystore'
+      return dailyStore(options.sender)
     default:
       return 'unknown command'
   }
