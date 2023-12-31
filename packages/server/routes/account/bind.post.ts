@@ -2,8 +2,8 @@ import {
   type AccountBindResponse,
   type AccountBindSchema,
   bindSchema,
+  objectOmit,
 } from '@valorant-bot/shared'
-import { objectOmit } from '../../../shared/src/utils/internal'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -53,7 +53,8 @@ export default defineEventHandler(async (event) => {
     data: {
       accountQQ: account.qq,
 
-      alias: parsedBody.alias,
+      // idk why not setiing default value when zod parsed
+      alias: parsedBody.alias || 'default',
       remember: parsedBody.remember ?? false,
 
       cookies,

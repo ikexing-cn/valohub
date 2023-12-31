@@ -8,7 +8,8 @@ import {
   parseCommand,
 } from './command'
 import { groupReply, sendPravite } from './utils/chat'
-import { getMsgCtx } from './utils/mesage-context'
+import { getMsgCtx } from './utils/message-context/manager'
+// eslint-disable-next-line sort-imports
 
 export const client = new CQWebSocket({
   host: process.env.VALORANT_BOT_HOST || 'localhost',

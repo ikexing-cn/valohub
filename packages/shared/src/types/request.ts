@@ -17,6 +17,7 @@ const alias = z
     invalid_type_error: '别名必须是字符串',
   })
   .trim()
+  .optional()
   .default('default')
 
 export const accountSchema = z.object({

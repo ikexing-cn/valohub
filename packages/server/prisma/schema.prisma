@@ -90,7 +90,7 @@ model StoreItem {
 
   cost     Int
   costType CostType
-  uuid     String   @unique
+  uuid     String
 
   storeListId Int
   storeList   StoreList @relation(fields: [storeListId], references: [id])

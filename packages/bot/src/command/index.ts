@@ -1,5 +1,6 @@
 /* eslint-disable no-return-await */
-import { bind, bindWithCtx, bindWithCtxStart } from './bind'
+import { createMsgCtx, getMsgCtx } from '../utils/message-context/manager'
+import { bind } from './bind'
 import { dailyStore } from './daily-store'
 import { help, helpItems } from './help'
 
@@ -59,8 +60,11 @@ export async function executeCommandWithPravite(
       return help(...options.args)
     case 'bind':
       return options.isCommand
-        ? bindWithCtxStart(options.sender, options.args[0])
-        : await bindWithCtx(options)
+        ? createMsgCtx(options.sender, 'bind').execute()
+        : await getMsgCtx(options.sender)?.execute(
+            options.message,
+            options.sendPraviteMsg,
+          )
     case 'unbind':
       return 'unbind'
     case 'dailystore':

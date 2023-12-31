@@ -1,77 +1,72 @@
-import {
-  clearMsgCtx,
-  createMsgCtx,
-  forwardMsgCtx,
-  getMsgCtx,
-} from '../utils/mesage-context'
-import { createRequest } from '../utils/request'
-import type { ExecuteCommandPraviteOptions } from './index'
+import { MessageContext } from '../utils/message-context'
+import { clearMsgCtx, createMsgCtx } from '../utils/message-context/manager'
+import type { RequestFunction } from '../utils/request'
 import type {
   AccountBindResponse,
   AccountBindSchema,
 } from '@valorant-bot/shared'
+
 import type { ExecuteCommandGroupOptions } from '.'
 
 export function bind(options: ExecuteCommandGroupOptions) {
   options.replyGroupMsg(
     `此命令需要完整的验证你的 Riot 账号，请查阅私聊信息进行绑定`,
   )
-  options.sendPraviteMsg(bindWithCtxStart(options.sender, options.args?.[0]))
+  createMsgCtx(options.sender, 'bind').execute()
 }
 
-export function bindWithCtxStart(qq: number, _alias?: string) {
-  const alias = _alias || 'default'
-
-  createMsgCtx(qq, 'bind')
-  forwardMsgCtx(qq, alias)
-  return '请输入你需要绑定的 Riot 账号'
-}
-
-export async function bindWithCtx(options: ExecuteCommandPraviteOptions) {
-  const msgCtx = getMsgCtx(options.sender)
-
-  if (msgCtx == null) {
-    return '无效的上下文对话，请先输入指令！'
+export class BindMessageContext extends MessageContext<'bind'> {
+  constructor(qq: number) {
+    super(qq, 'bind')
   }
 
-  switch (msgCtx.step) {
-    case 0: {
-      forwardMsgCtx(options.sender, options.message)
-      return '请输入你需要绑定的 Riot 密码'
+  async execute(message?: string, sendMsg?: (msg: string) => void) {
+    if (message == null || sendMsg == null) {
+      return '请输入你需要绑定的 Riot 账号'
     }
-    case 1: {
-      const [isSuccess, message, needMFA] = await sendFetch(
-        [msgCtx.stepData[0], msgCtx.stepData[1], options.message],
-        [options.sender, options.sendPraviteMsg],
-      )
-      if (needMFA) {
-        forwardMsgCtx(options.sender, options.message)
-      }
-      if (isSuccess) {
-        clearMsgCtx(options.sender)
-      }
-      return message
-    }
-    case 2: {
-      const [isSuccess, message] = await sendFetch(
-        [
-          msgCtx.stepData[0],
-          msgCtx.stepData[1],
-          msgCtx.stepData[2],
-          options.message,
-        ],
-        [options.sender, options.sendPraviteMsg],
-      )
 
-      if (isSuccess) forwardMsgCtx(options.sender, options.message)
-      return message
+    await super.execute(message, sendMsg)
+
+    switch (this.step) {
+      case 0: {
+        this.forward(message)
+        return '请输入你需要绑定的 Riot 密码'
+      }
+      case 1: {
+        const [isSuccess, resMeg, needMFA] = await sendFetch(
+          this.request,
+          ...this.stepData,
+          message,
+        )
+        if (needMFA) {
+          this.forward(message)
+        }
+        if (isSuccess) {
+          clearMsgCtx(this.qq)
+        }
+        return resMeg
+      }
+      case 2: {
+        const [isSuccess, resMeg] = await sendFetch(
+          this.request,
+          ...this.stepData,
+          message,
+        )
+        if (isSuccess) {
+          clearMsgCtx(this.qq)
+        }
+        return resMeg
+      }
+      default: {
+        return '出现未知错误，请联系开发者'
+      }
     }
   }
 }
 
 async function sendFetch(
-  messages: string[],
-  config: Parameters<typeof createRequest>,
+  request: RequestFunction,
+  ...messages: string[]
 ): Promise<[boolean, string, boolean?]> {
   const body: AccountBindSchema = {
     remember: true,
@@ -81,21 +76,13 @@ async function sendFetch(
     mfaCode: messages?.[3] ?? undefined,
   }
 
-  const request = createRequest(...config)
   const response = await request<AccountBindSchema, AccountBindResponse>(
     '/account/bind',
     { body },
   )
 
-  if (!response.success) {
-    if (response.data?.isBinded) {
-      clearMsgCtx(config[0])
-      return [response.success, response.message]
-    }
-
-    if (response.data.needMFA) {
-      return [response.success, response.message, true]
-    }
+  if (!response.success && response?.data?.needMFA) {
+    return [response.success, response.message, true]
   }
 
   return [response.success, response.message]
