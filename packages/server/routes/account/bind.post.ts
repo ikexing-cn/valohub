@@ -7,7 +7,7 @@ import { createRSOApi, parseRSOAuthResultUri } from '@valorant-bot/core'
 import type { $Enums } from '@prisma/client'
 
 async function loginRiot(
-  qq: number,
+  qq: string,
   parsedBody: AccountBindSchema,
   response: ReturnType<typeof useResponse<AccountBindResponse['data']>>,
 ) {

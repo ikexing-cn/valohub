@@ -1,8 +1,8 @@
 import { type RequestFunction, createRequest } from '@valorant-bot/shared'
 
-export const requestMap: Map<number, RequestFunction> = new Map()
+export const requestMap: Map<string, RequestFunction> = new Map()
 
-function $createRequest(qq: number) {
+function $createRequest(qq: string) {
   return createRequest(
     (res, cookieJar) => {
       const cookie = res.headers.getSetCookie()
@@ -14,7 +14,7 @@ function $createRequest(qq: number) {
   )
 }
 
-export function useRequest(qq?: number) {
+export function useRequest(qq?: string) {
   if (!qq) {
     return createRequest()
   }
@@ -26,7 +26,7 @@ export function useRequest(qq?: number) {
   return requestMap.get(qq)!
 }
 
-export function useCleanRequest(qq: number) {
+export function useCleanRequest(qq: string) {
   if (requestMap.get(qq)) {
     requestMap.delete(qq)
   }

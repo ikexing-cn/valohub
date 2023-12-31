@@ -78,7 +78,7 @@ async function sendFetch(
     alias: messages[0],
     username: messages[1],
     password: messages[2],
-    mfaCode: messages?.[3] ? Number(messages[3]) : undefined,
+    mfaCode: messages?.[3] ?? undefined,
   }
 
   const request = createRequest(...config)

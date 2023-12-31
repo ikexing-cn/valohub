@@ -25,16 +25,18 @@ async function sendFetch(
   const result = response.data.skinItems!
 
   const res = await Promise.all(
-    result.map(async (uuid) => {
+    result.map(async (item) => {
       const res = await fetch(
-        createValorantApi('zh-TW').getWeaponLevelFromUUID(uuid),
+        createValorantApi('zh-TW').getWeaponLevelFromUUID(item.uuid),
         {
           headers: {
             'Content-Type': 'application/json',
           },
         },
       )
-      return ((await res.json()) as any).data.displayName
+      return `${item.costType}: ${item.cost} ${
+        ((await res.json()) as any).data.displayName
+      }`
     }),
   )
 

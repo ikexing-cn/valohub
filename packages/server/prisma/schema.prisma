@@ -13,7 +13,7 @@ datasource db {
 model Account {
   id Int @id @default(autoincrement())
 
-  qq             Int    @unique
+  qq             String @unique
   verifyPassword String
 
   valorantInfo ValorantInfo[]
@@ -32,7 +32,7 @@ enum Region {
 model ValorantInfo {
   id Int @id @default(autoincrement())
 
-  accountQQ Int
+  accountQQ String
   account   Account @relation(fields: [accountQQ], references: [qq])
 
   alias String @default("default")
@@ -51,15 +51,21 @@ model ValorantInfo {
   gameName String
   tagLine  String
 
-  bonusStore     StoreItems[] @relation("BonusStoreRelation")
-  dailyStores    StoreItems[] @relation("DailyStoresRelation")
-  accessoryStore StoreItems[] @relation("AccessoryStoreRelation")
+  bonusStore     StoreList[] @relation("BonusStoreRelation")
+  dailyStores    StoreList[] @relation("DailyStoresRelation")
+  accessoryStore StoreList[] @relation("AccessoryStoreRelation")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model StoreItems {
+enum CostType {
+  VP
+  RP
+  KC
+}
+
+model StoreList {
   id Int @id @default(autoincrement())
 
   bonusValorantInfoId Int?
@@ -69,10 +75,21 @@ model StoreItems {
   ValorantInfoDaily   ValorantInfo? @relation("DailyStoresRelation", fields: [dailyValorantInfoId], references: [id])
 
   accessoryValorantInfoId Int?
-  ValorantInfoAccessory  ValorantInfo? @relation("AccessoryStoreRelation", fields: [accessoryValorantInfoId], references: [id])
+  ValorantInfoAccessory   ValorantInfo? @relation("AccessoryStoreRelation", fields: [accessoryValorantInfoId], references: [id])
 
-  items String[]
+  storeItems StoreItem[]
 
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
+}
+
+model StoreItem {
+  id Int @id @default(autoincrement())
+
+  cost     Int
+  costType CostType
+  uuid     String   @unique
+
+  storeListId Int
+  storeList   StoreList @relation(fields: [storeListId], references: [id])
 }

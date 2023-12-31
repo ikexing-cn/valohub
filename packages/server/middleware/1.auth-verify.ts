@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   const response = useResponse()
 
   let accountExist = await prisma.account.findFirst({
-    where: { qq: body.qq },
+    where: { qq: parsedBody.qq },
   })
 
   if (!accountExist) {
@@ -28,19 +28,20 @@ export default defineEventHandler(async (event) => {
 
     accountExist = await prisma.account.create({
       data: {
-        qq: body.qq,
+        qq: parsedBody.qq,
         verifyPassword: dMd5(parsedBody.verifyPassword),
       },
     })
   }
 
   // check verify password per 10 da
-  const updateTime = accountExist.updatedAt.getTime() + 1000 * 60 * 60 * 10
+  const updateTime = accountExist.updatedAt.getTime() + 1000 * 60 * 60 * 24 * 10
   if (updateTime < Date.now()) {
     if (!parsedBody.verifyPassword) {
       return response(
         false,
         '为了确保获取数据的用户是此 qq 号本人，需要在十天内手动输入一次密码！',
+        { needVerify: true },
       )
     }
 

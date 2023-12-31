@@ -18,7 +18,7 @@ export function createRequest(qq: number, sendMsg?: (msg: string) => void) {
       method: 'POST',
       headers: generateHeaders(options.headers),
       body: JSON.stringify({
-        qq,
+        qq: String(qq),
         ...options.body,
       }),
     })

@@ -61,11 +61,11 @@ export function getAuthorizationHeader(
 }
 
 export function getMultiFactorBody(config: {
-  code: number
+  code: string
   rememberDevice: boolean
 }) {
   const multiFactorBody = { ...MULTI_FACTOR_BODY }
-  multiFactorBody.code = String(config.code)
+  multiFactorBody.code = config.code
   multiFactorBody.rememberDevice = config.rememberDevice
   return multiFactorBody
 }

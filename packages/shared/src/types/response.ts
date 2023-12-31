@@ -8,6 +8,7 @@ export type AccountVerifyResponse = IResponse<
   Partial<{
     needInit: boolean
     needBind: boolean
+    needVerify: boolean
   }>
 >
 
@@ -25,5 +26,9 @@ export type AccountBindResponse = VerifiedResponseWith<{
 }>
 
 export type InGameStoreFrontResponse = VerifiedResponseWith<{
-  skinItems: string[]
+  skinItems: {
+    uuid: string
+    cost: number
+    costType: string
+  }[]
 }>

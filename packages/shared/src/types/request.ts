@@ -1,9 +1,11 @@
 import { z } from 'zod'
 
 const qq = z
-  .number({
+  .string({
     required_error: 'QQ号不能为空',
-    invalid_type_error: 'QQ号必须是数字',
+  })
+  .regex(/[1-9]\d{4,10}/, {
+    message: 'QQ号格式不正确',
   })
   .min(5, {
     message: 'QQ号长度必须大于5',
@@ -46,8 +48,10 @@ export const bindSchema = z.object({
     })
     .trim(),
   mfaCode: z
-    .number({
-      invalid_type_error: '验证码必须是数字',
+    .string()
+    .trim()
+    .regex(/^\d{6}$/, {
+      message: '验证码必须是6位数字',
     })
     .optional(),
   remember: z
