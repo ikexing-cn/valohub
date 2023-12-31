@@ -47,6 +47,7 @@ async function loginRiot(
         response(
           false,
           '检测到此 Valorant 账号已启用二步验证，请输入邮箱验证码',
+          { needMFA: true },
         ),
       ] as const
     }

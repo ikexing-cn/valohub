@@ -40,11 +40,16 @@ export async function bindWithCtx(options: ExecuteCommandPraviteOptions) {
       return '请输入你需要绑定的 Riot 密码'
     }
     case 1: {
-      const [isSuccess, message] = await sendFetch(
+      const [isSuccess, message, needMFA] = await sendFetch(
         [msgCtx.stepData[0], msgCtx.stepData[1], options.message],
         [options.sender, options.sendPraviteMsg],
       )
-      if (isSuccess) forwardMsgCtx(options.sender, options.message)
+      if (needMFA) {
+        forwardMsgCtx(options.sender, options.message)
+      }
+      if (isSuccess) {
+        clearMsgCtx(options.sender)
+      }
       return message
     }
     case 2: {
@@ -67,7 +72,7 @@ export async function bindWithCtx(options: ExecuteCommandPraviteOptions) {
 async function sendFetch(
   messages: string[],
   config: Parameters<typeof createRequest>,
-): Promise<[boolean, string]> {
+): Promise<[boolean, string, boolean?]> {
   const body: AccountBindSchema = {
     remember: true,
     alias: messages[0],
@@ -88,7 +93,9 @@ async function sendFetch(
       return [response.success, response.message]
     }
 
-    return [response.success, response.message]
+    if (response.data.needMFA) {
+      return [response.success, response.message, true]
+    }
   }
 
   return [response.success, response.message]
