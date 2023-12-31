@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
     accountExist = await prisma.account.create({
       data: {
         qq: parsedBody.qq,
-        verifyPassword: dMd5(parsedBody.verifyPassword),
+        verifyPassword: parsedBody.verifyPassword,
       },
     })
   }
@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
       )
     }
 
-    if (accountExist.verifyPassword !== dMd5(parsedBody.verifyPassword)) {
+    if (accountExist.verifyPassword !== parsedBody.verifyPassword) {
       return response(false, '验证失败，你输入的密码不正确')
     }
   }

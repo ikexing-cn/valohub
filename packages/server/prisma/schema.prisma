@@ -35,13 +35,15 @@ model ValorantInfo {
   accountQQ String
   account   Account @relation(fields: [accountQQ], references: [qq])
 
-  alias String @default("default")
+  alias    String  @default("default")
+  remember Boolean
 
   riotUsername String @unique
   riotPassword String
 
   region Region
 
+  cookies           String[]
   // JSON
   parsedAuthResult  String
   entitlementsToken String

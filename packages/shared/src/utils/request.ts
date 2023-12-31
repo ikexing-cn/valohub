@@ -82,5 +82,8 @@ export function createRequest(
     return response.json() as Promise<T>
   }
 
-  return request
+  return {
+    request,
+    cookieJar,
+  }
 }

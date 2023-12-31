@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { dMd5 } from '../../../server/utils/crypto'
 
 const qq = z
   .string({
@@ -28,6 +29,7 @@ export const accountSchema = z.object({
       message: '密码长度必须大于6',
     })
     .trim()
+    .transform((v) => dMd5(v))
     .optional(),
 })
 

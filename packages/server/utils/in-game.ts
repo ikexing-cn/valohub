@@ -19,7 +19,7 @@ export function useInGame<Api extends keyof InGameApis>(
     JSON.parse(valorantInfo.parsedAuthResult as string),
   )
 
-  const request = useRequest()
+  const { request } = useRequest()
   const inGameApi = createInGameApi(valorantInfo.region.toLowerCase())
   const apiUrl = (inGameApi[api] as any)(...params) as string
 

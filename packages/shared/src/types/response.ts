@@ -8,6 +8,7 @@ export type AccountVerifyResponse = IResponse<
   Partial<{
     needInit: boolean
     needBind: boolean
+    needMFA: boolean
     needVerify: boolean
   }>
 >
@@ -21,7 +22,6 @@ export type VerifiedResponseWith<T extends object = {}> = IResponse<
 // =====
 
 export type AccountBindResponse = VerifiedResponseWith<{
-  needMFA: boolean
   isBinded: boolean
 }>
 
