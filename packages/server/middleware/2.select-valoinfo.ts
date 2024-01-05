@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
 
     if (!valorantInfo) {
       if (parsedBody.alias === 'default') {
-        return response(false, '请先绑定 Valorant 账号')
+        return response(false, '请先进行 Valorant 账号绑定')
       } else {
         return response(
           false,

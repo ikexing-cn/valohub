@@ -1,5 +1,6 @@
 import {
   type InGameApiResponse,
+  type ParsedRSOAuthResult,
   createInGameApi,
   getInGameRequestHeader,
 } from '@valorant-bot/core'
@@ -16,7 +17,7 @@ export function useInGame<Api extends keyof InGameApis>(
 ) {
   const headers = getInGameRequestHeader(
     valorantInfo.entitlementsToken,
-    JSON.parse(valorantInfo.parsedAuthResult as string),
+    valorantInfo.parsedAuthResult as ParsedRSOAuthResult,
   )
 
   const { request } = useRequest()

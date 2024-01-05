@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
 
   if (!accountExist) {
     if (!parsedBody.verifyPassword) {
-      return response(false, '此 qq 号需要初始化, 请先设置你的初始化密码！', {
+      return response(false, '此 qq 号需要初始化, 请先输入你的初始化密码！', {
         needInit: true,
       })
     }

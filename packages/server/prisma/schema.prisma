@@ -43,10 +43,9 @@ model ValorantInfo {
 
   region Region
 
-  cookies           String[]
-  // JSON
-  parsedAuthResult  String
+  parsedAuthResult  Json
   entitlementsToken String
+  cookies           String[]
 
   uuid     String @unique
   country  String
@@ -79,19 +78,25 @@ model StoreList {
   accessoryValorantInfoId Int?
   ValorantInfoAccessory   ValorantInfo? @relation("AccessoryStoreRelation", fields: [accessoryValorantInfoId], references: [id])
 
-  storeItems StoreItem[]
+  storeListStoreItem StoreListWithStoreItem[]
 
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
 }
 
 model StoreItem {
-  id Int @id @default(autoincrement())
+  id                 Int                      @id @default(autoincrement())
+  cost               Int
+  costType           CostType
+  uuid               String                   @unique
+  storeListStoreItem StoreListWithStoreItem[]
+}
 
-  cost     Int
-  costType CostType
-  uuid     String
-
+model StoreListWithStoreItem {
   storeListId Int
   storeList   StoreList @relation(fields: [storeListId], references: [id])
+  storeItemId Int
+  storeItem   StoreItem @relation(fields: [storeItemId], references: [id])
+
+  @@id([storeListId, storeItemId])
 }

@@ -1,25 +1,36 @@
 import { type InGameStoreFrontResponse, objectOmit } from '@valorant-bot/shared'
-import { StoreCostType } from '@valorant-bot/core'
-import type { Prisma } from '@prisma/client'
+import { type SkinsPanelLayout, StoreCostType } from '@valorant-bot/core'
+import type { Prisma, PrismaClient } from '@prisma/client'
+
+import type * as runtime from '@prisma/client/runtime/library'
 
 function transformStoreItems(
   storeItems: Prisma.$StoreItemPayload['scalars'][],
 ) {
-  return storeItems.map((item) => objectOmit(item, ['id', 'storeListId']))
+  return storeItems.map((item) =>
+    objectOmit(item, ['id']),
+  ) as InGameStoreFrontResponse['data']['items']
 }
 
-export default defineEventHandler(async (event) => {
-  const prisma = usePrisma()
-  const response = useResponse<InGameStoreFrontResponse['data']>()
-  const valorantInfo = event.context.valorantInfo
-
+async function getDailyStore(
+  db: PrismaClient,
+  valorantInfo: Prisma.$ValorantInfoPayload['scalars'],
+) {
   const now = new Date()
   const gte = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const lt = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
 
-  const dailyStore = await prisma.storeList.findFirst({
+  const dailyStore = await db.storeList.findFirst({
     include: {
-      storeItems: true,
+      storeListStoreItem: {
+        include: {
+          storeItem: {
+            include: {
+              storeListStoreItem: true,
+            },
+          },
+        },
+      },
     },
     where: {
       dailyValorantInfoId: valorantInfo.id,
@@ -27,10 +38,49 @@ export default defineEventHandler(async (event) => {
     },
   })
 
-  if (dailyStore)
+  return dailyStore
+}
+
+function createStoreItems(
+  db: Omit<PrismaClient, runtime.ITXClientDenyList>,
+  SkinsPanelLayout: SkinsPanelLayout,
+) {
+  return Promise.all(
+    SkinsPanelLayout.SingleItemStoreOffers.map(async (offer) => {
+      const existingItem = await db.storeItem.findUnique({
+        where: { uuid: offer.Rewards[0].ItemID },
+      })
+
+      if (!existingItem) {
+        return db.storeItem.create({
+          data: {
+            costType: 'VP',
+            cost: offer.Cost[StoreCostType.VP],
+            uuid: offer.Rewards[0].ItemID,
+          },
+        })
+      }
+
+      return existingItem
+    }),
+  )
+}
+
+export default defineEventHandler(async (event) => {
+  const prisma = usePrisma()
+
+  const response = useResponse<InGameStoreFrontResponse['data']>()
+  const valorantInfo = event.context.valorantInfo
+
+  const dailyStore = await getDailyStore(prisma, valorantInfo)
+
+  if (dailyStore) {
     return response({
-      skinItems: transformStoreItems(dailyStore.storeItems),
+      items: transformStoreItems(
+        dailyStore.storeListStoreItem.map((item) => item.storeItem),
+      ),
     })
+  }
 
   const { SkinsPanelLayout } = await useInGame(
     valorantInfo,
@@ -38,24 +88,27 @@ export default defineEventHandler(async (event) => {
     valorantInfo.uuid,
   )
 
-  const storeList = await prisma.storeList.create({
-    include: {
-      storeItems: true,
-      ValorantInfoDaily: true,
-    },
-    data: {
-      storeItems: {
-        createMany: {
-          data: SkinsPanelLayout.SingleItemStoreOffers.map((offer) => ({
-            costType: 'VP',
-            cost: offer.Cost[StoreCostType.VP],
-            uuid: offer.Rewards[0].ItemID,
-          })),
-        },
+  const storeItems = await prisma.$transaction(async (client) => {
+    const storeItems = await createStoreItems(client, SkinsPanelLayout)
+
+    const storeList = await client.storeList.create({
+      include: {
+        ValorantInfoDaily: true,
       },
-      dailyValorantInfoId: valorantInfo.id,
-    },
+      data: {
+        dailyValorantInfoId: valorantInfo.id,
+      },
+    })
+
+    await client.storeListWithStoreItem.createMany({
+      data: storeItems.map((item) => ({
+        storeItemId: item.id,
+        storeListId: storeList.id,
+      })),
+    })
+
+    return storeItems
   })
 
-  return response({ skinItems: transformStoreItems(storeList.storeItems) })
+  return response({ items: transformStoreItems(storeItems) })
 })

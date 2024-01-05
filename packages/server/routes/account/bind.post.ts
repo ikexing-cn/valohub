@@ -4,6 +4,7 @@ import {
   bindSchema,
   objectOmit,
 } from '@valorant-bot/shared'
+import type { Prisma } from '@prisma/client'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -58,7 +59,7 @@ export default defineEventHandler(async (event) => {
       remember: parsedBody.remember ?? false,
 
       cookies,
-      parsedAuthResult: JSON.stringify(parsedAuthResult),
+      parsedAuthResult: parsedAuthResult as Prisma.JsonObject,
       entitlementsToken: entitlementToken.entitlements_token,
       riotUsername: parsedBody.username,
       riotPassword: parsedBody.password,
