@@ -77,7 +77,9 @@ export default defineEventHandler(async (event) => {
   if (dailyStore) {
     return response({
       items: transformStoreItems(
-        dailyStore.storeListStoreItem.map((item) => item.storeItem),
+        dailyStore.storeListStoreItem.map((item) =>
+          objectOmit(item.storeItem, ['storeListStoreItem']),
+        ),
       ),
     })
   }
