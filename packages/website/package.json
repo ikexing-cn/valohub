@@ -1,0 +1,22 @@
+{
+  "name": "@valorant-bot/website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@unocss/reset": "^0.58.3",
+    "solid-js": "^1.8.7"
+  },
+  "devDependencies": {
+    "@solidjs/router": "^0.10.6",
+    "typescript": "^5.2.2",
+    "unocss": "^0.58.3",
+    "unplugin-auto-import": "^0.17.3",
+    "vite": "^5.0.8",
+    "vite-plugin-solid": "^2.8.0"
+  }
+}

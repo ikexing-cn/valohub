@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "lib": ["DOM", "ESNext"],
+    "types": ["vite/client"],
+    "jsxImportSource": "solid-js",
+    "paths": {
+      "@/*": ["./src/*", "./dist/*"]
+    }
+  }
+}
