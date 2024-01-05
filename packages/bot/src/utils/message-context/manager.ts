@@ -27,5 +27,5 @@ export function getMsgCtx(qq: number) {
 }
 
 export function clearMsgCtx(qq: number) {
-  messageContextMap.delete(qq)
+  getMsgCtx(qq) && messageContextMap.delete(qq)
 }

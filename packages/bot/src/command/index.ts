@@ -14,6 +14,7 @@ export type Commands =
   | 'bind'
   | 'unbind'
   | 'dailystore'
+  | 'clear'
   | 'error'
 
 export interface ExecuteCommandGroupOptions {
@@ -55,6 +56,8 @@ export function executeCommandWithGroup(options: ExecuteCommandGroupOptions) {
       return 'unbind'
     case 'dailystore':
       return dailyStore(options.sender)
+    case 'clear':
+      return clearMsgCtx(options.sender)
     default:
       return 'unknown command'
   }
@@ -85,6 +88,8 @@ export async function executeCommandWithPravite(
       clearMsgCtx(options.sender)
       return
     }
+    case 'clear':
+      return clearMsgCtx(options.sender)
     default:
       return 'unknown command'
   }

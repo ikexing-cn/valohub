@@ -30,6 +30,11 @@ export const helpItems: HelpItem[] = [
     description: '查看每日商店',
     usage: '/dailyStore [alias? = "default"]',
   },
+  {
+    name: 'clear',
+    description: '清除全部消息上下文(非必要情况下不推荐使用)',
+    usage: '/clear',
+  },
 ]
 
 export function help(item?: string) {
