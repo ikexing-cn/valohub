@@ -1,9 +1,10 @@
 import { BindMessageContext } from '../../command/bind'
-import type { MessageContext } from '.'
+import { MessageContext } from '.'
+import type { Commands } from '../../command'
 
 export const messageContextMap: Map<number, MessageContext<any>> = new Map()
 
-export function createMsgCtx(qq: number, type: 'bind') {
+export function createMsgCtx(qq: number, type: Commands) {
   if (messageContextMap.has(qq)) {
     clearMsgCtx(qq)
   }
@@ -13,6 +14,8 @@ export function createMsgCtx(qq: number, type: 'bind') {
     case 'bind':
       context = new BindMessageContext(qq)
       break
+    default:
+      context = new MessageContext(qq, type)
   }
 
   messageContextMap.set(qq, context)

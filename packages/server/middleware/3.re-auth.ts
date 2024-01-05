@@ -30,7 +30,8 @@ function isReauthSuccessful(response: Response) {
 export default defineEventHandler(async (event) => {
   const valorantInfo = event.context.valorantInfo
 
-  if (valorantInfo && valorantInfo.updatedAt) {
+  const updateTime = valorantInfo.updatedAt.getTime() + 1000 * 60 * 60 * 2
+  if (valorantInfo && updateTime < Date.now()) {
     const prisma = usePrisma()
     const response = useResponse()
     const reauthResponse = await reauth(valorantInfo.cookies)

@@ -8,11 +8,11 @@ import type {
 
 import type { ExecuteCommandGroupOptions } from '.'
 
-export function bind(options: ExecuteCommandGroupOptions) {
+export async function bind(options: ExecuteCommandGroupOptions) {
   options.replyGroupMsg(
     `此命令需要完整的验证你的 Riot 账号，请查阅私聊信息进行绑定`,
   )
-  createMsgCtx(options.sender, 'bind').execute()
+  options.sendPraviteMsg(await createMsgCtx(options.sender, 'bind').execute())
 }
 
 export class BindMessageContext extends MessageContext<'bind'> {

@@ -1,5 +1,7 @@
+import type { Commands } from '.'
+
 interface HelpItem {
-  name: string
+  name: Commands
   description: string
   usage?: string
 }
@@ -24,7 +26,7 @@ export const helpItems: HelpItem[] = [
     usage: '/unbind [alias? = "default"]',
   },
   {
-    name: 'dailyStore',
+    name: 'dailystore',
     description: '查看每日商店',
     usage: '/dailyStore [alias? = "default"]',
   },

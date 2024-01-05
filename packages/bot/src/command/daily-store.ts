@@ -19,13 +19,13 @@ async function sendFetch(
   >('/in-game/store-front')
 
   if (!response.success) {
-    return response.message
+    return `${response.message}`
   }
 
-  const result = response.data.skinItems!
+  const result = response.data.items
 
   const res = await Promise.all(
-    result.map(async (item) => {
+    result!.map(async (item) => {
       const res = await fetch(
         createValorantApi('zh-TW').getWeaponLevelFromUUID(item.uuid),
         {

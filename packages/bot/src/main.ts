@@ -78,6 +78,7 @@ client.on('message.private', async (event) => {
     const msgCtx = getMsgCtx(context.user_id)
     if (msgCtx == null)
       return sendPravite(context.user_id, '无效的上下文对话，请先输入指令！')
+
     const result = await executeCommandWithPravite({
       message,
       args: [],

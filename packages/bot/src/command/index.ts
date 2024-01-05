@@ -1,10 +1,20 @@
 /* eslint-disable no-return-await */
-import { createMsgCtx, getMsgCtx } from '../utils/message-context/manager'
+import {
+  clearMsgCtx,
+  createMsgCtx,
+  getMsgCtx,
+} from '../utils/message-context/manager'
 import { bind } from './bind'
 import { dailyStore } from './daily-store'
 import { help, helpItems } from './help'
 
-export type Commands = 'ping' | 'help' | 'bind' | 'unbind' | 'dailystore'
+export type Commands =
+  | 'ping'
+  | 'help'
+  | 'bind'
+  | 'unbind'
+  | 'dailystore'
+  | 'error'
 
 export interface ExecuteCommandGroupOptions {
   args: string[]
@@ -69,6 +79,12 @@ export async function executeCommandWithPravite(
       return 'unbind'
     case 'dailystore':
       return dailyStore(options.sender)
+    case 'error': {
+      const msgCtx = getMsgCtx(options.sender)!
+      await msgCtx.execute(options.message, options.sendPraviteMsg)
+      clearMsgCtx(options.sender)
+      return
+    }
     default:
       return 'unknown command'
   }

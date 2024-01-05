@@ -1,9 +1,9 @@
 import { type RequestFunction, createRequest } from '../request'
 import type { Commands } from '../../command'
 
-type GlobalType = 'needBind' | 'needInit' | 'unknow'
+type GlobalType = 'verify' | 'unknow'
 
-export abstract class MessageContext<T extends Commands> {
+export class MessageContext<T extends Commands> {
   private _stepData: string[] = ['']
 
   protected step: number = 0
@@ -61,10 +61,7 @@ export abstract class MessageContext<T extends Commands> {
     sendMsg?: (msg: string) => void,
     //@ts-expect-error: sub class impl
   ): Promise<string> | string {
-    if (
-      this.isGlobalState &&
-      (this.globalCommand === 'needBind' || this.globalCommand === 'needInit')
-    ) {
+    if (this.isGlobalState) {
       this.setGlobalData({ verifyPassword: message! })
       const response = await this.request('/account/auth', {
         body: {

@@ -3,6 +3,7 @@ import {
   generateHeaders,
   objectOmit,
 } from '@valorant-bot/shared'
+import { createMsgCtx } from './message-context/manager'
 import type { MessageContext } from './message-context'
 
 export const baseUrl =
@@ -38,16 +39,24 @@ export function createRequest(qq: number, msgCtx?: MessageContext<any>) {
 
     const result = (await response.json()) as Response
 
-    if (!result.success) {
-      if (result?.data?.needBind) {
-        msgCtx?.setGlobal('needBind')
-      } else if (result?.data?.needInit) {
-        msgCtx?.setGlobal('needInit')
+    if (
+      !result.success &&
+      (result?.data?.needBind ||
+        result?.data?.needInit ||
+        result?.data?.needVerify)
+    ) {
+      if (!msgCtx) {
+        msgCtx = createMsgCtx(qq, 'error')
+      }
+
+      return {
+        ...result,
+        message: `${result.message} [注意隐私信息私聊 Bot]`,
       }
     }
 
     return result as Omit<Response, 'data'> & {
-      data: Omit<Response['data'], 'needBind' | 'needInit'>
+      data: Omit<Response['data'], 'needBind' | 'needInit' | 'needVerify'>
     }
   }
 
