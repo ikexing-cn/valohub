@@ -30,8 +30,8 @@ function isReauthSuccessful(response: Response) {
 export default defineEventHandler(async (event) => {
   const valorantInfo = event.context.valorantInfo
 
-  const updateTime = valorantInfo.updatedAt.getTime() + 1000 * 60 * 60 * 2
-  if (valorantInfo && updateTime < Date.now()) {
+  const updateTime = valorantInfo.updatedAt.getTime() + 1000 * 60 * 60
+  if (valorantInfo && updateTime > Date.now()) {
     const prisma = usePrisma()
     const response = useResponse()
     const reauthResponse = await reauth(valorantInfo.cookies)
@@ -46,9 +46,10 @@ export default defineEventHandler(async (event) => {
         },
       }
 
+      const parsedAuthResult = parseRSOAuthResultUri(authResponse)
       const { entitlements_token } = await getEntitlementToken(
         createRSOApi(useRequest()),
-        parseRSOAuthResultUri(authResponse),
+        parsedAuthResult,
       )
 
       await prisma.valorantInfo.update({
@@ -56,6 +57,7 @@ export default defineEventHandler(async (event) => {
           id: valorantInfo.id,
         },
         data: {
+          parsedAuthResult,
           entitlementsToken: entitlements_token,
         },
       })
