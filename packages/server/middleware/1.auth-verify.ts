@@ -9,8 +9,7 @@ declare module 'h3' {
 }
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
-  const parsedBody = zodParse<AccountVerifyRequest>(accountSchema, body)
+  const parsedBody = await useValidatedBody(accountSchema)
 
   const prisma = usePrisma()
   const response = useResponse()

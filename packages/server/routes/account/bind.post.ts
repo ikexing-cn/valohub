@@ -8,7 +8,7 @@ import type { Prisma } from '@prisma/client'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const parsedBody = zodParse<AccountBindRequest>(bindSchema, body)
+  const parsedBody = await useValidatedBody(bindSchema)
 
   const account = event.context.account
 

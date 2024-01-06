@@ -10,8 +10,7 @@ declare module 'h3' {
 export default defineEventHandler(async (event) => {
   const account = event.context.account
   if (account && !getRequestURL(event).pathname.startsWith('/account/bind')) {
-    const body = await readBody(event)
-    const parsedBody = zodParse(aliasOnlySchema, body)
+    const parsedBody = await useValidatedBody(aliasOnlySchema)
 
     const prisma = usePrisma()
     const response = useResponse()
