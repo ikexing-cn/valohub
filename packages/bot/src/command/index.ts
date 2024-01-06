@@ -7,6 +7,7 @@ import {
 import { bind } from './bind'
 import { dailyStore } from './daily-store'
 import { help, helpItems } from './help'
+import { unbind } from './unbind'
 
 export type Commands =
   | 'ping'
@@ -53,13 +54,14 @@ export function executeCommandWithGroup(options: ExecuteCommandGroupOptions) {
     case 'bind':
       return bind(options)
     case 'unbind':
-      return 'unbind'
+      return unbind(options.sender)
     case 'dailystore':
       return dailyStore(options.sender)
     case 'clear':
-      return clearMsgCtx(options.sender)
+      clearMsgCtx(options.sender)
+      return '已清除消息上下文'
     default:
-      return 'unknown command'
+      return '未知指令'
   }
 }
 
@@ -79,7 +81,7 @@ export async function executeCommandWithPravite(
             options.sendPraviteMsg,
           )
     case 'unbind':
-      return 'unbind'
+      return unbind(options.sender)
     case 'dailystore':
       return dailyStore(options.sender)
     case 'error': {
@@ -89,8 +91,9 @@ export async function executeCommandWithPravite(
       return
     }
     case 'clear':
-      return clearMsgCtx(options.sender)
+      clearMsgCtx(options.sender)
+      return '已清除消息上下文'
     default:
-      return 'unknown command'
+      return '未知指令'
   }
 }

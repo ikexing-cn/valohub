@@ -63,9 +63,7 @@ export const bindSchema = z.object({
     })
     .optional(),
 })
+export type AccountBindRequest = typeof bindSchema._input
 
-export type AccountBindSchema = typeof bindSchema._input
-
-export const selectValoInfoSchema = z.object({ alias })
-
-export type InGameStoreFrontSchema = typeof selectValoInfoSchema._input
+export const aliasOnlySchema = z.object({ alias })
+export type AliasOnlyRequest = typeof aliasOnlySchema._input

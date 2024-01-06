@@ -1,8 +1,8 @@
 import { createValorantApi } from '@valorant-bot/core'
 import { createRequest } from '../utils/request'
 import type {
+  AliasOnlyRequest,
   InGameStoreFrontResponse,
-  InGameStoreFrontSchema,
 } from '@valorant-bot/shared'
 
 export function dailyStore(sender: number) {
@@ -13,10 +13,9 @@ async function sendFetch(
   config: Parameters<typeof createRequest>,
 ): Promise<string> {
   const request = createRequest(...config)
-  const response = await request<
-    InGameStoreFrontSchema,
-    InGameStoreFrontResponse
-  >('/in-game/store-front')
+  const response = await request<AliasOnlyRequest, InGameStoreFrontResponse>(
+    '/in-game/store-front',
+  )
 
   if (!response.success) {
     return `${response.message}`

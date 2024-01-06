@@ -7,13 +7,13 @@ import {
 } from '@valorant-bot/core'
 import type { $Enums } from '@prisma/client'
 import type {
+  AccountBindRequest,
   AccountBindResponse,
-  AccountBindSchema,
 } from '@valorant-bot/shared'
 
 export async function loginRiot(
   qq: string,
-  parsedBody: AccountBindSchema,
+  parsedBody: AccountBindRequest,
   response: ReturnType<typeof useResponse<AccountBindResponse['data']>>,
 ) {
   const { username, password, mfaCode, remember = false } = parsedBody

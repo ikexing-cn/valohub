@@ -2,8 +2,8 @@ import { MessageContext } from '../utils/message-context'
 import { clearMsgCtx, createMsgCtx } from '../utils/message-context/manager'
 import type { RequestFunction } from '../utils/request'
 import type {
+  AccountBindRequest,
   AccountBindResponse,
-  AccountBindSchema,
 } from '@valorant-bot/shared'
 
 import type { ExecuteCommandGroupOptions } from '.'
@@ -68,7 +68,7 @@ async function sendFetch(
   request: RequestFunction,
   ...messages: string[]
 ): Promise<[boolean, string, boolean?]> {
-  const body: AccountBindSchema = {
+  const body: AccountBindRequest = {
     remember: true,
     alias: messages[0],
     username: messages[1],
@@ -76,7 +76,7 @@ async function sendFetch(
     mfaCode: messages?.[3] ?? undefined,
   }
 
-  const response = await request<AccountBindSchema, AccountBindResponse>(
+  const response = await request<AccountBindRequest, AccountBindResponse>(
     '/account/bind',
     { body },
   )

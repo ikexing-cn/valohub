@@ -1,4 +1,4 @@
-import { selectValoInfoSchema } from '@valorant-bot/shared'
+import { aliasOnlySchema } from '@valorant-bot/shared'
 import type { Prisma } from '@prisma/client'
 
 declare module 'h3' {
@@ -9,9 +9,9 @@ declare module 'h3' {
 
 export default defineEventHandler(async (event) => {
   const account = event.context.account
-  if (account && !getRequestURL(event).pathname.startsWith('/account')) {
+  if (account && !getRequestURL(event).pathname.startsWith('/account/bind')) {
     const body = await readBody(event)
-    const parsedBody = zodParse(selectValoInfoSchema, body)
+    const parsedBody = zodParse(aliasOnlySchema, body)
 
     const prisma = usePrisma()
     const response = useResponse()
@@ -20,6 +20,7 @@ export default defineEventHandler(async (event) => {
       where: {
         alias: parsedBody.alias,
         accountQQ: account.qq,
+        deleteStatus: false,
       },
     })
 

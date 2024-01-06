@@ -1,6 +1,6 @@
 import {
+  type AccountBindRequest,
   type AccountBindResponse,
-  type AccountBindSchema,
   bindSchema,
   objectOmit,
 } from '@valorant-bot/shared'
@@ -8,7 +8,7 @@ import type { Prisma } from '@prisma/client'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const parsedBody = zodParse<AccountBindSchema>(bindSchema, body)
+  const parsedBody = zodParse<AccountBindRequest>(bindSchema, body)
 
   const account = event.context.account
 
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
   const valorantAccountExists = await prisma.valorantInfo.findFirst({
     where: { riotUsername: parsedBody.username },
   })
-  if (valorantAccountExists) {
+  if (valorantAccountExists && !valorantAccountExists.deleteStatus) {
     return response(false, '此 Valorant 账号已被其他 qq 绑定！', {
       isBinded: true,
     })
@@ -33,12 +33,12 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const [isSuccess, authResponse, cookies] = await loginRiot(
+  const [isLoginSuccessful, authResponse, cookies] = await loginRiot(
     account.qq,
     { ...objectOmit(parsedBody, ['password']), password: body.password },
     response,
   )
-  if (!isSuccess) return authResponse
+  if (!isLoginSuccessful) return authResponse
 
   const {
     gameName,
@@ -49,29 +49,37 @@ export default defineEventHandler(async (event) => {
     region,
   } = await getRiotinfo(authResponse)
 
-  await prisma.valorantInfo.create({
-    include: { account: true },
-    data: {
-      accountQQ: account.qq,
+  const data = {
+    accountQQ: account.qq,
 
-      // idk why not setiing default value when zod parsed
-      alias: parsedBody.alias || 'default',
-      remember: parsedBody.remember ?? false,
+    // idk why not setiing default value when zod parsed
+    alias: parsedBody.alias || 'default',
+    remember: parsedBody.remember ?? false,
 
-      cookies,
-      parsedAuthResult: parsedAuthResult as Prisma.JsonObject,
-      entitlementsToken: entitlementToken.entitlements_token,
-      riotUsername: parsedBody.username,
-      riotPassword: parsedBody.password,
+    cookies,
+    parsedAuthResult: parsedAuthResult as Prisma.JsonObject,
+    entitlementsToken: entitlementToken.entitlements_token,
+    riotUsername: parsedBody.username,
+    riotPassword: parsedBody.password,
 
-      uuid: playerInfo.sub,
-      country: playerInfo.country,
-      tagLine: playerInfo.acct.tag_line,
-      gameName: playerInfo.acct.game_name,
+    uuid: playerInfo.sub,
+    country: playerInfo.country,
+    tagLine: playerInfo.acct.tag_line,
+    gameName: playerInfo.acct.game_name,
 
-      region,
-    },
-  })
+    region,
+    deleteStatus: false,
+  }
+
+  if (valorantAccountExists && valorantAccountExists.deleteStatus) {
+    await prisma.valorantInfo.update({
+      data,
+      include: { account: true },
+      where: { id: valorantAccountExists.id },
+    })
+  } else {
+    await prisma.valorantInfo.create({ data, include: { account: true } })
+  }
 
   return response(`已成功绑定 ${gameName}#${tagLine}, 欢迎使用!`)
 })
