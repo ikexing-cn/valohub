@@ -3,6 +3,7 @@ import {
   createRSOApi,
   parseRSOAuthResultUri,
 } from '@valorant-bot/core'
+import { delay } from '../utils/delay'
 
 async function reauth(cookies: string[]) {
   const response = await fetch(
@@ -30,8 +31,8 @@ function isReauthSuccessful(response: Response) {
 export default defineEventHandler(async (event) => {
   const valorantInfo = event.context.valorantInfo
 
-  const updateTime = valorantInfo.updatedAt.getTime() + 1000 * 60 * 60
-  if (valorantInfo && updateTime > Date.now()) {
+  const updateTime = valorantInfo.updatedAt.getTime() + 1000 * 60 * 30
+  if (valorantInfo && updateTime < Date.now()) {
     const prisma = usePrisma()
     const response = useResponse()
     const reauthResponse = await reauth(valorantInfo.cookies)
@@ -61,6 +62,10 @@ export default defineEventHandler(async (event) => {
           entitlementsToken: entitlements_token,
         },
       })
+
+      // 拿到 token 后不能直接获取，需要等待一段时间继续请求 riot 的 API才能拿相关的数据
+      // 2000 的具体值待测试
+      await delay(Math.random() * 2000)
     } else {
       // TODO: 从 valorantInfo 读取值
       // 如果是 remember = true 直接重新登录
