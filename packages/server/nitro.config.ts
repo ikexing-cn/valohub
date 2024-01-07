@@ -1,2 +1,6 @@
 //https://nitro.unjs.io/config
-export default defineNitroConfig({})
+export default defineNitroConfig({
+  experimental: {
+    asyncContext: true,
+  },
+})
