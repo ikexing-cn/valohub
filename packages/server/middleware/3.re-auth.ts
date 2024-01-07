@@ -55,7 +55,7 @@ export default defineEventHandler(async (event) => {
         parsedAuthResult,
       )
 
-      await prisma.valorantInfo.update({
+      const updatedValorantInfo = await prisma.valorantInfo.update({
         where: {
           id: valorantInfo.id,
         },
@@ -65,9 +65,7 @@ export default defineEventHandler(async (event) => {
         },
       })
 
-      // 拿到 token 后不能直接获取，需要等待一段时间继续请求 riot 的 API才能拿相关的数据
-      // 2000 的具体值待测试
-      await delay(Math.random() * 2000)
+      event.context.valorantInfo = updatedValorantInfo
     } else {
       // TODO: 从 valorantInfo 读取值
       // 如果是 remember = true 直接重新登录
