@@ -29,14 +29,18 @@ export default function DailyStore() {
   return (
     <div
       p="x y"
-      relative
       w-700px
+      relative
       of-hidden
-      text-gray-4
+      text-white
       bg="center contain #0d1611"
     >
-      <img absolute top--22 left-0 op-25 src={BackgroundImage} />
-      <span>每日商店: ikx#0103</span>
+      <img absolute top--22 op-25 left-0 src={BackgroundImage} />
+
+      <div relative>
+        <span>每日商店: </span>
+        <span text="2.8">ikx#0103</span>
+      </div>
 
       <div my grid="~ cols-2 rows-2 gap-4">
         <ItemWeapon
@@ -59,6 +63,10 @@ export default function DailyStore() {
           uuid={items[3].uuid}
           price={items[3].cost}
         />
+      </div>
+
+      <div w-full relative text="3 gray" flex="~ row-reverse">
+        <span font-italic>ValorantBot 生成</span>
       </div>
     </div>
   )

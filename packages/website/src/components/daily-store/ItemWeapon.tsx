@@ -48,21 +48,21 @@ export function ItemWeapon(props: ItemWeaponProps) {
         bottom-2
         absolute
         float-right
-        text="white 3"
+        text="4"
         flex="~ items-center justify-center"
       >
-        <img src={VP} w-3 />
-        <span mr-1>&nbsp;{props.price}</span>
-        <img src={icon()} w-3 />
+        <img src={VP} width="18" />
+        <span mr-2>&nbsp;{props.price}</span>
       </div>
 
-      <div text="2.5 white" absolute top-2 right-2>
+      <div text="3.5" absolute top-2 right-2 flex>
         <span>
           {(weaponInfo()?.data?.displayName as string)
             ?.split(' ')
             ?.reverse()
             ?.join(' | ')}
         </span>
+        <img src={icon()} w-6 ml />
       </div>
 
       <div mt relative>
