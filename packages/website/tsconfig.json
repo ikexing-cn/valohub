@@ -5,7 +5,7 @@
     "jsxImportSource": "solid-js",
     "lib": ["DOM", "ESNext"],
     "paths": {
-      "@/*": ["./src/*", "./dist/*"]
+      "~/*": ["./src/*"]
     },
     "types": ["vite/client"]
   }
