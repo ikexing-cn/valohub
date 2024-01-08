@@ -1,4 +1,3 @@
-import { fetch as fetchWithProrxy } from 'node-fetch-native/proxy'
 import { objectOmit } from './internal'
 
 export interface ApiAuthFailure {
@@ -12,7 +11,7 @@ export interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: object
 }
 
-export function generateHeaders(otherHeaders: object = {}) {
+export function generateHeaders(otherHeaders: object = {}): Headers {
   const headers = new Headers({
     'Content-Type': 'application/json',
     ...Object.fromEntries(
@@ -46,7 +45,7 @@ export function createRequest(
       cookie: cookies(),
     })
 
-    const response = await fetchWithProrxy(url, {
+    const response = await fetch(url, {
       ...objectOmit(options, ['body', 'headers']),
       body: options.body ? JSON.stringify(options.body) : undefined,
       headers,

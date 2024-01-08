@@ -19,5 +19,8 @@
   "scripts": {
     "build": "tsup",
     "dev": "DEV=true tsup"
+  },
+  "peerDependencies": {
+    "zod": "^3.22.4"
   }
 }

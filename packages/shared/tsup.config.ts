@@ -10,12 +10,13 @@ export default defineConfig({
     ? false
     : {
         compilerOptions: {
-          composite: false,
           customConditions: [],
         },
       },
   tsconfig: './tsconfig.json',
   clean: true,
-  minify: true,
+  minify: !process.env.DEV,
   treeshake: true,
+  bundle: true,
+  external: ['zod'],
 })
