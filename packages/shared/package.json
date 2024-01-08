@@ -12,12 +12,12 @@
   "exports": {
     ".": {
       "dev": "./src/index.ts",
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.mjs"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "scripts": {
-    "dev": "unbuild --stub",
-    "build": "unbuild"
+    "build": "tsup",
+    "dev": "DEV=true tsup"
   }
 }
