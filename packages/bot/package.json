@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "esno watch src/main"
+    "dev": "esno watch --clear-screen=false src/main"
   },
   "dependencies": {
     "@valorant-bot/core": "workspace:^",
