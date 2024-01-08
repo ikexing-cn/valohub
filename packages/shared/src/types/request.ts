@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { dMd5 } from '../../../server/utils/crypto'
+import { dMd5 } from '../utils/internal'
 
 const qq = z
   .string({
