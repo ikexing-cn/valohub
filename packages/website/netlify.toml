@@ -2,8 +2,8 @@
   NODE_VERSION = "16"
 
 [build]
-  publish = "dist"
-  command = "pnpm run build"
+  publish = "packages/website/dist"
+  command = "turbo run build --filter @valorant-bot/website"
 
 [[redirects]]
   from = "/*"
