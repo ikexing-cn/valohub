@@ -1,0 +1,12 @@
+diff --git a/package.json b/package.json
+index 142b741bd532983ab8e602e8a0f1c1d4404d5545..f52ae8d1e04c4cd85d84932d1e77fbcb54c99c2c 100644
+--- a/package.json
++++ b/package.json
+@@ -25,6 +25,7 @@
+   "types": "./dist/index.d.ts",
+   "exports": {
+     ".": {
++      "types": "./dist/index.d.ts",
+       "import": "./dist/nitro-cors.es.js",
+       "require": "./dist/nitro-cors.umd.js"
+     }

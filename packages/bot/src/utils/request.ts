@@ -7,7 +7,7 @@ import { createMsgCtx } from './message-context/manager'
 import type { MessageContext } from './message-context'
 
 export const baseUrl =
-  process.env.VALORANT_BOT_API_URL ?? 'http://localhost:3000'
+  process.env.VALORANT_SERVER_URL ?? 'http://localhost:3000'
 
 export type RequestFunction = ReturnType<typeof createRequest>
 export function createRequest(qq: number, msgCtx?: MessageContext<any>) {

@@ -10,17 +10,30 @@ import Logo from '~/assets/images/icons/V_Logomark_Off-White.png'
 type ItemWeaponProps = {
   uuid: string
   price: number
-  priceTier: PriceTier
 }
 
-export function ItemWeapon(props: ItemWeaponProps) {
-  const icon = createMemo(() => getPriceTierIcon(props.priceTier))
-  const colors = createMemo(() => getPriceTierColor(props.priceTier))
+export function ItemWeapon({ price, uuid }: ItemWeaponProps) {
+  const priceTier = createMemo<PriceTier>(() => {
+    if (price === 875) {
+      return 'select'
+    } else if (price === 1275) {
+      return 'deluxe'
+    } else if (price === 1775) {
+      return 'premium'
+    } else if ([2475, 2975].includes(price)) {
+      return 'ultra'
+    } else {
+      return 'exclusive'
+    }
+  })
+
+  const icon = createMemo(() => getPriceTierIcon(priceTier()))
+  const colors = createMemo(() => getPriceTierColor(priceTier()))
 
   const [weaponInfo, setWeaponInfo] = createSignal<any>({})
 
   fetch(
-    `https://valorant-api.com/v1/weapons/skinlevels/${props.uuid}?language=zh-TW`,
+    `https://valorant-api.com/v1/weapons/skinlevels/${uuid}?language=zh-TW`,
   ).then(async (item) => {
     const info = await item.json()
     setWeaponInfo(info)
@@ -52,7 +65,7 @@ export function ItemWeapon(props: ItemWeaponProps) {
         flex="~ items-center justify-center"
       >
         <img src={VP} width="18" />
-        <span mr-2>&nbsp;{props.price}</span>
+        <span mr-2>&nbsp;{price}</span>
       </div>
 
       <div text="3.5" absolute top-2 right-2 flex>

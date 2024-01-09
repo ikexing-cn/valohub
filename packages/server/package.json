@@ -8,6 +8,7 @@
     "preview": "node .output/server/index.mjs"
   },
   "dependencies": {
+    "nitro-cors": "^0.7.0",
     "nitropack": "latest"
   },
   "devDependencies": {
