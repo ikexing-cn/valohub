@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import 'dotenv/config'
+import * as puppeteer from 'puppeteer'
 
 import { CQWebSocket } from 'go-cqwebsocket'
 import {
@@ -95,4 +96,33 @@ client.on('message.private', async (event) => {
 })
 
 client.connect()
-console.log('success opened')
+
+const browser = await puppeteer.launch({ headless: 'new' })
+const page = await browser.newPage()
+
+export async function getScreenShot(qq: string) {
+  await page.goto(
+    `${
+      process.env.VALORANT_WEBSITE_URL ?? 'http://localhost:5173'
+    }/daily-store?qq=${qq}`,
+    {
+      waitUntil: 'networkidle2',
+    },
+  )
+
+  await page.screenshot({
+    path: 'screenshot.png',
+    type: 'png',
+    clip: {
+      x: 0,
+      y: 0,
+      height: 370,
+      width: 700,
+    },
+  })
+
+  // return import.meta.resolve('../screenshot.png')
+  return 'files:///c:/screenshot.png'
+}
+
+console.log('Success opened for CQWebSocket.')
