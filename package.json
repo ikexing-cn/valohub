@@ -9,7 +9,9 @@
     "dev": "dotenv -- turbo dev",
     "build": "dotenv -- turbo build",
     "lint": "eslint . --cache && prettier --cache -c .",
-    "lint:fix": "eslint . --cache --fix && prettier --cache -w ."
+    "lint:fix": "eslint . --cache --fix && prettier --cache -w .",
+    "db:generate": "dotenv -- turbo db:generate",
+    "db:push": "dotenv -- turbo db:push"
   },
   "devDependencies": {
     "@sxzz/eslint-config": "^3.7.5",

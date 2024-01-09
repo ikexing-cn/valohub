@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@valorant-bot/server-database'
 
 let _prisma: PrismaClient
 export function usePrisma() {

@@ -8,12 +8,11 @@
     "preview": "node .output/server/index.mjs"
   },
   "dependencies": {
-    "@prisma/client": "5.7.1",
     "nitropack": "latest"
   },
   "devDependencies": {
     "@valorant-bot/core": "workspace:^",
     "@valorant-bot/shared": "workspace:^",
-    "prisma": "^5.7.1"
+    "@valorant-bot/server-database": "workspace:^"
   }
 }

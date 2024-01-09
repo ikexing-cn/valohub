@@ -71,9 +71,6 @@ importers:
 
   packages/server:
     dependencies:
-      '@prisma/client':
-        specifier: 5.7.1
-        version: 5.7.1(prisma@5.7.1)
       nitropack:
         specifier: latest
         version: 2.8.1
@@ -81,9 +78,19 @@ importers:
       '@valorant-bot/core':
         specifier: workspace:^
         version: link:../core
+      '@valorant-bot/server-database':
+        specifier: workspace:^
+        version: link:../server-database
       '@valorant-bot/shared':
         specifier: workspace:^
         version: link:../shared
+
+  packages/server-database:
+    dependencies:
+      '@prisma/client':
+        specifier: ^5.7.1
+        version: 5.7.1(prisma@5.7.1)
+    devDependencies:
       prisma:
         specifier: ^5.7.1
         version: 5.7.1
