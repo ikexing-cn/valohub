@@ -1,5 +1,4 @@
 import {
-  type AccountBindRequest,
   type AccountBindResponse,
   bindSchema,
   objectOmit,

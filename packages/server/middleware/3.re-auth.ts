@@ -3,7 +3,6 @@ import {
   createRSOApi,
   parseRSOAuthResultUri,
 } from '@valorant-bot/core'
-import { delay } from '../utils/delay'
 
 async function reauth(cookies: string[]) {
   const response = await fetch(

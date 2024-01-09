@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@valorant-bot/core": "workspace:^",
-    "@valorant-bot/shared": "workspace:^",
-    "@valorant-bot/server-database": "workspace:^"
+    "@valorant-bot/server-database": "workspace:^",
+    "@valorant-bot/shared": "workspace:^"
   }
 }
