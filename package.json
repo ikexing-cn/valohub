@@ -29,10 +29,10 @@
     "typescript": "^5.3.3",
     "zod": "^3.22.4"
   },
-  "prettier": "@sxzz/prettier-config",
   "pnpm": {
     "patchedDependencies": {
       "nitro-cors@0.7.0": "patches/nitro-cors@0.7.0.patch"
     }
-  }
+  },
+  "prettier": "@sxzz/prettier-config"
 }

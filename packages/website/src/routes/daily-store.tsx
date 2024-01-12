@@ -1,3 +1,5 @@
+import toast, { Toaster } from 'solid-toast'
+
 import { baseUrl } from '~/utils/request'
 import { ItemWeapon } from '~/components/daily-store/ItemWeapon'
 
@@ -5,11 +7,14 @@ import BackgroundImage from '~/assets/images/daily-store/background.jpg'
 
 import type { InGameStoreFrontResponse } from '@valorant-bot/shared'
 
-async function fetchData(qq: string): Promise<InGameStoreFrontResponse> {
+async function fetchData(
+  qq: string,
+  alias: string,
+): Promise<InGameStoreFrontResponse> {
   if (!Number.parseInt(qq))
     return {
       data: [] as any,
-      message: 'Invalid qq',
+      message: 'QQ 必须为数字',
       success: false,
     }
 
@@ -18,7 +23,7 @@ async function fetchData(qq: string): Promise<InGameStoreFrontResponse> {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ qq }),
+    body: JSON.stringify({ qq, alias }),
   })
 
   return response.json()
@@ -26,7 +31,17 @@ async function fetchData(qq: string): Promise<InGameStoreFrontResponse> {
 
 export default function DailyStore() {
   const [searchParams] = useSearchParams()
-  const [items] = createResource(searchParams.qq, fetchData)
+  const [response] = createResource(searchParams, ({ qq, alias }) =>
+    fetchData(qq!, alias || 'default'),
+  )
+
+  createEffect(() => {
+    if (response()?.success === false) {
+      toast.error(response()?.message || '未知的错误，请联系开发者', {
+        position: 'top-left',
+      })
+    }
+  })
 
   return (
     <div
@@ -45,7 +60,7 @@ export default function DailyStore() {
       </div>
 
       <div my grid="~ cols-2 rows-2 gap-4">
-        <For each={items()?.data.items}>
+        <For each={response()?.data?.items ?? []}>
           {(item) => {
             return <ItemWeapon uuid={item.uuid} price={item.cost} />
           }}
@@ -55,6 +70,8 @@ export default function DailyStore() {
       <div w-full relative text="3 gray" flex="~ row-reverse">
         <span font-italic>ValorantBot 生成</span>
       </div>
+
+      <Toaster />
     </div>
   )
 }

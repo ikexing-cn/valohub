@@ -56,7 +56,7 @@ export function executeCommandWithGroup(options: ExecuteCommandGroupOptions) {
     case 'unbind':
       return unbind(options.sender)
     case 'dailystore':
-      return dailyStore(options.sender)
+      return dailyStore(options)
     case 'clear':
       clearMsgCtx(options.sender)
       return '已清除消息上下文'
@@ -83,7 +83,7 @@ export async function executeCommandWithPravite(
     case 'unbind':
       return unbind(options.sender)
     case 'dailystore':
-      return dailyStore(options.sender)
+      return dailyStore(options)
     case 'error': {
       const msgCtx = getMsgCtx(options.sender)!
       await msgCtx.execute(options.message, options.sendPraviteMsg)

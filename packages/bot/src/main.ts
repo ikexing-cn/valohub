@@ -100,11 +100,11 @@ client.connect()
 const browser = await puppeteer.launch({ headless: 'new' })
 const page = await browser.newPage()
 
-export async function getScreenShot(qq: string) {
+export async function getScreenShot(qq: string, alias: string) {
   await page.goto(
     `${
       process.env.VALORANT_WEBSITE_URL ?? 'http://localhost:5173'
-    }/daily-store?qq=${qq}`,
+    }/daily-store?qq=${qq}&alias=${alias}`,
     {
       waitUntil: 'networkidle2',
     },
