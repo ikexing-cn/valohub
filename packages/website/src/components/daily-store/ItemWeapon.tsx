@@ -5,7 +5,7 @@ import {
 } from '~/utils/price-tier'
 
 import VP from '~/assets/images/icons/vp.webp'
-import Logo from '~/assets/images/icons/V_Logomark_Off-White.png'
+import Logo from '~/assets/images/icons/white_icon.png'
 
 type ItemWeaponProps = {
   uuid: string

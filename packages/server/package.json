@@ -14,6 +14,7 @@
   "devDependencies": {
     "@valorant-bot/core": "workspace:^",
     "@valorant-bot/server-database": "workspace:^",
-    "@valorant-bot/shared": "workspace:^"
+    "@valorant-bot/shared": "workspace:^",
+    "h3": "^1.10.0"
   }
 }

@@ -1,9 +1,9 @@
-import toast, { Toaster } from 'solid-toast'
+import toast from 'solid-toast'
 
 import { baseUrl } from '~/utils/request'
 import { ItemWeapon } from '~/components/daily-store/ItemWeapon'
 
-import BackgroundImage from '~/assets/images/daily-store/background.jpg'
+import BackgroundImage from '~/assets/images/background/daily-store.jpg'
 
 import type { InGameStoreFrontResponse } from '@valorant-bot/shared'
 
@@ -70,8 +70,6 @@ export default function DailyStore() {
       <div w-full relative text="3 gray" flex="~ row-reverse">
         <span font-italic>ValorantBot 生成</span>
       </div>
-
-      <Toaster />
     </div>
   )
 }

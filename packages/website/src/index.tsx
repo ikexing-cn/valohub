@@ -2,16 +2,25 @@
 import { render } from 'solid-js/web'
 
 import 'uno.css'
-import '@unocss/reset/tailwind.css'
 import './assets/base.css'
 
+import '@unocss/reset/tailwind-compat.css'
+
+import { Toaster } from 'solid-toast'
 import DailyStore from './routes/daily-store'
+import SignIn from './routes/bind'
 
 function AppRoot() {
   return (
-    <Router>
-      <Route path="/daily-store" component={DailyStore} />
-    </Router>
+    <>
+      {/* 全局的 Toaster */}
+      <Toaster position="top-center" />
+
+      <Router>
+        <Route path="/bind" component={SignIn} />
+        <Route path="/daily-store" component={DailyStore} />
+      </Router>
+    </>
   )
 }
 
