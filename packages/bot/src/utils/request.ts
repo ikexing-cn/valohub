@@ -3,30 +3,16 @@ import {
   generateHeaders,
   objectOmit,
 } from '@valorant-bot/shared'
-import { createMsgCtx } from './message-context/manager'
-import type { MessageContext } from './message-context'
 
 export const baseUrl =
   process.env.VALORANT_SERVER_URL ?? 'http://localhost:3000'
 
 export type RequestFunction = ReturnType<typeof createRequest>
-export function createRequest(qq: number, msgCtx?: MessageContext<any>) {
+export function createRequest(qq: number) {
   async function request<
     Request extends object,
     Response extends VerifiedResponseWith,
   >(url: string, options: Omit<RequestInit, 'body'> & { body?: Request } = {}) {
-    const body = {
-      qq: String(qq),
-      ...options.body,
-    }
-
-    if (msgCtx?.isGlobalState) {
-      Object.entries(msgCtx.globalData).forEach(([key, value]) => {
-        //@ts-expect-error
-        body[key] = value
-      })
-    }
-
     const response = await fetch(`${baseUrl}${url}`, {
       ...objectOmit(options, ['headers', 'body']),
       method: 'POST',
@@ -39,19 +25,18 @@ export function createRequest(qq: number, msgCtx?: MessageContext<any>) {
 
     const result = (await response.json()) as Response
 
-    if (
-      !result.success &&
-      (result?.data?.needBind ||
-        result?.data?.needInit ||
-        result?.data?.needVerify)
-    ) {
-      if (!msgCtx) {
-        msgCtx = createMsgCtx(qq, 'error')
-      }
-
-      return {
-        ...result,
-        message: `${result.message} [注意隐私信息私聊 Bot]`,
+    if (!result.success) {
+      if (result.data.needBind || result.data.needInit) {
+        return {
+          success: false,
+          message:
+            '你的账户需要绑定或初始化, 请添加 Bot 好友后发送 "绑定" 指令进行绑定',
+        }
+      } else if (result.data.needVerify) {
+        return {
+          success: false,
+          message: '你的账户需要二次验证所属权, 请查阅私聊信息进行验证',
+        }
       }
     }
 
