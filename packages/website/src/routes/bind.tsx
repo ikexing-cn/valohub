@@ -2,23 +2,25 @@
  * v0 by Vercel.
  * @see https://v0.dev/t/hqfOoow3NuH
  */
+import toast from 'solid-toast'
+import { TbLoader } from 'solid-icons/tb'
 import { Label } from '~/components/ui/label'
 import { Input } from '~/components/ui/input'
 import { Checkbox } from '~/components/ui/checkbox'
 import { Button } from '~/components/ui/button'
-import SignInDialog, { SignInDialogType } from '~/components/sign-in/dialog'
+import SignInDialog, {
+  type SignInDialogType,
+} from '~/components/sign-in/dialog'
 
-import toast from 'solid-toast'
 import { baseUrl } from '~/utils/request'
 import { cn } from '~/lib/utils'
 
-import { TbLoader } from 'solid-icons/tb'
-import { AccountBindResponse } from '@valorant-bot/shared'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '~/components/ui/tooltip'
+import type { AccountBindResponse } from '@valorant-bot/shared'
 
 async function fetchData(fields: {
   qq: string
@@ -35,7 +37,7 @@ async function fetchData(fields: {
     ),
   )
 
-  const response = await fetch(baseUrl + '/account/bind', {
+  const response = await fetch(`${baseUrl}/account/bind`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -48,7 +50,7 @@ async function fetchData(fields: {
 
 export default function SignIn() {
   const [dialogType, setDialogType] = createSignal<SignInDialogType>('initial')
-  let dialogTriggerRef: HTMLButtonElement | undefined = undefined
+  const dialogTriggerRef: HTMLButtonElement | undefined = undefined
 
   const [searchParams] = useSearchParams()
   const [loading, setLoading] = createSignal(false)
@@ -77,23 +79,22 @@ export default function SignIn() {
     })
 
     if (!response.success) {
-      if (response.data) {
-        if (
-          response.data?.needInit ||
+      if (
+        response.data &&
+        (response.data?.needInit ||
           response.data?.needVerify ||
-          response.data?.needMFA
-        ) {
-          dialogTriggerRef?.click()
-          setDialogType(
-            response.data.needInit
-              ? 'initial'
-              : response.data.needMFA
-                ? 'mfaCode'
-                : 'verify',
-          )
-          toast(response.message)
-          return
-        }
+          response.data?.needMFA)
+      ) {
+        dialogTriggerRef?.click()
+        setDialogType(
+          response.data.needInit
+            ? 'initial'
+            : response.data.needMFA
+              ? 'mfaCode'
+              : 'verify',
+        )
+        toast(response.message)
+        return
       }
 
       toast.error(response.message)
@@ -119,7 +120,7 @@ export default function SignIn() {
       if (!qq || !Number.isInteger(Number(atob(qq)))) {
         throw new Error('无效的 qq')
       }
-    } catch (error) {
+    } catch {
       setDisabled(true)
       toast.error('请在 ValoranBot 处申请链接打开本页面')
     }
@@ -183,7 +184,11 @@ export default function SignIn() {
               />
               <Label class="text-sm" htmlFor="terms">
                 我同意
-                <a class="text-blue-500 hover:text-blue-700 " href="#" onClick={() => toast("不知道写啥, 先不写了 :(")}>
+                <a
+                  class="text-blue-500 hover:text-blue-700 "
+                  href="#"
+                  onClick={() => toast('不知道写啥, 先不写了 :(')}
+                >
                   服务条款
                 </a>
               </Label>

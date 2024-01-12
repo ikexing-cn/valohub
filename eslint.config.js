@@ -16,10 +16,10 @@ export default sxzz(
     },
   ],
   {
+    unocss: false,
     vue: true,
     prettier: true,
     markdown: true,
-    unocss: true,
     sortKeys: true,
   },
 )

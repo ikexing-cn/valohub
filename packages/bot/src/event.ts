@@ -2,7 +2,7 @@
 import { findCommandBase, parseCommand } from './commands'
 import { sendMessage } from './utils/chat'
 import type { Tag } from 'go-cqwebsocket/out/tags'
-import type { CQWebSocket, Tags } from 'go-cqwebsocket'
+import type { CQWebSocket } from 'go-cqwebsocket'
 
 export function registerEvent(client: CQWebSocket) {
   client.on('request.friend', (event) => {

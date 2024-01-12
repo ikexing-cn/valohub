@@ -16,7 +16,7 @@
   "devDependencies": {
     "@sxzz/eslint-config": "^3.7.6",
     "@sxzz/prettier-config": "^2.0.0",
-    "@types/node": "^20.10.7",
+    "@types/node": "^20.11.0",
     "@types/readline-sync": "^1.4.8",
     "dotenv": "^16.3.1",
     "dotenv-cli": "^7.3.0",
