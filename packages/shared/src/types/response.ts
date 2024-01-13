@@ -22,6 +22,7 @@ export type VerifiedResponseWith<T extends object = {}> = IResponse<
 // =====
 
 export type AccountBindResponse = VerifiedResponseWith<{
+  needRetry: boolean
   isBinded: boolean
 }>
 

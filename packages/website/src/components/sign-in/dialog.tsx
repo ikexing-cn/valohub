@@ -13,7 +13,8 @@ import {
 export type SignInDialogType = 'initial' | 'verify' | 'mfaCode'
 
 interface SignInDialogProps {
-  ref?: HTMLButtonElement
+  open: boolean
+  disabled: boolean
   type: SignInDialogType
   onInputEnter: (type: SignInDialogType, value: string) => void
 }
@@ -21,8 +22,8 @@ export default function SignInDialog(props: SignInDialogProps) {
   const [text, setText] = createSignal('')
 
   return (
-    <Dialog modal={true}>
-      <DialogTrigger as={Button} ref={props.ref} hidden />
+    <Dialog open={props.open}>
+      {/* <DialogTrigger as={Button} ref={props.ref} hidden /> */}
       <DialogContent
         onEscapeKeyDown={(event) => event.preventDefault()}
         onPointerDownOutside={(event) => event.preventDefault()}
@@ -39,7 +40,10 @@ export default function SignInDialog(props: SignInDialogProps) {
             />
           </DialogDescription>
           <DialogFooter>
-            <Button onClick={() => props.onInputEnter(props.type, text())}>
+            <Button
+              onClick={() => props.onInputEnter(props.type, text())}
+              disabled={props.disabled}
+            >
               确认
             </Button>
           </DialogFooter>

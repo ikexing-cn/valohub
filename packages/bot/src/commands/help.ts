@@ -1,6 +1,6 @@
 import { commands } from './index'
 
-export function helpCommand(command?: string) {
+export function helpCommand(command?: string): string {
   if (!command) {
     return Object.values(commands)
       .flatMap((item) => {

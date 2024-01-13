@@ -30,12 +30,13 @@ export function createRequest(qq: number) {
         return {
           success: false,
           message:
-            '你的账户需要绑定或初始化, 请添加 Bot 好友后发送 "绑定" 指令进行绑定',
+            '你的账户需要绑定或初始化, 请添加 Bot 好友后使用 "绑定" 指令进行绑定',
         }
       } else if (result.data.needVerify) {
         return {
           success: false,
-          message: '你的账户需要二次验证所属权, 请查阅私聊信息进行验证',
+          message:
+            '你的账户需要二次验证所属权, 请私信 Bot 发送 "验证" 指令进行验证',
         }
       }
     }

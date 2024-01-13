@@ -2,6 +2,7 @@
 import { findCommandBase, parseCommand } from './commands'
 import { sendMessage } from './utils/chat'
 import { helpCommand } from './commands/help'
+import { bindCommand } from './commands/bind'
 import type { Tag } from 'go-cqwebsocket/out/tags'
 import type { CQEvent, CQWebSocket } from 'go-cqwebsocket'
 
@@ -28,29 +29,28 @@ function handleMessage(client: CQWebSocket, event: CQEvent<'message'>) {
 
   const send = sendMessage({
     client,
-    isGroup,
     messageId: context.message_id,
     senderId: isGroup ? context.group_id : context.user_id,
   })
 
   switch (commandBase) {
     case 'ping':
-      send('pong')
+      send(isGroup, 'pong')
       break
     case 'help':
-      send(helpCommand(args?.[0]))
+      send(isGroup, helpCommand(args?.[0]))
       break
     case 'dailystore':
-      send('todo')
+      send(isGroup, 'todo')
       break
     case 'bind':
-      send('todo')
+      send(isGroup, bindCommand(context.sender.user_id, args?.[0]))
       break
     case 'unbind':
-      send('todo')
+      send(isGroup, 'todo')
       break
     default:
-      send('未知指令')
+      send(isGroup, '未知指令')
       break
   }
 }

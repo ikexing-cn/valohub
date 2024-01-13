@@ -49,8 +49,8 @@ async function fetchData(fields: {
 }
 
 export default function SignIn() {
+  const [dialogOpen, setDialogOpen] = createSignal(false)
   const [dialogType, setDialogType] = createSignal<SignInDialogType>('initial')
-  const dialogTriggerRef: HTMLButtonElement | undefined = undefined
 
   const [searchParams] = useSearchParams()
   const [loading, setLoading] = createSignal(false)
@@ -79,22 +79,25 @@ export default function SignIn() {
     })
 
     if (!response.success) {
-      if (
-        response.data &&
-        (response.data?.needInit ||
+      if (response.data) {
+        if (
+          response.data?.needInit ||
           response.data?.needVerify ||
-          response.data?.needMFA)
-      ) {
-        dialogTriggerRef?.click()
-        setDialogType(
-          response.data.needInit
-            ? 'initial'
-            : response.data.needMFA
-              ? 'mfaCode'
-              : 'verify',
-        )
-        toast(response.message)
-        return
+          response.data?.needMFA
+        ) {
+          setDialogOpen(true)
+          setDialogType(
+            response.data.needInit
+              ? 'initial'
+              : response.data.needMFA
+                ? 'mfaCode'
+                : 'verify',
+          )
+          toast(response.message)
+          return
+        } else if (response.data.needRetry && dialogType() === 'mfaCode') {
+          setDialogOpen(true)
+        }
       }
 
       toast.error(response.message)
@@ -102,10 +105,12 @@ export default function SignIn() {
     }
 
     setDisabled(true)
+    setDialogOpen(false)
     toast.success(response.message)
   }
 
   async function handleInputEnter(type: SignInDialogType, value: string) {
+    setDialogOpen(false)
     if (type === 'initial' || type === 'verify') {
       setFields({ verifyPassword: value })
     } else {
@@ -134,9 +139,10 @@ export default function SignIn() {
       ])}
     >
       <SignInDialog
-        ref={dialogTriggerRef}
+        open={dialogOpen()}
         type={dialogType()}
         onInputEnter={handleInputEnter}
+        disabled={loading()}
       />
 
       <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
@@ -229,10 +235,8 @@ export default function SignIn() {
           </div>
           <Button
             variant="default"
-            class={cn([
-              'w-full',
-              loading() && 'opacity-50 pointer-events-none',
-            ])}
+            class="w-full"
+            disabled={loading()}
             type="submit"
           >
             <TbLoader

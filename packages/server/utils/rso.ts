@@ -29,9 +29,15 @@ export async function loginRiot(
       code: mfaCode,
     })
     if (authLoginResult.type === 'auth') {
-      return [false, response(false, '邮箱验证码错误，请重试！')] as const
+      return [
+        false,
+        response(false, '邮箱验证码错误，请重试！', { needRetry: true }),
+      ] as const
     } else if (authLoginResult.type === 'multifactor') {
-      return [false, response(false, '邮箱验证码错误，请重试！')] as const
+      return [
+        false,
+        response(false, '邮箱验证码错误，请重试！', { needRetry: true }),
+      ] as const
     }
   } else {
     // 重复请求时，需要清空之前的 session
@@ -44,7 +50,9 @@ export async function loginRiot(
     if (authLoginResult.type === 'auth') {
       return [
         false,
-        response(false, '此 Valorant 账号或密码错误，请重试！'),
+        response(false, '此 Valorant 账号或密码错误，请重试！', {
+          needRetry: true,
+        }),
       ] as const
     } else if (authLoginResult.type === 'multifactor') {
       return [

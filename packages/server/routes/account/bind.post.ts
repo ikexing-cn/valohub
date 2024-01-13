@@ -59,7 +59,7 @@ export default defineEventHandler(async (event) => {
     parsedAuthResult: parsedAuthResult as Prisma.JsonObject,
     entitlementsToken: entitlementToken.entitlements_token,
     riotUsername: parsedBody.username,
-    riotPassword: parsedBody.password,
+    riotPassword: parsedBody.password, // TODO: 密码加密存储
 
     uuid: playerInfo.sub,
     country: playerInfo.country,
