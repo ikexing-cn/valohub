@@ -17,8 +17,8 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'v20.11.0'
-          cache: 'pnpm'
+          node-version: v20.11.0
+          cache: pnpm
 
       - run: pnpm install
 
