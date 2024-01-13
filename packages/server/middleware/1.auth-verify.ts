@@ -18,6 +18,18 @@ export default defineEventHandler(async (event) => {
     where: { qq: parsedBody.qq },
   })
 
+  if (
+    parsedBody.verifyPassword &&
+    accountExist &&
+    accountExist.verifyPassword !== parsedBody.verifyPassword
+  ) {
+    await prisma.account.update({
+      where: { id: accountExist.id },
+      data: { needVerify: true },
+    })
+    return response(false, '验证失败，你输入的密码不正确')
+  }
+
   if (!accountExist) {
     if (!parsedBody.verifyPassword) {
       return response(false, '此 qq 号需要初始化, 请先输入你的初始化密码！', {
@@ -33,9 +45,9 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // check verify password per 10 da
+  // check verify password per 10 day
   const updateTime = accountExist.updatedAt.getTime() + 1000 * 60 * 60 * 24 * 10
-  if (updateTime < Date.now()) {
+  if (updateTime < Date.now() || accountExist.needVerify) {
     if (!parsedBody.verifyPassword) {
       return response(
         false,
@@ -45,6 +57,10 @@ export default defineEventHandler(async (event) => {
     }
 
     if (accountExist.verifyPassword !== parsedBody.verifyPassword) {
+      await prisma.account.update({
+        where: { id: accountExist.id },
+        data: { needVerify: true },
+      })
       return response(false, '验证失败，你输入的密码不正确')
     }
   }

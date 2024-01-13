@@ -11,6 +11,7 @@ model Account {
   id             Int            @id @default(autoincrement())
   qq             String         @unique
   verifyPassword String
+  needVerify     Boolean        @default(false)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   valorantInfo   ValorantInfo[]

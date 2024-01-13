@@ -9,7 +9,14 @@ declare module 'h3' {
 
 export default defineEventHandler(async (event) => {
   const account = event.context.account
-  if (account && !getRequestURL(event).pathname.startsWith('/account/bind')) {
+  const pathname = getRequestURL(event).pathname
+  if (
+    account &&
+    !(
+      pathname.startsWith('/account/bind') &&
+      pathname.startsWith('/account/auth')
+    )
+  ) {
     const parsedBody = await useValidatedBody(aliasOnlySchema)
 
     const prisma = usePrisma()
