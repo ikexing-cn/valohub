@@ -4,14 +4,16 @@ export function sendMessage({
   senderId: sender,
   messageId,
   client,
+  isGroup,
 }: {
   senderId: number
+  isGroup: boolean
   client: CQWebSocket
   messageId: number
 }) {
-  return (isGroup: boolean, message: Message) => {
+  return (message: Message, sendGroup?: boolean) => {
     const msg = typeof message === 'string' ? [CQ.text(message)] : message
-    if (isGroup) {
+    if (sendGroup ?? isGroup) {
       client.send_msg({
         auto_escape: false,
         message_type: 'group',

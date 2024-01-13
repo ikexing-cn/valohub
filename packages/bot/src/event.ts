@@ -6,7 +6,7 @@ import { bindCommand } from './commands/bind'
 import type { Tag } from 'go-cqwebsocket/out/tags'
 import type { CQEvent, CQWebSocket } from 'go-cqwebsocket'
 
-function handleMessage(client: CQWebSocket, event: CQEvent<'message'>) {
+async function handleMessage(client: CQWebSocket, event: CQEvent<'message'>) {
   const context = event.context
   const message = context.message
   const isGroup = context.message_type === 'group'
@@ -29,28 +29,39 @@ function handleMessage(client: CQWebSocket, event: CQEvent<'message'>) {
 
   const send = sendMessage({
     client,
+    isGroup,
     messageId: context.message_id,
     senderId: isGroup ? context.group_id : context.user_id,
   })
 
+  if (isGroup) {
+    const friendList = await client.get_friend_list()
+    if (
+      !friendList.some((friend) => friend.user_id === context.sender.user_id)
+    ) {
+      send('避免腾讯风控，请先添加 Bot 好友才可以正常使用 「申请会自动通过」')
+      return
+    }
+  }
+
   switch (commandBase) {
     case 'ping':
-      send(isGroup, 'pong')
+      send('pong')
       break
     case 'help':
-      send(isGroup, helpCommand(args?.[0]))
+      send(helpCommand(args?.[0]))
       break
     case 'dailystore':
-      send(isGroup, 'todo')
+      send('todo')
       break
     case 'bind':
-      send(isGroup, bindCommand(context.sender.user_id, args?.[0]))
+      send(bindCommand(context.sender.user_id, args?.[0]))
       break
     case 'unbind':
-      send(isGroup, 'todo')
+      send('todo')
       break
     default:
-      send(isGroup, '未知指令')
+      send('未知指令')
       break
   }
 }
