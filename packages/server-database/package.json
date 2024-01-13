@@ -1,6 +1,7 @@
 {
   "name": "@valorant-bot/server-database",
   "private": true,
+  "type": "module",
   "main": "./index.ts",
   "types": "./index.ts",
   "exports": {
