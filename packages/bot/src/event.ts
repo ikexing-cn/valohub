@@ -5,6 +5,8 @@ import { helpCommand } from './commands/help'
 import { bindCommand } from './commands/bind'
 
 import { dailyStoreCommand } from './commands/daily-store'
+import { unbindCommand } from './commands/unbind'
+import { verifyCommand } from './commands/verify'
 import type { Page } from 'puppeteer'
 import type { Tag } from 'go-cqwebsocket/out/tags'
 import type { CQEvent, CQWebSocket } from 'go-cqwebsocket'
@@ -51,6 +53,8 @@ async function handleMessage(
     }
   }
 
+  const senderUserId = context.sender.user_id
+
   switch (commandBase) {
     case 'ping':
       send('pong')
@@ -59,13 +63,17 @@ async function handleMessage(
       send(helpCommand(args?.[0]))
       break
     case 'dailystore':
-      send(await dailyStoreCommand(context.sender.user_id, page, args?.[0]))
+      send(await dailyStoreCommand(senderUserId, page, args?.[0]))
       break
     case 'bind':
-      send(bindCommand(context.sender.user_id, args?.[0]))
+      send(bindCommand(senderUserId, args?.[0]))
       break
     case 'unbind':
-      send('todo')
+      send(await unbindCommand(senderUserId, args?.[0]))
+      break
+    case 'verify':
+      if (!args || args?.length < 1) return send('此命令至少需要一个参数')
+      send(await verifyCommand(senderUserId, args[0], args?.[1]))
       break
     default:
       send('未知指令')

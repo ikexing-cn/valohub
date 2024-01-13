@@ -25,7 +25,7 @@ export function createRequest(qq: number) {
 
     const result = (await response.json()) as Response
 
-    if (!result.success) {
+    if (!result.success && result?.data) {
       if (result.data.needBind || result.data.needInit) {
         return {
           success: false,
@@ -36,7 +36,7 @@ export function createRequest(qq: number) {
         return {
           success: false,
           message:
-            '你的账户需要二次验证所属权, 请私信 Bot 发送 "验证" 指令进行验证',
+            '你的账户需要二次验证所属权, 请私信 Bot 使用 "验证" 指令进行验证',
         }
       }
     }
