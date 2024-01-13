@@ -3,10 +3,17 @@ import { findCommandBase, parseCommand } from './commands'
 import { sendMessage } from './utils/chat'
 import { helpCommand } from './commands/help'
 import { bindCommand } from './commands/bind'
+
+import { dailyStoreCommand } from './commands/daily-store'
+import type { Page } from 'puppeteer'
 import type { Tag } from 'go-cqwebsocket/out/tags'
 import type { CQEvent, CQWebSocket } from 'go-cqwebsocket'
 
-async function handleMessage(client: CQWebSocket, event: CQEvent<'message'>) {
+async function handleMessage(
+  client: CQWebSocket,
+  page: Page,
+  event: CQEvent<'message'>,
+) {
   const context = event.context
   const message = context.message
   const isGroup = context.message_type === 'group'
@@ -52,7 +59,7 @@ async function handleMessage(client: CQWebSocket, event: CQEvent<'message'>) {
       send(helpCommand(args?.[0]))
       break
     case 'dailystore':
-      send('todo')
+      send(await dailyStoreCommand(context.sender.user_id, page, args?.[0]))
       break
     case 'bind':
       send(bindCommand(context.sender.user_id, args?.[0]))
@@ -66,7 +73,7 @@ async function handleMessage(client: CQWebSocket, event: CQEvent<'message'>) {
   }
 }
 
-export function registerEvent(client: CQWebSocket) {
+export function registerEvent(client: CQWebSocket, page: Page) {
   client.on('request.friend', (event) => {
     setTimeout(() => {
       client.set_friend_add_request(
@@ -77,11 +84,7 @@ export function registerEvent(client: CQWebSocket) {
     }, Math.random() * 2000)
   })
 
-  client.on('message', (event) => handleMessage(client, event))
-
-  client.on('socket.open', () => {
-    console.log('Success opened for CQWebSocket.')
-  })
+  client.on('message', (event) => handleMessage(client, page, event))
 
   client.on('socket.close', () => client.connect())
 }

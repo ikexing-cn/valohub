@@ -12,10 +12,11 @@ export const client = new CQWebSocket({
 })
 client.connect()
 
-registerEvent(client)
-
 const browser = await puppeteer.launch({ headless: 'new' })
 const page = await browser.newPage()
+
+registerEvent(client, page)
+console.log('Success opened for CQWebSocket.')
 
 process.on('beforeExit', async () => {
   await page.close()
