@@ -27,6 +27,9 @@ export type AccountBindResponse = VerifiedResponseWith<{
 }>
 
 export type InGameStoreFrontResponse = VerifiedResponseWith<{
+  tagLine: string
+  gameName: string
+
   items: {
     uuid: string
     cost: number

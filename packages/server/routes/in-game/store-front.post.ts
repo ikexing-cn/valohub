@@ -76,6 +76,8 @@ export default defineEventHandler(async (event) => {
 
   if (dailyStore) {
     return response({
+      gameName: valorantInfo.gameName,
+      tagLine: valorantInfo.tagLine,
       items: transformStoreItems(
         dailyStore.storeListStoreItem.map((item) =>
           objectOmit(item.storeItem, ['storeListStoreItem']),
@@ -112,5 +114,9 @@ export default defineEventHandler(async (event) => {
     return storeItems
   })
 
-  return response({ items: transformStoreItems(storeItems) })
+  return response({
+    gameName: valorantInfo.gameName,
+    tagLine: valorantInfo.tagLine,
+    items: transformStoreItems(storeItems),
+  })
 })
