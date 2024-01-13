@@ -1,0 +1,50 @@
+name: build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: action/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'v20.11.0'
+          cache: 'pnpm'
+
+      - run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Deploy bot
+        run: pnpm deploy
+
+      - name: Upload Deploy bot artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-bot-build-files
+          path: ./packages/bot/.deploy
+          if-no-files-found: error
+
+      - name: Upload Build server files
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-server-files
+          path: ./packages/server/.output
+          if-no-files-found: error
+
+      - name: Upload build website files
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-website-files
+          path: ./packages/website/dist
+          if-no-files-found: error
