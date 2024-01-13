@@ -9,7 +9,7 @@
   "scripts": {
     "build": "unbuild",
     "dev": "esno watch --clear-screen=false src/main",
-    "deploy": "rimraf .deploy && pnpm --filter bot deploy .deploy"
+    "deploy": "rimraf .deploy && pnpm --filter bot deploy .deploy --prod --no-optional"
   },
   "dependencies": {
     "@valorant-bot/core": "workspace:^",
