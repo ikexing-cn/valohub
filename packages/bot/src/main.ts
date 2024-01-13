@@ -8,7 +8,7 @@ import { registerEvent } from './event'
 
 export const client = new CQWebSocket({
   host: process.env.VALORANT_BOT_HOST || 'localhost',
-  port: Number(process.env.VALORANT_BOT_PORT) || 3000,
+  port: Number(process.env.VALORANT_BOT_PORT) || 8080,
 })
 client.connect()
 
@@ -16,7 +16,7 @@ const browser = await puppeteer.launch({ headless: 'new' })
 const page = await browser.newPage()
 
 registerEvent(client, page)
-console.log('Success opened for CQWebSocket.')
+console.log('Success started bot')
 
 process.on('beforeExit', async () => {
   await page.close()

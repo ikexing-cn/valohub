@@ -93,6 +93,4 @@ export function registerEvent(client: CQWebSocket, page: Page) {
   })
 
   client.on('message', (event) => handleMessage(client, page, event))
-
-  client.on('socket.close', () => client.connect())
 }

@@ -2,12 +2,19 @@
   "name": "@valorant-bot/bot",
   "private": true,
   "type": "module",
+  "files": [
+    "dist",
+    "node_modules"
+  ],
   "scripts": {
-    "dev": "esno watch --clear-screen=false src/main"
+    "build": "unbuild",
+    "dev": "esno watch --clear-screen=false src/main",
+    "deploy": "rimraf .deploy && pnpm --filter bot deploy .deploy"
   },
   "dependencies": {
     "@valorant-bot/core": "workspace:^",
     "@valorant-bot/shared": "workspace:^",
+    "dotenv": "^16.3.1",
     "go-cqwebsocket": "^6.2.14",
     "puppeteer": "^21.7.0"
   }

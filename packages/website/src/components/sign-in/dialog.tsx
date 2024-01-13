@@ -7,7 +7,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '~/components/ui/dialog'
 
 export type SignInDialogType = 'initial' | 'verify' | 'mfaCode'

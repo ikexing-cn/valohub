@@ -8,13 +8,13 @@
     "preview": "node .output/server/index.mjs"
   },
   "dependencies": {
+    "@valorant-bot/core": "workspace:^",
+    "@valorant-bot/server-database": "workspace:^",
+    "@valorant-bot/shared": "workspace:^",
     "nitro-cors": "^0.7.0",
     "nitropack": "latest"
   },
   "devDependencies": {
-    "@valorant-bot/core": "workspace:^",
-    "@valorant-bot/server-database": "workspace:^",
-    "@valorant-bot/shared": "workspace:^",
     "h3": "^1.10.0"
   }
 }

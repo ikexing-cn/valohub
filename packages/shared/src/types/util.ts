@@ -4,6 +4,5 @@ export type IsNull<T extends unknown | null | undefined> = T extends
   ? true
   : false
 
-export type NotNull<T extends unknown | null | undefined> = T extends IsNull<T>
-  ? never
-  : T
+export type NotNull<T extends unknown | null | undefined> =
+  T extends IsNull<T> ? never : T
