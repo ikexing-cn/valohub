@@ -23,10 +23,10 @@ jobs:
       - run: pnpm install
 
       - name: Build
-        run: pnpm build
+        run: pnpm run build
 
       - name: Deploy bot
-        run: pnpm deploy
+        run: pnpm run deploy
 
       - name: Upload Deploy bot artifacts
         uses: actions/upload-artifact@v4
@@ -35,14 +35,14 @@ jobs:
           path: ./packages/bot/.deploy
           if-no-files-found: error
 
-      - name: Upload Build server files
+      - name: Upload Build server artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-server-files
           path: ./packages/server/.output
           if-no-files-found: error
 
-      - name: Upload build website files
+      - name: Upload build website artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-website-files
