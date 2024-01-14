@@ -78,8 +78,4 @@ jobs:
           password: ${{ secrets.BOT_SSH_PASSWORD }}
           port: ${{ secrets.BOT_SSH_PORT }}
           script: |
-            node ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}/deploy-bot-build-files-download/safe-pm2-control.cjs
-            cd /d ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}
-            ren deploy-bot-build-files-download deploy-bot
-            cd deploy-bot
-            pm2 start ecosystem.config.cjs
+            node ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}/deploy-bot-build-files-download/safe-pm2-control.cjs ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}

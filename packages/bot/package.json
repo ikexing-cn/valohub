@@ -17,6 +17,7 @@
     "@valorant-bot/shared": "workspace:^",
     "dotenv": "^16.3.1",
     "go-cqwebsocket": "^6.2.14",
-    "puppeteer": "^21.7.0"
+    "puppeteer": "^21.7.0",
+    "rimraf": "^5.0.5"
   }
 }
