@@ -6,7 +6,7 @@ module.exports = {
       autorestart: true,
       log: './logs/app.log',
       log_date_format: 'YYYY-MM-DD HH:mm Z',
-      script: 'dist/main.mjs',
+      script: 'main.mjs',
     },
   ],
 }
