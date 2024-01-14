@@ -5,6 +5,7 @@ export default defineBuildConfig({
     {
       input: 'src/',
       builder: 'mkdist',
+      format: 'cjs',
     },
   ],
 })
