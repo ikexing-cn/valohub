@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-import { manualSync } from 'rimraf'
 const { execSync } = require('node:child_process')
 const { existsSync } = require('node:fs')
+const { manualSync } = require('rimraf')
 const { copySync } = require('fs-extra')
 
 try {
