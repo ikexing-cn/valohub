@@ -57,16 +57,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: deploy-bot-build-files
+          path: deploy-bot-build-files-download
 
       - name: Deploy bot to server
-        uses: appleboy/ssh-action@master
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.BOT_SSH_HOST }}
           username: ${{ secrets.BOT_SSH_USERNAME }}
           password: ${{ secrets.BOT_SSH_PASSWORD }}
           port: ${{ secrets.BOT_SSH_PORT }}
-          script: |
-            echo "Deploying bot..."
-            echo %GITHUB_WORKSPACE%
-            cd /d ${{ secrets.BOT_SSH_DOWNLOADED_PATH }} || exit 1
-            scp -r %GITHUB_WORKSPACE%/deploy-bot-build-files ${{ secrets.BOT_SSH_USERNAME }}@${{ secrets.BOT_SSH_HOST }}:${{ secrets.BOT_SSH_DOWNLOADED_PATH }} || exit 1
+          source: deploy-bot-build-files-download/*
+          target: ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}
