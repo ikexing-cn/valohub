@@ -78,10 +78,9 @@ jobs:
           password: ${{ secrets.BOT_SSH_PASSWORD }}
           port: ${{ secrets.BOT_SSH_PORT }}
           script: |
-            pm2 stop bot || echo "Bot is not running"
-            pm2 delete bot || echo "Bot is not running"
+            pm2 stop bot >nul 2>nul || (echo Bot is not running & exit /b)
+            pm2 delete bot >nul 2>nul || (echo Bot is not running & exit /b)
             cd /d ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}
             ren deploy-bot-build-files-download deploy-bot
-            cd deploy-bot
+            cd deploy-bot 
             pm2 start ecosystem.config.cjs
-            
