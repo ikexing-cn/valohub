@@ -67,4 +67,4 @@ jobs:
           port: ${{ secrets.BOT_SSH_PORT }}
           script: |
             cd /d ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}
-            scp -r $GITHUB_WORKSPACE/deploy-bot-build-files.zip ${{ secrets.BOT_SSH_USERNAME }}@${{ secrets.BOT_SSH_HOST }}:${{ secrets.BOT_SSH_DOWNLOADED_PATH }}
+            scp -r $GITHUB_WORKSPACE/deploy-bot-build-files ${{ secrets.BOT_SSH_USERNAME }}@${{ secrets.BOT_SSH_HOST }}:${{ secrets.BOT_SSH_DOWNLOADED_PATH }}
