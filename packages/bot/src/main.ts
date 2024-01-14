@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import 'dotenv/config'
-import * as puppeteer from 'puppeteer'
 
 import { CQWebSocket } from 'go-cqwebsocket'
 import { registerEvent } from './event'
+import { ScreenshotQueue } from './utils/screenshot-queue'
 // eslint-disable-next-line sort-imports
 
 export const client = new CQWebSocket({
@@ -12,14 +12,15 @@ export const client = new CQWebSocket({
 })
 client.connect()
 
-const browser = await puppeteer.launch({ headless: 'new' })
-const page = await browser.newPage()
+const screenshotQueue = new ScreenshotQueue(
+  Number(process.env.VALORANT_BOT_SCREENSHOT_QUEUE_SIZE) || 3,
+)
 
-registerEvent(client, page)
-console.log('Success started bot')
+registerEvent(client, screenshotQueue)
+
+console.log('Bot started')
 
 process.on('beforeExit', async () => {
-  await page.close()
-  await browser.close()
+  await screenshotQueue.beforceExit()
   client.disconnect()
 })
