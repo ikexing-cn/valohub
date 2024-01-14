@@ -48,3 +48,23 @@ jobs:
           name: build-website-files
           path: ./packages/website/dist
           if-no-files-found: error
+
+  deploy-bot:
+    needs: build-files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download deploy bot artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy-bot-build-files
+
+      - name: Deploy bot to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.BOT_SSH_HOST }}
+          username: ${{ secrets.BOT_SSH_USERNAME }}
+          password: ${{ secrets.BOT_SSH_PASSWORD }}
+          port: ${{ secrets.BOT_SSH_PORT }}
+          script: |
+            cd /d ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}
+            scp -r deploy-bot-build-files ${{ secrets.BOT_SSH_USERNAME }}@${{ secrets.BOT_SSH_HOST }}:${{ secrets.BOT_SSH_DOWNLOADED_PATH }}
