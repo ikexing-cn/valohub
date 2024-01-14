@@ -5,7 +5,7 @@ const { manualSync } = require('rimraf')
 const { copySync } = require('fs-extra')
 
 try {
-  const result = execSync('pm2 start bot', { encoding: 'utf-8' })
+  const result = execSync('pm2 stop bot', { encoding: 'utf-8' })
   console.log('Stoppping bot:', result)
 } catch (error) {
   console.log(error)
@@ -23,7 +23,7 @@ if (existsSync('deploy-bot')) {
 }
 
 try {
-  process.chdir(process.argv0.replace('C:\\Users\\', ''))
+  process.chdir(process.argv[2])
   copySync('deploy-bot-build-files-download', 'deploy-bot')
   process.chdir('deploy-bot')
   execSync('pm2 start ecosystem.config.cjs', { stdio: 'inherit' })
