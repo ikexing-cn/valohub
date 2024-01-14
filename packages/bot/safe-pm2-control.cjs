@@ -1,25 +1,22 @@
 /* eslint-disable no-console */
 const { execSync } = require('node:child_process')
 const { existsSync } = require('node:fs')
+const { resolve } = require('node:path')
 const { manualSync } = require('rimraf')
 const { copySync } = require('fs-extra')
 
 try {
   const result = execSync('pm2 stop bot', { encoding: 'utf-8' })
   console.log('Stoppping bot:', result)
-} catch (error) {
-  console.log(error)
-}
+} catch {}
 
 try {
   const result = execSync('pm2 delete bot', { encoding: 'utf-8' })
   console.log('Deleting bot:', result)
-} catch (error) {
-  console.log(error)
-}
+} catch {}
 
-if (existsSync('deploy-bot')) {
-  manualSync('deploy-bot')
+if (existsSync(resolve(process.argv[2], 'deploy-bot'))) {
+  manualSync(resolve(process.argv[2], 'deploy-bot'))
 }
 
 try {
