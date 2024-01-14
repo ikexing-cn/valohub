@@ -7,8 +7,7 @@
     },
     "dev": {
       "dependsOn": ["^db:generate"],
-      "cache": false,
-      "persistent": true
+      "cache": false
     },
     "deploy": {
       "dependsOn": ["^deploy"],

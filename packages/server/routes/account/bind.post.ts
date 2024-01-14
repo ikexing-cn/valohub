@@ -1,6 +1,7 @@
 import {
   type AccountBindResponse,
   bindSchema,
+  dMd5,
   objectOmit,
 } from '@valorant-bot/shared'
 import type { Prisma } from '@prisma/client'
@@ -26,10 +27,16 @@ export default defineEventHandler(async (event) => {
   const valorantInfoExists = await prisma.valorantInfo.findFirst({
     where: { accountQQ: account.qq, alias: parsedBody.alias },
   })
-  if (valorantInfoExists) {
-    return response(false, '默认别名已绑定其他 Valorant 账号，请更换别名！', {
-      isBinded: true,
-    })
+  if (valorantInfoExists && !valorantInfoExists.deleteStatus) {
+    return response(
+      false,
+      `${
+        parsedBody.alias === 'default' ? '默认' : '此'
+      }别名已绑定其他 Valorant 账号，请更换别名！`,
+      {
+        isBinded: true,
+      },
+    )
   }
 
   const [isLoginSuccessful, authResponse, cookies] = await loginRiot(
@@ -48,6 +55,10 @@ export default defineEventHandler(async (event) => {
     region,
   } = await getRiotinfo(authResponse)
 
+  const riotPassword = parsedBody.remember
+    ? JSON.stringify(encrypt(parsedBody.password))
+    : dMd5(parsedBody.password)
+
   const data = {
     accountQQ: account.qq,
 
@@ -58,8 +69,8 @@ export default defineEventHandler(async (event) => {
     cookies,
     parsedAuthResult: parsedAuthResult as Prisma.JsonObject,
     entitlementsToken: entitlementToken.entitlements_token,
+    riotPassword,
     riotUsername: parsedBody.username,
-    riotPassword: parsedBody.password, // TODO: 密码加密存储
 
     uuid: playerInfo.sub,
     country: playerInfo.country,
