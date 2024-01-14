@@ -23,7 +23,7 @@ if (existsSync('deploy-bot')) {
 }
 
 try {
-  process.chdir(process.argv0)
+  process.chdir(process.argv0.replace('C:\\Users\\', ''))
   copySync('deploy-bot-build-files-download', 'deploy-bot')
   process.chdir('deploy-bot')
   execSync('pm2 start ecosystem.config.cjs', { stdio: 'inherit' })
