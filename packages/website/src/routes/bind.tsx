@@ -48,6 +48,18 @@ async function fetchData(fields: {
   return response.json() as Promise<AccountBindResponse>
 }
 
+async function fetchIsBind(qq: string, alias: string) {
+  const response = await fetch(`${baseUrl}/account/is-bind`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ qq: atob(qq), alias }),
+  })
+
+  return response.json()
+}
+
 export default function SignIn() {
   const [dialogOpen, setDialogOpen] = createSignal(false)
   const [dialogType, setDialogType] = createSignal<SignInDialogType>('initial')
@@ -119,11 +131,17 @@ export default function SignIn() {
     await handleSubmit().finally(() => setLoading(false))
   }
 
-  onMount(() => {
+  onMount(async () => {
     try {
       const qq = searchParams?.qq
       if (!qq || !Number.isInteger(Number(atob(qq)))) {
         throw new Error('无效的 qq')
+      }
+
+      const isBind = await fetchIsBind(qq, searchParams?.alias || 'default')
+      if (isBind.success) {
+        setDisabled(true)
+        toast('此 qq 已绑定, 请勿重新绑定')
       }
     } catch {
       setDisabled(true)

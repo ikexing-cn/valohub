@@ -47,7 +47,7 @@ export default function DailyStore() {
       }
     } catch {
       setDisabled(true)
-      toast.error('出现错误，请重新尝试', { position: 'top-left' })
+      toast.error('出现错误, 请重新尝试', { position: 'top-left' })
     }
   })
 
@@ -66,7 +66,7 @@ export default function DailyStore() {
       <div relative>
         <span>每日商店: </span>
         <span text="2.8">
-          {response()?.data.gameName}#{response()?.data.tagLine}
+          {response()?.data?.gameName}#{response()?.data?.tagLine}
         </span>
       </div>
 

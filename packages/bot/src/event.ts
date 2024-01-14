@@ -63,7 +63,7 @@ async function handleMessage(
       send(helpCommand(args?.[0]))
       break
     case 'dailystore':
-      send(await dailyStoreCommand(senderUserId, page, args?.[0]))
+      send(await dailyStoreCommand(page, senderUserId, args?.[0]))
       break
     case 'bind':
       send(bindCommand(senderUserId, args?.[0]))
