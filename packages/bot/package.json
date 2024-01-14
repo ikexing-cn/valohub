@@ -5,7 +5,8 @@
   "files": [
     "dist",
     "node_modules",
-    "ecosystem.config.cjs"
+    "ecosystem.config.cjs",
+    "safe-pm2-control.cjs"
   ],
   "scripts": {
     "dev": "esno watch --clear-screen=false src/main",

@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { execSync } from 'node:child_process'
+const { execSync } = require('node:child_process')
 
 try {
   execSync('pm2 stop bot', { stdio: 'ignore' })
