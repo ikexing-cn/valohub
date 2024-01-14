@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-files:
+  artifacts:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,7 +51,7 @@ jobs:
 
   deploy-bot:
     if: contains(github.event.head_commit.message, '[deploy]')
-    needs: build-files
+    needs: artifacts
     runs-on: ubuntu-latest
     steps:
       - name: Download deploy bot artifacts
@@ -71,7 +71,7 @@ jobs:
           target: ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}
 
       - name: 🚀 Deploy bot
-        uses: appleboy/ssh-action
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.BOT_SSH_HOST }}
           username: ${{ secrets.BOT_SSH_USERNAME }}
