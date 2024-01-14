@@ -29,7 +29,9 @@ export async function dailyStoreCommand(
     year: 'numeric',
   })
 
-  const dir = resolve(import.meta.dirname!, `../../screenshots/${qq}/${date}`)
+  const dirname = process.env.DEV ? import.meta.dirname : __dirname
+
+  const dir = resolve(dirname!, `../../screenshots/${qq}/${date}`)
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
 
   const imageStorePath = resolve(dir, `daily-store-${alias}.png`)
