@@ -1,8 +1,7 @@
 /* eslint-disable no-console */
 const { execSync } = require('node:child_process')
-const { existsSync, readdirSync } = require('node:fs')
-const { resolve } = require('node:path')
-const { copySync } = require('fs-extra')
+const { existsSync, readdirSync, copyFileSync, mkdirSync } = require('node:fs')
+const { resolve, join } = require('node:path')
 
 const downloadUri = process.argv[2]
 const downloadDirName = process.argv[3]
@@ -10,6 +9,25 @@ const downloadDirUri = resolve(downloadUri, downloadDirName)
 
 const realRuntimeDirName = 'deploy-bot'
 const realRuntimeDirUri = resolve(downloadUri, realRuntimeDirName)
+
+function copyDir(src, dest) {
+  if (!existsSync(dest)) {
+    mkdirSync(dest)
+  }
+
+  const entries = readdirSync(src, { withFileTypes: true })
+
+  for (const entry of entries) {
+    const srcPath = join(src, entry.name)
+    const destPath = join(dest, entry.name)
+
+    if (entry.isDirectory()) {
+      copyDir(srcPath, destPath)
+    } else {
+      copyFileSync(srcPath, destPath)
+    }
+  }
+}
 
 try {
   execSync('pm2 delete bot', { stdio: 'inherit' })
@@ -25,7 +43,7 @@ if (existsSync(realRuntimeDirUri)) {
 try {
   process.chdir(downloadUri)
   console.log('Copying runtime:', downloadUri, '->', realRuntimeDirName)
-  copySync(downloadDirName, realRuntimeDirName)
+  copyDir(downloadDirName, realRuntimeDirName)
 
   // console.log(
   //   'Moving dist:',
