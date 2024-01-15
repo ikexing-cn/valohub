@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "build": "unbuild",
-    "dev": "DEV=true && esno watch --clear-screen=false src/main"
+    "dev": "esno watch --clear-screen=false src/main"
   },
   "dependencies": {
     "@valorant-bot/core": "workspace:^",
