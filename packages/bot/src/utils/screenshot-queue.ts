@@ -17,7 +17,7 @@ export class ScreenshotQueue {
   }
 
   private async initPagePool() {
-    this.browser = await puppeteer.launch({ headless: false })
+    this.browser = await puppeteer.launch({ headless: 'new' })
 
     for (let i = 0; i < this.pageCacheSize; ++i) {
       const page = await this.browser!.newPage()
