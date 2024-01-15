@@ -2,7 +2,6 @@
 const { execSync } = require('node:child_process')
 const { existsSync, readdirSync } = require('node:fs')
 const { resolve } = require('node:path')
-const { manualSync } = require('rimraf')
 const { copySync } = require('fs-extra')
 
 const downloadUri = process.argv[2]
@@ -13,12 +12,14 @@ const realRuntimeDirName = 'deploy-bot'
 const realRuntimeDirUri = resolve(downloadUri, realRuntimeDirName)
 
 try {
-  execSync('pm2 delete bot', { encoding: 'utf-8', stdio: 'inherit' })
+  execSync('pm2 delete bot', { stdio: 'inherit' })
 } catch {}
+
+execSync(`npm install rimraf pnpm`, { stdio: 'inherit' })
 
 if (existsSync(realRuntimeDirUri)) {
   console.log('Deleting old runtime:', realRuntimeDirUri)
-  manualSync(realRuntimeDirUri)
+  execSync(`rimraf ${realRuntimeDirName}`, { stdio: 'inherit' })
 }
 
 try {
@@ -62,7 +63,7 @@ try {
   console.log('Deleting downloadfile:', `${downloadDirUri}`)
   readdirSync(downloadDirUri).forEach((file) => {
     if (file === 'safe-pm2-control.cjs') return
-    manualSync(resolve(downloadDirUri, file))
+    execSync(`rimraf ${resolve(downloadDirUri, file)}`, { stdio: 'inherit' })
   })
 } catch (error) {
   console.error('发生错误:', error)
