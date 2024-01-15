@@ -10,13 +10,11 @@
   ],
   "scripts": {
     "build": "unbuild",
-    "dev": "DEV=true && esno watch --clear-screen=false src/main",
-    "deploy": "rimraf .deploy && pnpm --config.shamefully-hoist=true --config.shared-workspace-lockfile=false --filter bot deploy .deploy --prod --no-optional"
+    "dev": "DEV=true && esno watch --clear-screen=false src/main"
   },
   "dependencies": {
     "@valorant-bot/core": "workspace:^",
     "@valorant-bot/shared": "workspace:^",
-    "dotenv": "^16.3.1",
     "go-cqwebsocket": "^6.2.14",
     "puppeteer": "^21.7.0",
     "rimraf": "^5.0.5"

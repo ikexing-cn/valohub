@@ -25,14 +25,14 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      - name: Deploy bot
-        run: pnpm run deploy
+      - name: Generate deploy bot files
+        run: pnpm run deploy:bot
 
       - name: Upload Deploy bot artifacts
         uses: actions/upload-artifact@v4
         with:
           name: deploy-bot-build-files
-          path: ./packages/bot/.deploy
+          path: .deploy-bot
           if-no-files-found: error
 
       - name: Upload Build server artifacts
@@ -78,4 +78,4 @@ jobs:
           password: ${{ secrets.BOT_SSH_PASSWORD }}
           port: ${{ secrets.BOT_SSH_PORT }}
           script: |
-            node ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}/deploy-bot-build-files-download/safe-pm2-control.cjs ${{ secrets.BOT_SSH_DOWNLOADED_PATH }} deploy-bot-build-files-download
+            node ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}/deploy-bot-build-files-download/packages/bot/deploy-start.cjs ${{ secrets.BOT_SSH_DOWNLOADED_PATH }} deploy-bot-build-files-download
