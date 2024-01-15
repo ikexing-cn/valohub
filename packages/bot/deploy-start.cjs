@@ -33,7 +33,7 @@ try {
   execSync('pm2 delete bot', { stdio: 'inherit' })
 } catch {}
 
-execSync(`npm install rimraf pnpm`, { stdio: 'inherit' })
+execSync(`npm install rimraf pnpm -g`, { stdio: 'inherit' })
 
 if (existsSync(realRuntimeDirUri)) {
   console.log('Deleting old runtime:', realRuntimeDirUri)
