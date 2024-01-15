@@ -3,13 +3,13 @@ name: build
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
-  build-files:
+  artifacts:
     runs-on: ubuntu-latest
     steps:
-      - uses: action/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -17,34 +17,65 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'v20.11.0'
-          cache: 'pnpm'
+          node-version: v20.11.0
+          cache: pnpm
 
       - run: pnpm install
 
       - name: Build
-        run: pnpm build
+        run: pnpm run build
 
-      - name: Deploy bot
-        run: pnpm deploy
+      - name: Generate deploy bot files
+        run: pnpm run deploy:bot
 
       - name: Upload Deploy bot artifacts
         uses: actions/upload-artifact@v4
         with:
           name: deploy-bot-build-files
-          path: ./packages/bot/.deploy
+          path: .deploy-bot
           if-no-files-found: error
 
-      - name: Upload Build server files
+      - name: Upload Build server artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-server-files
           path: ./packages/server/.output
           if-no-files-found: error
 
-      - name: Upload build website files
+      - name: Upload build website artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-website-files
           path: ./packages/website/dist
           if-no-files-found: error
+
+  deploy-bot:
+    if: contains(github.event.head_commit.message, '[deploy]')
+    needs: artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download deploy bot artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy-bot-build-files
+          path: deploy-bot-build-files-download
+
+      - name: Scp deploy bot files to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.BOT_SSH_HOST }}
+          username: ${{ secrets.BOT_SSH_USERNAME }}
+          password: ${{ secrets.BOT_SSH_PASSWORD }}
+          port: ${{ secrets.BOT_SSH_PORT }}
+          source: deploy-bot-build-files-download/*
+          target: ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}
+
+      - name: 🚀 Deploy bot
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.BOT_SSH_HOST }}
+          username: ${{ secrets.BOT_SSH_USERNAME }}
+          password: ${{ secrets.BOT_SSH_PASSWORD }}
+          port: ${{ secrets.BOT_SSH_PORT }}
+          script: |
+            node ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}/deploy-bot-build-files-download/packages/bot/deploy-start.cjs ${{ secrets.BOT_SSH_DOWNLOADED_PATH }} deploy-bot-build-files-download

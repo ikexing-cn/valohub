@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
   if (
     account &&
     !(
-      pathname.startsWith('/account/bind') &&
+      pathname.startsWith('/account/bind') ||
       pathname.startsWith('/account/auth')
     )
   ) {

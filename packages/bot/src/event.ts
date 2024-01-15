@@ -7,13 +7,14 @@ import { bindCommand } from './commands/bind'
 import { dailyStoreCommand } from './commands/daily-store'
 import { unbindCommand } from './commands/unbind'
 import { verifyCommand } from './commands/verify'
-import type { Page } from 'puppeteer'
+
+import type { ScreenshotQueue } from './utils/screenshot-queue'
 import type { Tag } from 'go-cqwebsocket/out/tags'
 import type { CQEvent, CQWebSocket } from 'go-cqwebsocket'
 
 async function handleMessage(
   client: CQWebSocket,
-  page: Page,
+  screenshotQueue: ScreenshotQueue,
   event: CQEvent<'message'>,
 ) {
   const context = event.context
@@ -63,7 +64,7 @@ async function handleMessage(
       send(helpCommand(args?.[0]))
       break
     case 'dailystore':
-      send(await dailyStoreCommand(senderUserId, page, args?.[0]))
+      send(await dailyStoreCommand(screenshotQueue, senderUserId, args?.[0]))
       break
     case 'bind':
       send(bindCommand(senderUserId, args?.[0]))
@@ -81,7 +82,10 @@ async function handleMessage(
   }
 }
 
-export function registerEvent(client: CQWebSocket, page: Page) {
+export function registerEvent(
+  client: CQWebSocket,
+  screenshotQueue: ScreenshotQueue,
+) {
   client.on('request.friend', (event) => {
     setTimeout(() => {
       client.set_friend_add_request(
@@ -92,5 +96,5 @@ export function registerEvent(client: CQWebSocket, page: Page) {
     }, Math.random() * 2000)
   })
 
-  client.on('message', (event) => handleMessage(client, page, event))
+  client.on('message', (event) => handleMessage(client, screenshotQueue, event))
 }

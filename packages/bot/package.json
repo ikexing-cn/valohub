@@ -4,17 +4,17 @@
   "type": "module",
   "files": [
     "dist",
-    "node_modules"
+    "ecosystem.config.cjs",
+    "node_modules",
+    "safe-pm2-control.cjs"
   ],
   "scripts": {
     "build": "unbuild",
-    "dev": "esno watch --clear-screen=false src/main",
-    "deploy": "rimraf .deploy && pnpm --filter bot deploy .deploy"
+    "dev": "DEV=true && esno watch --clear-screen=false src/main"
   },
   "dependencies": {
     "@valorant-bot/core": "workspace:^",
     "@valorant-bot/shared": "workspace:^",
-    "dotenv": "^16.3.1",
     "go-cqwebsocket": "^6.2.14",
     "puppeteer": "^21.7.0"
   }
