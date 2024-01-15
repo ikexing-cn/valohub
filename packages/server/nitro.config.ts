@@ -3,4 +3,5 @@ export default defineNitroConfig({
   experimental: {
     asyncContext: true,
   },
+  preset: 'vercel-edge',
 })
