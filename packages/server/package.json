@@ -12,7 +12,8 @@
     "@valorant-bot/server-database": "workspace:^",
     "@valorant-bot/shared": "workspace:^",
     "nitro-cors": "^0.7.0",
-    "nitropack": "npm:nitropack-nightly@latest"
+    "nitropack": "npm:nitropack-nightly@latest",
+    "unstorage": "^1.10.1"
   },
   "devDependencies": {
     "h3": "npm:h3-nightly@latest"

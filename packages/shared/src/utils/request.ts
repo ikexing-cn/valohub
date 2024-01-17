@@ -26,17 +26,19 @@ export function createRequest(
   handleCookies?: (
     response: Response,
     cookieJar: Record<string, string[]>,
-  ) => void,
-  getCookies?: (cookieJar: Record<string, string[]>) => string[],
+  ) => void | Promise<void>,
+  getCookies?: (
+    cookieJar: Record<string, string[]>,
+  ) => string[] | Promise<string[]>,
 ) {
   const cookieJar: Record<string, string[]> = {}
 
   async function request<T = any>(url: string, options: RequestOptions = {}) {
-    const cookies = () => {
+    const cookies = async () => {
       if (getCookies == null) {
         return cookieJar[url]?.join('; ') || undefined
       } else {
-        return getCookies(cookieJar)?.join('; ') || undefined
+        return (await getCookies(cookieJar))?.join('; ') || undefined
       }
     }
 
@@ -70,7 +72,7 @@ export function createRequest(
     }
 
     if (handleCookies != null) {
-      handleCookies(response, cookieJar)
+      await handleCookies(response, cookieJar)
     } else {
       const cookie = response.headers.getSetCookie()
       if (cookie) {

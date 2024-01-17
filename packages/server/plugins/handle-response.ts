@@ -22,7 +22,9 @@ function createResponse<
 
 export default defineNitroPlugin((nitro) => {
   nitro.hooks.hook('error', (error, { event }) => {
-    console.error(error)
+    if (!event?.path.includes('favicon.ico')) {
+      console.error(error)
+    }
     event?.respondWith(createResponse(500, error))
   })
 

@@ -4,12 +4,12 @@ export const requestMap: Map<string, RequestFunction> = new Map()
 
 function $createRequest(qq: string) {
   return createRequest(
-    (res, cookieJar) => {
+    async (res) => {
       const cookie = res.headers.getSetCookie()
-      cookie && (cookieJar[qq] = cookie)
+      cookie && (await useStorage('redis').setItem(qq, cookie))
     },
-    (cookieJar) => {
-      return cookieJar[qq] || []
+    async () => {
+      return (await useStorage('redis').getItem<string[]>(qq)) ?? []
     },
   )
 }
