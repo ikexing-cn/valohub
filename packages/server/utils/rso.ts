@@ -5,7 +5,7 @@ import {
   createRSOApi,
   parseRSOAuthResultUri,
 } from '@valorant-bot/core'
-import type { $Enums } from '@prisma/client'
+import type { $Enums } from '@valorant-bot/server-database'
 import type {
   AccountBindRequest,
   AccountBindResponse,

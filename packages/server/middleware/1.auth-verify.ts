@@ -1,6 +1,6 @@
 import { accountSchema } from '@valorant-bot/shared'
 
-import type { Prisma } from '@prisma/client'
+import type { Prisma } from '@valorant-bot/server-database'
 
 declare module 'h3' {
   interface H3EventContext {

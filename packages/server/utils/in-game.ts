@@ -4,7 +4,7 @@ import {
   createInGameApi,
   getInGameRequestHeader,
 } from '@valorant-bot/core'
-import type { Prisma } from '@prisma/client'
+import type { Prisma } from '@valorant-bot/server-database'
 
 type InGameApis = ReturnType<typeof createInGameApi>
 

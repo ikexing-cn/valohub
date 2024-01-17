@@ -1,8 +1,8 @@
 import { type InGameStoreFrontResponse, objectOmit } from '@valorant-bot/shared'
 import { type SkinsPanelLayout, StoreCostType } from '@valorant-bot/core'
-import type { Prisma, PrismaClient } from '@prisma/client'
+import type { Prisma, PrismaClient } from '@valorant-bot/server-database'
 
-import type * as runtime from '@prisma/client/runtime/library'
+import type * as runtime from '@valorant-bot/server-database/runtime/library'
 
 function transformStoreItems(
   storeItems: Prisma.$StoreItemPayload['scalars'][],

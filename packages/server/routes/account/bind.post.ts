@@ -4,7 +4,7 @@ import {
   dMd5,
   objectOmit,
 } from '@valorant-bot/shared'
-import type { Prisma } from '@prisma/client'
+import type { Prisma } from '@valorant-bot/server-database'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
