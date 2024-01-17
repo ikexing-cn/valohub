@@ -1,34 +1,33 @@
-import { type RequestFunction, createRequest } from '@valorant-bot/shared'
+import { createRequest } from '@valorant-bot/shared'
 
-export const requestMap: Map<string, RequestFunction> = new Map()
+export function getLoginRiotRedisKey(qq: string) {
+  return `riot:login:${qq}`
+}
 
-function $createRequest(qq: string) {
+function $createRequest(qq?: string) {
+  const key = getLoginRiotRedisKey(qq ?? 'unknown')
+
   return createRequest(
     async (res) => {
+      if (!qq) return
       const cookie = res.headers.getSetCookie()
-      cookie && (await useStorage('redis').setItem(qq, cookie))
+      cookie && (await useRedisStorage().setItem(key, cookie))
     },
     async () => {
-      return (await useStorage('redis').getItem<string[]>(qq)) ?? []
+      if (!qq) return []
+      return (await useRedisStorage().getItem<string[]>(key)) ?? []
     },
   )
 }
 
 export function useRequest(qq?: string) {
-  if (!qq) {
-    return createRequest()
-  }
-
-  if (!requestMap.has(qq)) {
-    requestMap.set(qq, $createRequest(qq))
-  }
-
-  return requestMap.get(qq)!
+  return $createRequest(qq)
 }
 
-export function useCleanRequest(qq: string) {
-  if (requestMap.get(qq)) {
-    requestMap.delete(qq)
+export async function useCleanRequest(qq: string) {
+  const key = getLoginRiotRedisKey(qq)
+  if (await useRedisStorage().getItem(key)) {
+    await useRedisStorage().removeItem(key)
   }
   return useRequest(qq)
 }

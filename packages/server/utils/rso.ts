@@ -18,7 +18,7 @@ export async function loginRiot(
 ) {
   const { username, password, mfaCode, remember = false } = parsedBody
 
-  const request = mfaCode != null ? useRequest(qq) : useCleanRequest(qq)
+  const request = mfaCode != null ? useRequest(qq) : await useCleanRequest(qq)
   const rsoApis = createRSOApi(request)
 
   let authLoginResult
@@ -70,7 +70,11 @@ export async function loginRiot(
     return [false, response(false, '未知错误！')] as const
   }
 
-  return [true, authLoginResult, request.cookieJar[qq]] as const
+  const key = getLoginRiotRedisKey(qq)
+  const cookies = await useRedisStorage().getItem<string[]>(key)
+  await useRedisStorage().removeItem(key)
+
+  return [true, authLoginResult, cookies] as const
 }
 
 export function getEntitlementToken(

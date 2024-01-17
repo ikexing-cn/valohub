@@ -33,9 +33,13 @@ export default defineEventHandler(async (event) => {
 
     if (!accountExist) {
       if (!parsedBody.verifyPassword) {
-        return response(false, '此 qq 号需要初始化, 请先输入你的初始化密码！', {
-          needInit: true,
-        })
+        return response(
+          false,
+          '此 qq 号需要初始化, 请先输入你的初始化密码！「此密码仅限用于 ValoranBot 进行验证, 非 Riot 密码」',
+          {
+            needInit: true,
+          },
+        )
       }
 
       accountExist = await prisma.account.create({
@@ -53,7 +57,7 @@ export default defineEventHandler(async (event) => {
       if (!parsedBody.verifyPassword) {
         return response(
           false,
-          '为了确保获取数据的用户是此 qq 号本人，需要在十天内手动输入一次密码！',
+          '为了确保获取数据的用户是此 qq 号本人，需要在十天内手动输入一次注册的初始化密码！「此密码仅限用于 ValoranBot 进行验证, 非 Riot 密码」',
           { needVerify: true },
         )
       }

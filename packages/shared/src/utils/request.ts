@@ -44,7 +44,7 @@ export function createRequest(
 
     const headers = generateHeaders({
       ...options.headers,
-      cookie: cookies(),
+      cookie: await cookies(),
     })
 
     const response = await fetch(url, {
