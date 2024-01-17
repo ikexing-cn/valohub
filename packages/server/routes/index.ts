@@ -1,3 +1,3 @@
 export default eventHandler(() => {
-  return { nitro: 'Hello World!' }
+  return { 'valorant-bot': 'Hello World!' }
 })

@@ -3,5 +3,5 @@ export default defineNitroConfig({
   experimental: {
     asyncContext: true,
   },
-  preset: 'vercel',
+  preset: 'zeabur',
 })
