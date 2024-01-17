@@ -1,10 +1,4 @@
-import {
-  type AccountBindResponse,
-  bindSchema,
-  dMd5,
-  objectOmit,
-} from '@valorant-bot/shared'
-import type { Prisma } from '@valorant-bot/server-database'
+import { type AccountBindResponse, bindSchema } from '@valorant-bot/shared'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -39,57 +33,21 @@ export default defineEventHandler(async (event) => {
     )
   }
 
-  const [isLoginSuccessful, authResponse, cookies] = await loginRiot(
-    account.qq,
-    { ...objectOmit(parsedBody, ['password']), password: body.password },
+  const isUpdate = valorantAccountExists && valorantAccountExists.deleteStatus
+  const [isBindSuccess, bindResponse] = await createOrUpadteValorantInfo({
+    qq: account.qq,
+    parsedBody,
+    password: body.password,
     response,
+    updateOrCreate: isUpdate ? 'update' : 'create',
+    toUpdateValorantInfoId: isUpdate ? valorantAccountExists.id : undefined,
+  })
+
+  if (!isBindSuccess) {
+    return bindResponse
+  }
+
+  return response(
+    `已成功绑定 ${bindResponse.gameName}#${bindResponse.tagLine}, 欢迎使用!`,
   )
-  if (!isLoginSuccessful) return authResponse
-
-  const {
-    gameName,
-    tagLine,
-    playerInfo,
-    parsedAuthResult,
-    entitlementToken,
-    region,
-  } = await getRiotinfo(authResponse)
-
-  const riotPassword = parsedBody.remember
-    ? JSON.stringify(encrypt(parsedBody.password))
-    : dMd5(parsedBody.password)
-
-  const data = {
-    accountQQ: account.qq,
-
-    // idk why not setiing default value when zod parsed
-    alias: parsedBody.alias || 'default',
-    remember: parsedBody.remember ?? false,
-
-    cookies,
-    parsedAuthResult: parsedAuthResult as Prisma.JsonObject,
-    entitlementsToken: entitlementToken.entitlements_token,
-    riotPassword,
-    riotUsername: parsedBody.username,
-
-    uuid: playerInfo.sub,
-    country: playerInfo.country,
-    tagLine: playerInfo.acct.tag_line,
-    gameName: playerInfo.acct.game_name,
-
-    region,
-    deleteStatus: false,
-  }
-
-  if (valorantAccountExists && valorantAccountExists.deleteStatus) {
-    await prisma.valorantInfo.update({
-      data,
-      include: { account: true },
-      where: { id: valorantAccountExists.id },
-    })
-  } else {
-    await prisma.valorantInfo.create({ data, include: { account: true } })
-  }
-
-  return response(`已成功绑定 ${gameName}#${tagLine}, 欢迎使用!`)
 })

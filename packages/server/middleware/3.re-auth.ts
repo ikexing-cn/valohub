@@ -66,12 +66,29 @@ export default defineEventHandler(async (event) => {
 
       event.context.valorantInfo = updatedValorantInfo
     } else {
-      // TODO: 从 valorantInfo 读取值
-      // 如果是 remember = true 直接重新登录
-      // - 如果有验证码需要用户输入验证码
-      // - 如果账号密码错误也需要特殊处理（重新输入账号密码）
-      // 如果不是则要求用户重新绑定信息 （账号/密码）
-      return response(false, 'Riot 登录已过期，请重新绑定！')
+      if (!valorantInfo.remember) {
+        return response(false, 'Riot 登录已过期, 请重新验证账户！', {
+          needReauth: true,
+        })
+      }
+
+      const password = decrypt(JSON.parse(valorantInfo.riotPassword))
+
+      const [isSuccess, result] = await createOrUpadteValorantInfo({
+        qq: valorantInfo.accountQQ,
+        parsedBody: {
+          alias: valorantInfo.alias,
+          username: valorantInfo.riotUsername,
+          password,
+          remember: true,
+        },
+        password,
+        response,
+        updateOrCreate: 'update',
+        toUpdateValorantInfoId: valorantInfo.id,
+      })
+
+      if (!isSuccess) return result
     }
   }
 })

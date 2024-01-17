@@ -10,6 +10,8 @@ export type AccountVerifyResponse = IResponse<
     needBind: boolean
     needMFA: boolean
     needVerify: boolean
+    needRetry: boolean
+    needReauth: boolean
   }>
 >
 
@@ -22,7 +24,6 @@ export type VerifiedResponseWith<T extends object = {}> = IResponse<
 // =====
 
 export type AccountBindResponse = VerifiedResponseWith<{
-  needRetry: boolean
   isBinded: boolean
 }>
 

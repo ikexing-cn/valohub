@@ -5,11 +5,13 @@ import {
   createRSOApi,
   parseRSOAuthResultUri,
 } from '@valorant-bot/core'
-import type { $Enums } from '@valorant-bot/server-database'
-import type {
-  AccountBindRequest,
-  AccountBindResponse,
+import {
+  type AccountBindRequest,
+  type AccountBindResponse,
+  dMd5,
+  objectOmit,
 } from '@valorant-bot/shared'
+import type { $Enums, Prisma } from '@valorant-bot/server-database'
 
 export async function loginRiot(
   qq: string,
@@ -107,4 +109,86 @@ export async function getRiotinfo(authResponse: AuthResponse) {
     parsedAuthResult,
     region: region.affinities.live.toUpperCase() as $Enums.Region,
   }
+}
+
+export async function createOrUpadteValorantInfo({
+  qq,
+  password,
+  parsedBody,
+  response,
+  updateOrCreate,
+  toUpdateValorantInfoId,
+}: {
+  qq: string
+  password: string
+  parsedBody: AccountBindRequest
+  response: ReturnType<typeof useResponse<AccountBindResponse['data']>>
+  updateOrCreate: 'update' | 'create'
+  toUpdateValorantInfoId?: number
+}) {
+  const event = useEvent()
+  const prisma = usePrisma()
+
+  const [isLoginSuccessful, authResponse, cookies] = await loginRiot(
+    qq,
+    { ...objectOmit(parsedBody, ['password']), password },
+    response,
+  )
+  if (!isLoginSuccessful) return [false, authResponse] as const
+
+  const {
+    gameName,
+    tagLine,
+    playerInfo,
+    parsedAuthResult,
+    entitlementToken,
+    region,
+  } = await getRiotinfo(authResponse)
+
+  const riotPassword = parsedBody.remember
+    ? JSON.stringify(encrypt(parsedBody.password))
+    : dMd5(parsedBody.password)
+
+  const data = {
+    accountQQ: qq,
+
+    // idk why not setiing default value when zod parsed
+    alias: parsedBody.alias || 'default',
+    remember: parsedBody.remember ?? false,
+
+    cookies: cookies!,
+    parsedAuthResult: parsedAuthResult as Prisma.JsonObject,
+    entitlementsToken: entitlementToken.entitlements_token,
+    riotPassword,
+    riotUsername: parsedBody.username,
+
+    uuid: playerInfo.sub,
+    country: playerInfo.country,
+    tagLine,
+    gameName,
+
+    region,
+    deleteStatus: false,
+  }
+
+  if (updateOrCreate === 'update') {
+    event.context.valorantInfo = await prisma.valorantInfo.update({
+      data,
+      include: { account: true },
+      where: { id: toUpdateValorantInfoId },
+    })
+  } else {
+    event.context.valorantInfo = await prisma.valorantInfo.create({
+      data,
+      include: { account: true },
+    })
+  }
+
+  return [
+    true,
+    {
+      gameName,
+      tagLine,
+    },
+  ] as const
 }
