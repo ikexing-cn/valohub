@@ -3,9 +3,11 @@ import { defineConfig } from 'vite'
 import Solid from 'vite-plugin-solid'
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
+import { EnvReplacePlugin } from './plugins/env.plugin'
 
 export default defineConfig({
   plugins: [
+    EnvReplacePlugin(),
     Solid(),
     UnoCSS(),
     AutoImport({
