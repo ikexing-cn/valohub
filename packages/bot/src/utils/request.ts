@@ -13,7 +13,15 @@ export type RealResponse<Response extends VerifiedResponseWith> = Omit<
   Response,
   'data'
 > & {
-  data?: Omit<Response['data'], 'needBind' | 'needInit' | 'needVerify'>
+  data?: Omit<
+    Response['data'],
+    | 'needBind'
+    | 'needInit'
+    | 'needVerify'
+    | 'needMFA'
+    | 'needRetry'
+    | 'needReauth'
+  >
   stack?: string
   cause?: string
 }
@@ -42,14 +50,30 @@ export function createRequest(qq: number) {
       if (result.data.needBind || result.data.needInit) {
         return {
           success: false,
-          message:
-            '你的账户需要绑定或初始化, 请添加 Bot 好友后使用 "绑定" 指令进行绑定',
+          message: `检测到你的账户需要绑定或初始化, 请 ${result.data.needInit ? '添加' : '私信'} Bot 好友后使用 "绑定" 指令进行绑定`,
         } as any
       } else if (result.data.needVerify) {
         return {
           success: false,
           message:
-            '你的账户需要二次验证所属权, 请私信 Bot 使用 "验证" 指令进行验证',
+            '检测到你的账户需要二次验证所属权, 请私信 Bot 使用 "验证" 指令进行验证',
+        } as any
+      } else if (result.data.needRetry) {
+        return {
+          success: false,
+          message:
+            '重新获取 Riot 授权失败, 请私信 Bot 使用 "验证" 指令进行验证',
+        } as any
+      } else if (result.data.needMFA) {
+        return {
+          success: false,
+          message:
+            '检测到你的账户已开启 Riot 二步验证, 请尝试关闭二步验证或私信 Bot 使用 "验证" 指令进行手动验证',
+        } as any
+      } else if (result.data.needReauth) {
+        return {
+          success: false,
+          message: `检测到你的账户在 "绑定" 时未选择保存密码，现有的 Riot 授权已过期，请私信 Bot 使用 "验证" 指令进行重新授权`,
         } as any
       }
     }

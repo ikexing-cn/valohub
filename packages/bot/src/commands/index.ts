@@ -12,8 +12,8 @@ export const commands = {
     },
     verify: {
       aliases: ['verify', '验证'],
-      desc: '账户所有权验证 「仅限私聊」',
-      usage: '验证 <密码> <别名 = default>',
+      desc: '账户所有权或相关 Riot 权限验证, 为了避免问题请不要手动触发此命令, 建议仅 Bot 提示时执行此命令使用 「仅限私聊」',
+      usage: '验证 <别名 = default>',
     },
   },
   common: {
