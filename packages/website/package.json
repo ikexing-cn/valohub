@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@kobalte/core": "^0.12.0",
+    "@kobalte/core": "^0.12.1",
     "@unocss/reset": "^0.58.3",
     "@valorant-bot/shared": "workspace:^",
     "clsx": "^2.1.0",
@@ -26,6 +26,6 @@
     "unocss-preset-shadcn": "^0.2.3",
     "unplugin-auto-import": "^0.17.3",
     "vite": "^5.0.11",
-    "vite-plugin-solid": "^2.8.0"
+    "vite-plugin-solid": "^2.8.2"
   }
 }
