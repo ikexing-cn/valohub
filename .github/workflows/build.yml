@@ -78,4 +78,4 @@ jobs:
           password: ${{ secrets.BOT_SSH_PASSWORD }}
           port: ${{ secrets.BOT_SSH_PORT }}
           script: |
-            node ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}/deploy-bot-build-files-download/packages/bot/deploy-start.cjs ${{ secrets.BOT_SSH_DOWNLOADED_PATH }} deploy-bot-build-files-download
+            node ${{ secrets.BOT_SSH_DOWNLOADED_PATH }}/deploy-bot-build-files-download/packages/bot/deploy-start.cjs ${{ secrets.BOT_SSH_DOWNLOADED_PATH }} deploy-bot-build-files-download http://127.0.0.1:7890

@@ -3,8 +3,7 @@ const { execSync } = require('node:child_process')
 const { existsSync, readdirSync, copyFileSync, mkdirSync } = require('node:fs')
 const { resolve, join } = require('node:path')
 
-const downloadUri = process.argv[2]
-const downloadDirName = process.argv[3]
+const [, , downloadUri, downloadDirName, proxyUrl] = process.argv
 const downloadDirUri = resolve(downloadUri, downloadDirName)
 
 const realRuntimeDirName = 'deploy-bot'
@@ -40,26 +39,31 @@ if (existsSync(realRuntimeDirUri)) {
   execSync(`rimraf ${realRuntimeDirUri}`, { stdio: 'inherit' })
 }
 
-try {
-  process.chdir(downloadUri)
-  console.log('Copying runtime:', downloadUri, '->', realRuntimeDirName)
-  copyDir(downloadDirName, realRuntimeDirName)
+process.chdir(downloadUri)
+console.log('Copying runtime:', downloadUri, '->', realRuntimeDirName)
+copyDir(downloadDirName, realRuntimeDirName)
 
-  process.chdir(realRuntimeDirName)
+process.chdir(realRuntimeDirName)
 
-  execSync('pnpm install', { stdio: 'inherit' })
-  execSync('pnpm run build', { stdio: 'inherit' })
-
-  process.chdir(resolve('packages', 'bot'))
-
-  console.log('Starting bot with pm2:')
-  execSync('pm2 start ecosystem.config.cjs node --', { stdio: 'inherit' })
-
-  console.log('Deleting downloadfile:', `${downloadDirUri}`)
-  execSync(`rimraf ${downloadDirUri}`, { stdio: 'inherit' })
-
-  console.log('Listing pm2 processes:')
-  execSync(`pm2 list`, { stdio: 'inherit' })
-} catch (error) {
-  console.error('发生错误:', error)
+if (proxyUrl) {
+  console.log('Setting environment variables:')
+  execSync(`set http_proxy=${proxyUrl}`)
+  execSync(`set https_proxy=${proxyUrl}`)
 }
+
+console.log('Installing dependencies:')
+execSync('pnpm install', { stdio: 'inherit' })
+
+console.log('Building bot:')
+execSync('pnpm run build', { stdio: 'inherit' })
+
+process.chdir(resolve('packages', 'bot'))
+
+console.log('Starting bot with pm2:')
+execSync('pm2 start ecosystem.config.cjs node --', { stdio: 'inherit' })
+
+console.log('Deleting downloadfile:', `${downloadDirUri}`)
+execSync(`rimraf ${downloadDirUri}`, { stdio: 'inherit' })
+
+console.log('Listing pm2 processes:')
+execSync(`pm2 list`, { stdio: 'inherit' })
