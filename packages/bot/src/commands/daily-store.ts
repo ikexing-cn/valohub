@@ -17,9 +17,12 @@ export async function dailyStoreCommand(
   alias: string = 'default',
 ) {
   const isBind = await fetchIsBind(qq, alias)
+
   if (isBind.cause ?? isBind.stack) {
     return `出现未知的错误, cause: ${isBind.cause}, stack: ${isBind.stack}`
   } else if (!isBind.success) {
+    // 调查为什么绑定了后依旧出现未绑定的问题
+    console.error(JSON.stringify(isBind))
     return `${
       alias === 'default' ? '此 qq 尚未绑定, ' : `别名 "${alias}" 尚未绑定, `
     }请私信 Bot 好友后使用 "绑定" 指令进行绑定`
