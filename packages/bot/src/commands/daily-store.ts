@@ -8,7 +8,7 @@ import type { ScreenshotQueue } from '../utils/screenshot-queue'
 async function fetchIsBind(qq: number, alias: string) {
   const request = createRequest(qq)
   const response = await request('/account/is-bind', { body: { alias } })
-  return response.success
+  return response
 }
 
 export async function dailyStoreCommand(
@@ -17,7 +17,9 @@ export async function dailyStoreCommand(
   alias: string = 'default',
 ) {
   const isBind = await fetchIsBind(qq, alias)
-  if (!isBind) {
+  if (isBind.cause ?? isBind.stack) {
+    return `出现未知的错误, cause: ${isBind.cause}, stack: ${isBind.stack}`
+  } else if (!isBind.success) {
     return `${
       alias === 'default' ? '此 qq 尚未绑定, ' : `别名 "${alias}" 尚未绑定, `
     }请私信 Bot 好友后使用 "绑定" 指令进行绑定`
