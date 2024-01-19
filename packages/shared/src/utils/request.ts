@@ -23,6 +23,7 @@ export function generateHeaders(otherHeaders: object = {}): Headers {
 
 export type RequestFunction = ReturnType<typeof createRequest>
 export function createRequest(
+  syncSession?: boolean,
   handleCookies?: (
     response: Response,
     cookieJar: Record<string, string[]>,
@@ -44,7 +45,7 @@ export function createRequest(
 
     const headers = generateHeaders({
       ...options.headers,
-      cookie: await cookies(),
+      cookie: syncSession ? await cookies() : undefined,
     })
 
     const response = await fetch(url, {
@@ -71,12 +72,14 @@ export function createRequest(
       )
     }
 
-    if (handleCookies != null) {
-      await handleCookies(response, cookieJar)
-    } else {
-      const cookie = response.headers.getSetCookie()
-      if (cookie) {
-        cookieJar[url] = cookie
+    if (syncSession) {
+      if (handleCookies != null) {
+        await handleCookies(response, cookieJar)
+      } else {
+        const cookie = response.headers.getSetCookie()
+        if (cookie) {
+          cookieJar[url] = cookie
+        }
       }
     }
 

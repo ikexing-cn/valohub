@@ -4,10 +4,11 @@ export function getLoginRiotRedisKey(qq: string) {
   return `riot:login:${qq}`
 }
 
-function $createRequest(qq?: string) {
+function $createRequest(qq?: string, syncSession?: boolean) {
   const key = getLoginRiotRedisKey(qq ?? 'unknown')
 
   return createRequest(
+    syncSession,
     async (res) => {
       if (!qq) return
       const cookie = res.headers.getSetCookie()
@@ -20,8 +21,17 @@ function $createRequest(qq?: string) {
   )
 }
 
-export function useRequest(qq?: string) {
-  return $createRequest(qq)
+export function useRequest(
+  qqOrSyncSession?: string | boolean,
+  syncSession?: boolean,
+) {
+  if (typeof syncSession === 'boolean') {
+    return $createRequest(qqOrSyncSession as string, true)
+  } else {
+    return typeof qqOrSyncSession === 'string'
+      ? $createRequest(qqOrSyncSession)
+      : $createRequest(undefined, qqOrSyncSession)
+  }
 }
 
 export async function useCleanRequest(qq: string) {
@@ -29,5 +39,5 @@ export async function useCleanRequest(qq: string) {
   if (await useRedisStorage().getItem(key)) {
     await useRedisStorage().removeItem(key)
   }
-  return useRequest(qq)
+  return useRequest(qq, true)
 }

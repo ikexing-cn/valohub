@@ -50,8 +50,7 @@ export default defineEventHandler(async (event) => {
 
       const parsedAuthResult = parseRSOAuthResultUri(authResponse)
       const { entitlements_token } = await getEntitlementToken(
-        createRSOApi(useRequest()),
-        parsedAuthResult,
+        useRSOApi(useRequest(false).request),
       )
 
       const updatedValorantInfo = await prisma.valorantInfo.update({

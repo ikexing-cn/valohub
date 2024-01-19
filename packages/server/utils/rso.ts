@@ -1,6 +1,8 @@
 import {
   type AuthResponse,
+  type EntitlementTokenResponse,
   type ParsedRSOAuthResult,
+  type RSOApiResponse,
   type RSOApis,
   createRSOApi,
   parseRSOAuthResultUri,
@@ -8,28 +10,56 @@ import {
 import {
   type AccountBindRequest,
   type AccountBindResponse,
+  type RequestFunction,
   dMd5,
   objectOmit,
 } from '@valorant-bot/shared'
 import type { $Enums, Prisma } from '@valorant-bot/server-database'
+
+export function useRSOApi(
+  request: RequestFunction['request'],
+  initParsedAuthResult?: ParsedRSOAuthResult,
+) {
+  const event = useEvent()
+  const valorantInfo = event.context.valorantInfo
+
+  const rsoApis = createRSOApi(
+    initParsedAuthResult ??
+      (valorantInfo?.parsedAuthResult as ParsedRSOAuthResult),
+  )
+
+  return function <Api extends keyof RSOApis>(
+    api: Api,
+    ...params: Parameters<RSOApis[Api]> extends unknown[]
+      ? Parameters<RSOApis[Api]>
+      : never
+  ): Promise<RSOApiResponse[Api]> {
+    const { url, fetchConfig } = (rsoApis[api] as any)(...params) as {
+      url: string
+      fetchConfig: Omit<RequestInit, 'body'>
+    }
+    return request<RSOApiResponse[Api]>(url, fetchConfig)
+  }
+}
 
 export async function loginRiot(
   qq: string,
   parsedBody: AccountBindRequest,
   response: ReturnType<typeof useResponse<AccountBindResponse['data']>>,
 ) {
+  let authLoginResult
   const { username, password, mfaCode, remember = false } = parsedBody
 
-  const request = mfaCode != null ? useRequest(qq) : await useCleanRequest(qq)
-  const rsoApis = createRSOApi(request)
-
-  let authLoginResult
+  const { request } =
+    mfaCode != null ? useRequest(qq, true) : await useCleanRequest(qq)
+  const rsoApi = useRSOApi(request)
 
   if (mfaCode != null) {
-    authLoginResult = await rsoApis.fetchAuthMultiFactor({
-      rememberDevice: remember,
+    authLoginResult = await rsoApi('getAuthMultiFactor', {
       code: mfaCode,
+      rememberDevice: remember,
     })
+
     if (authLoginResult.type === 'auth') {
       return [
         false,
@@ -42,13 +72,13 @@ export async function loginRiot(
       ] as const
     }
   } else {
-    // 重复请求时，需要清空之前的 session
-    await rsoApis.fetchAuthPing()
-    authLoginResult = await rsoApis.fetchAuthLogin({
+    await rsoApi('getAuthPing')
+    authLoginResult = await rsoApi('getAuthLogin', {
       remember,
       username,
       password,
     })
+
     if (authLoginResult.type === 'auth') {
       return [
         false,
@@ -79,21 +109,20 @@ export async function loginRiot(
   return [true, authLoginResult, cookies] as const
 }
 
-export function getEntitlementToken(
-  rsoApis: RSOApis,
-  parsedAuthResult: ParsedRSOAuthResult,
-) {
-  return rsoApis.fetchGetEntitlementToken(parsedAuthResult)
+export function getEntitlementToken(rsoApis: ReturnType<typeof useRSOApi>) {
+  return rsoApis('getEntitlementToken')
 }
 
 export async function getRiotinfo(authResponse: AuthResponse) {
-  const rsoApis = createRSOApi(useRequest())
+  const { request } = useRequest(false)
   const parsedAuthResult = parseRSOAuthResultUri(authResponse)
 
+  const rsoApis = useRSOApi(request, parsedAuthResult)
+
   const [region, playerInfo, entitlementToken] = await Promise.all([
-    rsoApis.fetchGetRegion(parsedAuthResult),
-    rsoApis.fetchGetPlayerInfo(parsedAuthResult),
-    getEntitlementToken(rsoApis, parsedAuthResult),
+    rsoApis('getRegion'),
+    rsoApis('getPlayerInfo'),
+    getEntitlementToken(rsoApis),
   ])
 
   const [gameName, tagLine] = [

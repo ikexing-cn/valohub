@@ -6,72 +6,87 @@ import {
   getPingBody,
   getRegionBody,
 } from '../utils/rso'
-import type { RequestFunction } from '@valorant-bot/shared'
 import type { ParsedRSOAuthResult } from '../types'
-import type {
-  AuthResponseOrRetry,
-  EntitlementTokenResponse,
-  PlayerInfoResponse,
-  RegionResponse,
-} from '../types/response'
 
-export type RSOApis = ReturnType<typeof createRSOApi>
-export function createRSOApi({ request }: RequestFunction) {
-  async function fetchAuthPing() {
-    await request(APIS.AUTH_URL, {
-      method: 'POST',
-      body: getPingBody(),
-    })
-  }
-
-  function fetchAuthLogin(accountInfo: {
-    username: string
-    password: string
-    remember: boolean
-  }) {
-    return request<AuthResponseOrRetry>(APIS.AUTH_URL, {
-      method: 'PUT',
-      body: getAuthBody(accountInfo),
-    })
-  }
-
-  function fetchAuthMultiFactor(mfaInfo: {
-    code: string
-    rememberDevice: boolean
-  }) {
-    return request<AuthResponseOrRetry>(APIS.AUTH_URL, {
-      method: 'PUT',
-      body: getMultiFactorBody(mfaInfo),
-    })
-  }
-
-  function fetchGetRegion(parsedRSOAuthResult: ParsedRSOAuthResult) {
-    return request<RegionResponse>(APIS.REGION_URL, {
-      method: 'PUT',
-      body: getRegionBody(parsedRSOAuthResult),
-      headers: getAuthorizationHeader(parsedRSOAuthResult),
-    })
-  }
-
-  function fetchGetEntitlementToken(parsedRSOAuthResult: ParsedRSOAuthResult) {
-    return request<EntitlementTokenResponse>(APIS.ENTITLEMENTS_URL, {
-      method: 'POST',
-      headers: getAuthorizationHeader(parsedRSOAuthResult),
-    })
-  }
-
-  function fetchGetPlayerInfo(parsedRSOAuthResult: ParsedRSOAuthResult) {
-    return request<PlayerInfoResponse>(APIS.PLAYER_INFO_URL, {
-      headers: getAuthorizationHeader(parsedRSOAuthResult),
-    })
-  }
-
+export function createRSOApi(parsedRSOAuthResult?: ParsedRSOAuthResult) {
   return {
-    fetchAuthPing,
-    fetchAuthLogin,
-    fetchAuthMultiFactor,
-    fetchGetRegion,
-    fetchGetEntitlementToken,
-    fetchGetPlayerInfo,
+    getAuthPing: () => {
+      return {
+        url: APIS.AUTH_URL,
+        fetchConfig: {
+          method: 'POST',
+          body: getPingBody(),
+        },
+      }
+    },
+
+    getAuthLogin: (accountInfo: {
+      username: string
+      password: string
+      remember: boolean
+    }) => {
+      return {
+        url: APIS.AUTH_URL,
+        fetchConfig: {
+          method: 'PUT',
+          body: getAuthBody(accountInfo),
+        },
+      }
+    },
+
+    getAuthMultiFactor: (mfaInfo: {
+      code: string
+      rememberDevice: boolean
+    }) => {
+      return {
+        url: APIS.AUTH_URL,
+        fetchConfig: {
+          method: 'PUT',
+          body: getMultiFactorBody(mfaInfo),
+        },
+      }
+    },
+
+    getRegion: () => {
+      if (!parsedRSOAuthResult) {
+        throw new Error('This function requires a parsedRSOAuthResult')
+      }
+
+      return {
+        url: APIS.REGION_URL,
+        fetchConfig: {
+          method: 'PUT',
+          body: getRegionBody(parsedRSOAuthResult),
+          headers: getAuthorizationHeader(parsedRSOAuthResult),
+        },
+      }
+    },
+
+    getEntitlementToken: () => {
+      if (!parsedRSOAuthResult) {
+        throw new Error('This function requires a parsedRSOAuthResult')
+      }
+
+      return {
+        url: APIS.ENTITLEMENTS_URL,
+        fetchConfig: {
+          method: 'POST',
+          headers: getAuthorizationHeader(parsedRSOAuthResult),
+        },
+      }
+    },
+
+    getPlayerInfo: () => {
+      if (!parsedRSOAuthResult) {
+        throw new Error('This function requires a parsedRSOAuthResult')
+      }
+
+      return {
+        url: APIS.PLAYER_INFO_URL,
+        fetchConfig: {
+          headers: getAuthorizationHeader(parsedRSOAuthResult),
+        },
+      }
+    },
   }
 }

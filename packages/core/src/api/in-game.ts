@@ -1,3 +1,4 @@
+import { replacePlaceholder } from '../utils/api'
 import type { ParsedRSOAuthResult } from '../types'
 
 const BASE_DOMAIN = 'https://{endPoint}.{server}.a.pvp.net'
@@ -7,18 +8,6 @@ function genInGameApi(endPoint: string, server: string, restUrl: string) {
     BASE_DOMAIN.replace('{endPoint}', endPoint).replace('{server}', server) +
     restUrl
   )
-}
-
-export function replacePlaceholder(url: string, ...values: string[]) {
-  let index = 0
-  return url.replaceAll(/{(.+?)}/g, () => {
-    if (index >= values.length) {
-      throw new RangeError(
-        'Placeholder values are less than the total placeholders!',
-      )
-    }
-    return values[index++]
-  })
 }
 
 export enum ItemType {

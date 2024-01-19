@@ -78,6 +78,13 @@ export function createRequest(qq: number) {
       }
     }
 
+    if (result?.cause || result?.stack) {
+      return {
+        success: false,
+        message: `出现未知的错误, cause: ${result.cause}, stack: ${result.stack}`,
+      } as any
+    }
+
     return result as RealResponse<Response>
   }
 

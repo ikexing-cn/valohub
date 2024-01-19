@@ -2,6 +2,9 @@ export interface IResponse<Data extends object> {
   data: Data
   success: boolean
   message: string
+
+  cause?: string
+  stack?: string
 }
 
 export type AccountVerifyResponse = IResponse<

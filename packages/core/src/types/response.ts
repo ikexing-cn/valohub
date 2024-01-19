@@ -43,7 +43,6 @@ export interface EntitlementTokenResponse {
   entitlements_token: string
 }
 
-// 没有标记的 field 表示我也不知道什么意思)
 export interface PlayerInfoResponse {
   // 用户账号所属区域
   country: string
@@ -92,6 +91,17 @@ export interface PlayerInfoResponse {
     pp: string
   }
   player_plocale: string | null
+}
+
+export interface RSOApiResponse {
+  updateParsedRSOAuthResult: undefined
+
+  getAuthPing: undefined
+  getAuthLogin: AuthResponseOrRetry
+  getAuthMultiFactor: AuthResponseOrRetry
+  getRegion: RegionResponse
+  getEntitlementToken: EntitlementTokenResponse
+  getPlayerInfo: PlayerInfoResponse
 }
 
 // TODO: replace null

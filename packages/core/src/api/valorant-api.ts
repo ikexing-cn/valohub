@@ -1,14 +1,21 @@
+import { replacePlaceholder } from '../utils/api'
+
 export type ValorantApiLanguage = 'en-US' | 'zh-CN' | 'zh-TW'
 
-const baseUrl = 'https://valorant-api.com/v1'
+const BASE_DOMAIN = 'https://valorant-api.com/v1'
+
+function genValorantApiApi(language: string, url: string) {
+  return `${BASE_DOMAIN}${url}?language=${language}`
+}
+
 export function createValorantApi(_language?: ValorantApiLanguage) {
   const language = _language || 'zh-TW'
 
-  function getWeaponLevelFromUUID(uuid: string) {
-    return `${baseUrl}/weapons/skinlevels/${uuid}?language=${language}`
-  }
-
   return {
-    getWeaponLevelFromUUID,
-  } as const
+    getWeaponLevelFromUUID: (uuid: string) =>
+      replacePlaceholder(
+        genValorantApiApi(language, '/weapons/skinlevels/{uuid}'),
+        uuid,
+      ),
+  }
 }
