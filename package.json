@@ -16,7 +16,7 @@
     "deploy:bot": "turbo prune @valorant-bot/bot --out-dir .deploy-bot && cp tsconfig.json .deploy-bot/tsconfig.json"
   },
   "dependencies": {
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.2"
   },
   "devDependencies": {
     "@sxzz/eslint-config": "^3.7.6",
