@@ -34,10 +34,12 @@ try {
 
 execSync(`npm install rimraf pnpm -g`, { stdio: 'inherit' })
 
-if (existsSync(realRuntimeDirUri)) {
-  console.log('Deleting old runtime:', realRuntimeDirUri)
-  execSync(`rimraf ${realRuntimeDirUri}`, { stdio: 'inherit' })
-}
+try {
+  if (existsSync(realRuntimeDirUri)) {
+    console.log('Deleting old runtime:', realRuntimeDirUri)
+    execSync(`rimraf ${realRuntimeDirUri}`, { stdio: 'inherit' })
+  }
+} catch {}
 
 process.chdir(downloadUri)
 console.log('Copying runtime:', downloadUri, '->', realRuntimeDirName)
