@@ -65,5 +65,16 @@ export const bindSchema = z.object({
 })
 export type AccountBindRequest = typeof bindSchema._input
 
+export const verifySchema = z.object({
+  password: z.string().optional(),
+  mfaCode: z
+    .string()
+    .trim()
+    .regex(/^\d{6}$/, {
+      message: '验证码必须是6位数字',
+    })
+    .optional(),
+})
+
 export const aliasOnlySchema = z.object({ alias })
 export type AliasOnlyRequest = typeof aliasOnlySchema._input

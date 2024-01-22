@@ -9,6 +9,7 @@ import '@unocss/reset/tailwind-compat.css'
 import { Toaster } from 'solid-toast'
 import DailyStore from './routes/daily-store'
 import SignIn from './routes/bind'
+import Verify from './routes/verify'
 
 function AppRoot() {
   return (
@@ -18,6 +19,7 @@ function AppRoot() {
 
       <Router>
         <Route path="/bind" component={SignIn} />
+        <Route path="/verify" component={Verify} />
         <Route path="/daily-store" component={DailyStore} />
       </Router>
     </>

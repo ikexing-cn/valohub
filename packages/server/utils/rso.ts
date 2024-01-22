@@ -1,6 +1,5 @@
 import {
   type AuthResponse,
-  type EntitlementTokenResponse,
   type ParsedRSOAuthResult,
   type RSOApiResponse,
   type RSOApis,
@@ -8,7 +7,7 @@ import {
   parseRSOAuthResultUri,
 } from '@valorant-bot/core'
 import {
-  type AccountBindRequest,
+  type AccountBindOrVerifyRequest,
   type AccountBindResponse,
   type RequestFunction,
   dMd5,
@@ -44,9 +43,11 @@ export function useRSOApi(
 
 export async function loginRiot(
   qq: string,
-  parsedBody: AccountBindRequest,
+  parsedBody: AccountBindOrVerifyRequest,
   response: ReturnType<typeof useResponse<AccountBindResponse['data']>>,
 ) {
+  const event = useEvent()
+
   let authLoginResult
   const { username, password, mfaCode, remember = false } = parsedBody
 
@@ -72,6 +73,7 @@ export async function loginRiot(
       ] as const
     }
   } else {
+    const valorantInfo = event.context?.valorantInfo
     await rsoApi('getAuthPing')
     authLoginResult = await rsoApi('getAuthLogin', {
       remember,
@@ -84,6 +86,7 @@ export async function loginRiot(
         false,
         response(false, '此 Valorant 账号或密码错误，请重试！', {
           needRetry: true,
+          riotUsername: valorantInfo?.riotUsername,
         }),
       ] as const
     } else if (authLoginResult.type === 'multifactor') {
@@ -92,7 +95,10 @@ export async function loginRiot(
         response(
           false,
           '检测到此 Valorant 账号已启用二步验证，请输入邮箱验证码',
-          { needMFA: true },
+          {
+            needMFA: true,
+            riotUsername: valorantInfo?.riotUsername,
+          },
         ),
       ] as const
     }
@@ -150,7 +156,7 @@ export async function createOrUpadteValorantInfo({
 }: {
   qq: string
   password: string
-  parsedBody: AccountBindRequest
+  parsedBody: AccountBindOrVerifyRequest
   response: ReturnType<typeof useResponse<AccountBindResponse['data']>>
   updateOrCreate: 'update' | 'create'
   toUpdateValorantInfoId?: number

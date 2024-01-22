@@ -73,8 +73,7 @@ async function handleMessage(
       send(await unbindCommand(senderUserId, args?.[0]))
       break
     case 'verify':
-      if (!args || args?.length < 1) return send('此命令至少需要一个参数')
-      send(await verifyCommand(senderUserId, args[0], args?.[1]))
+      send(await verifyCommand(senderUserId, args?.[0]))
       break
     default:
       send('未知指令')

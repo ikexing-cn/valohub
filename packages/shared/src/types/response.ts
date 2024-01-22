@@ -11,10 +11,12 @@ export type AccountVerifyResponse = IResponse<
   Partial<{
     needInit: boolean
     needBind: boolean
-    needMFA: boolean
     needVerify: boolean
+
+    needMFA: boolean
     needRetry: boolean
     needReauth: boolean
+    riotUsername: string
   }>
 >
 

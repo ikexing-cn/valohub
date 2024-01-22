@@ -1,17 +1,5 @@
-import { createRequest } from '../utils/request'
-
-async function fetchData(qq: number, password: string, alias: string) {
-  const request = createRequest(qq)
-  const response = await request('/account/verify', {
-    body: { verifyPassword: password, alias },
-  })
-  return response.message
-}
-
-export function verifyCommand(
-  qq: number,
-  password: string,
-  alias: string = 'default',
-) {
-  return fetchData(qq, password, alias)
+export function verifyCommand(qq: number, alias: string = 'default') {
+  return `请打开以下链接进行验证：${
+    process.env.VALORANT_WEBSITE_URL
+  }/verify?qq=${btoa(qq.toString())}&alias=${alias}`
 }

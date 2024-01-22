@@ -5,9 +5,9 @@
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
     "paths": {
-      "#imports": ["./.nitro/types/nitro-imports"]
+      "#imports": ["./.nitro/types/nitro-imports"],
     },
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
   },
-  "include": ["./**/*", "./.nitro/types/nitro.d.ts"]
+  "include": ["./**/*", "./.nitro/types/nitro.d.ts"],
 }

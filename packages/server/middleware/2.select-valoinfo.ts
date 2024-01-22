@@ -7,16 +7,12 @@ declare module 'h3' {
   }
 }
 
+const skipPaths = ['/account/bind']
+
 export default defineEventHandler(async (event) => {
   const account = event.context.account
   const pathname = getRequestURL(event).pathname
-  if (
-    account &&
-    !(
-      pathname.startsWith('/account/bind') ||
-      pathname.startsWith('/account/auth')
-    )
-  ) {
+  if (account && !skipPaths.some((path) => pathname.startsWith(path))) {
     const parsedBody = await useValidatedBody(aliasOnlySchema)
 
     const prisma = usePrisma()

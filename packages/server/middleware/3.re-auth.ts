@@ -1,8 +1,4 @@
-import {
-  type AuthResponse,
-  createRSOApi,
-  parseRSOAuthResultUri,
-} from '@valorant-bot/core'
+import { type AuthResponse, parseRSOAuthResultUri } from '@valorant-bot/core'
 
 async function reauth(cookies: string[]) {
   const response = await fetch(
@@ -65,29 +61,35 @@ export default defineEventHandler(async (event) => {
 
       event.context.valorantInfo = updatedValorantInfo
     } else {
-      if (!valorantInfo.remember) {
+      if (
+        !valorantInfo.remember ||
+        getRequestURL(event).pathname.startsWith('/account/is-bind')
+      ) {
         return response(false, 'Riot 登录已过期, 请重新验证账户！', {
           needReauth: true,
+          riotUsername: valorantInfo.riotUsername,
         })
       }
 
-      const password = decrypt(JSON.parse(valorantInfo.riotPassword))
+      if (!getRequestURL(event).pathname.startsWith('/account/verify')) {
+        const password = decrypt(JSON.parse(valorantInfo.riotPassword))
 
-      const [isSuccess, result] = await createOrUpadteValorantInfo({
-        qq: valorantInfo.accountQQ,
-        parsedBody: {
-          alias: valorantInfo.alias,
-          username: valorantInfo.riotUsername,
+        const [isSuccess, result] = await createOrUpadteValorantInfo({
+          qq: valorantInfo.accountQQ,
+          parsedBody: {
+            password,
+            alias: valorantInfo.alias,
+            username: valorantInfo.riotUsername,
+            remember: true,
+          },
           password,
-          remember: true,
-        },
-        password,
-        response,
-        updateOrCreate: 'update',
-        toUpdateValorantInfoId: valorantInfo.id,
-      })
+          response,
+          updateOrCreate: 'update',
+          toUpdateValorantInfoId: valorantInfo.id,
+        })
 
-      if (!isSuccess) return result
+        if (!isSuccess) return result
+      }
     }
   }
 })

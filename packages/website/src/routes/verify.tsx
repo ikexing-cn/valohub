@@ -1,43 +1,11 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/hqfOoow3NuH
- */
 import toast from 'solid-toast'
-import { baseUrl } from '~/utils/request'
 import Form from '~/components/riot/Form'
+import { baseUrl } from '~/utils/request'
+import type { AccountVerifyResponse } from '@valorant-bot/shared'
 import type { SignInDialogType } from '~/components/riot/InputDialog'
 
-import type {
-  AccountBindResponse,
-  AccountVerifyResponse,
-} from '@valorant-bot/shared'
-
-async function fetchBind(fields: {
-  qq: string
-  alias: string
-  mfaCode: string
-  username: string
-  password: string
-  remember: boolean
-  verifyPassword: string
-}) {
-  const filterEmptyFields = Object.fromEntries(
-    Object.entries(fields).filter(([, value]) => value != null && value !== ''),
-  )
-
-  const response = await fetch(`${baseUrl}/account/bind`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(filterEmptyFields),
-  })
-
-  return response.json() as Promise<AccountBindResponse>
-}
-
-async function fetchIsBind(qq: string, alias: string) {
-  const response = await fetch(`${baseUrl}/account/is-bind`, {
+async function fetchAuth(qq: string, alias: string) {
+  const response = await fetch(`${baseUrl}/account/auth`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -48,14 +16,39 @@ async function fetchIsBind(qq: string, alias: string) {
   return response.json() as Promise<AccountVerifyResponse>
 }
 
-export default function SignIn() {
-  const [searchParams] = useSearchParams()
+async function fetchVerify(fields: {
+  qq: string
+  alias: string
+  mfaCode: string
+  username: string
+  password: string
+  verifyPassword: string
+}) {
+  const filterEmptyFields = Object.fromEntries(
+    Object.entries(fields).filter(([, value]) => value != null && value !== ''),
+  )
+  const response = await fetch(`${baseUrl}/account/verify`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(filterEmptyFields),
+  })
 
+  return response.json() as Promise<AccountVerifyResponse>
+}
+
+export default function Verify() {
+  const [searchParams] = useSearchParams()
   const [formControl, setFormControl] = createStore({
     loading: false,
     disabled: false,
     dialogOpen: false,
     dialogType: 'initial' as SignInDialogType,
+    inputDisabled: {
+      username: false,
+      password: false,
+    },
   })
 
   const [fields, setFields] = createStore({
@@ -75,7 +68,7 @@ export default function SignIn() {
       return toast.error('请同意服务条款')
     }
 
-    const response = await fetchBind({
+    const response = await fetchVerify({
       ...fields,
       qq: atob(searchParams.qq!),
       alias: searchParams.alias ?? 'default',
@@ -83,25 +76,14 @@ export default function SignIn() {
 
     if (!response.success) {
       if (response.data) {
-        if (
-          response.data?.needInit ||
-          response.data?.needVerify ||
-          response.data?.needMFA
-        ) {
+        if (response.data?.needMFA) {
           setFormControl({
             dialogOpen: true,
-            dialogType: response.data.needInit
-              ? 'initial'
-              : response.data.needMFA
-                ? 'mfaCode'
-                : 'verify',
+            dialogType: 'mfaCode',
           })
           toast(response.message)
           return
-        } else if (
-          response.data.needRetry &&
-          formControl.dialogType === 'mfaCode'
-        ) {
+        } else if (response.data.needRetry) {
           setFormControl({ dialogOpen: true })
         }
       }
@@ -124,6 +106,38 @@ export default function SignIn() {
     await handleSubmit().finally(() => setFormControl({ loading: false }))
   }
 
+  async function beforeReauth(qq: string) {
+    setFormControl({ loading: true })
+    const authResponse = await fetchAuth(
+      qq,
+      searchParams?.alias || 'default',
+    ).finally(() => setFormControl({ loading: false }))
+
+    if (authResponse.success) {
+      setFormControl({ disabled: true })
+      toast('此 qq 暂无需验证，请勿使用此页面')
+      return
+    }
+
+    setFields({ username: authResponse.data.riotUsername! })
+    if (authResponse.data.needVerify) {
+      // todo
+      setFields({ riotAllowTerms: true })
+      return
+    } else if (authResponse.data.needRetry) {
+      setFields({ riotAllowTerms: true, remember: true })
+      setFormControl({ inputDisabled: { username: true, password: false } })
+    } else if (authResponse.data.needMFA) {
+      setFields({
+        riotAllowTerms: true,
+        remember: true,
+        password: '*'.repeat(16),
+      })
+      setFormControl({ dialogOpen: true, dialogType: 'mfaCode' })
+      setFormControl({ inputDisabled: { username: true, password: true } })
+    }
+  }
+
   onMount(async () => {
     try {
       const qq = searchParams?.qq
@@ -131,18 +145,7 @@ export default function SignIn() {
         throw new Error('无效的 qq')
       }
 
-      setFormControl({ loading: true })
-      const isBind = await fetchIsBind(
-        qq,
-        searchParams?.alias || 'default',
-      ).then((res) => {
-        setFormControl({ loading: false })
-        return res
-      })
-      if (!isBind.success) {
-        setFormControl({ disabled: true })
-        toast('此 qq 已绑定, 请勿重新绑定')
-      }
+      await beforeReauth(qq)
     } catch {
       setFormControl({ disabled: true })
       toast.error('请在 ValoranBot 处申请链接打开本页面')
@@ -151,12 +154,13 @@ export default function SignIn() {
 
   return (
     <Form
-      title="绑定 Riot 账户"
+      title="验证 Riot 账户"
       formControl={formControl}
       setFields={setFields}
       handleSubmit={handleSubmit}
       setFormControl={setFormControl}
       handleInputEnter={handleInputEnter}
+      buttonTitle="验证"
     />
   )
 }
