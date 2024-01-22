@@ -2,8 +2,11 @@ import { verifySchema } from '@valorant-bot/shared'
 
 export default defineEventHandler(async (event) => {
   const response = useResponse()
-  const { mfaCode, password: riotPassword } =
-    await useValidatedBody(verifySchema)
+  const {
+    mfaCode,
+    remember,
+    password: riotPassword,
+  } = await useValidatedBody(verifySchema)
   const valorantInfo = event.context.valorantInfo
 
   if (!valorantInfo) {
@@ -20,7 +23,7 @@ export default defineEventHandler(async (event) => {
     parsedBody: {
       mfaCode,
       password,
-      remember: true,
+      remember: remember ?? true,
       alias: valorantInfo.alias,
       username: valorantInfo.riotUsername,
     },

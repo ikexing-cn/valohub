@@ -61,9 +61,10 @@ export default defineEventHandler(async (event) => {
 
       event.context.valorantInfo = updatedValorantInfo
     } else {
+      const skipPath = ['/account/verify', '/account/is-bind']
       if (
         !valorantInfo.remember ||
-        getRequestURL(event).pathname.startsWith('/account/is-bind')
+        !skipPath.some((path) => getRequestURL(event).pathname.startsWith(path))
       ) {
         return response(false, 'Riot 登录已过期, 请重新验证账户！', {
           needReauth: true,

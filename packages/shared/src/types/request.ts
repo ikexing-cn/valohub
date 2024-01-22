@@ -74,6 +74,11 @@ export const verifySchema = z.object({
       message: '验证码必须是6位数字',
     })
     .optional(),
+  remember: z
+    .boolean({
+      invalid_type_error: '记住密码必须是布尔值',
+    })
+    .optional(),
 })
 
 export const aliasOnlySchema = z.object({ alias })
