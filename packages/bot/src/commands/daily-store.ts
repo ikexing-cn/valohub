@@ -47,14 +47,11 @@ export async function dailyStoreCommand(
 
   const storageDir = process.env.VALORANT_BOT_SCREENSHOT_STORAGE_DIR_PATH
   const dir = storageDir
-    ? storageDir
-    : resolve(import.meta.dirname!, `../../screenshots`)
+    ? resolve(storageDir, `${qq}/${getDate()}/`)
+    : resolve(import.meta.dirname!, `../../screenshots/${qq}/${getDate()}/`)
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
 
-  const imageStorePath = resolve(
-    dir,
-    `/${qq}/${getDate()}/daily-store-${alias}.png`,
-  )
+  const imageStorePath = resolve(dir, `daily-store-${alias}.png`)
 
   if (existsSync(imageStorePath)) {
     return [CQ.image(`file:///${imageStorePath}`)]
