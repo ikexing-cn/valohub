@@ -73,7 +73,7 @@ export function createRequest(qq: number) {
       } else if (result.data.needReauth) {
         return {
           success: false,
-          message: `检测到你的账户在 "绑定" 时未选择保存密码，现有的 Riot 授权已过期，请私信 Bot 使用 "验证" 指令进行重新授权`,
+          message: `检测到你的账户在 "绑定" 时未选择保存密码或开启了二步验证，现有的 Riot 授权已过期，请私信 Bot 使用 "验证" 指令进行重新授权`,
         } as any
       }
     }
