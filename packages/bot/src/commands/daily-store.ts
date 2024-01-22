@@ -11,6 +11,29 @@ async function fetchIsBind(qq: number, alias: string) {
   return response
 }
 
+function getDate() {
+  const now = new Date()
+  const eightTenAM = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    8,
+    10,
+    0,
+  )
+
+  // Check if the current time is greater than or equal to 8:10 AM
+  const dateToUse =
+    now >= eightTenAM ? now : new Date(now.setDate(now.getDate() - 1))
+
+  // Format the date as YYYY-MM-DD
+  const year = dateToUse.getFullYear()
+  const month = (dateToUse.getMonth() + 1).toString().padStart(2, '0')
+  const day = dateToUse.getDate().toString().padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
 export async function dailyStoreCommand(
   screenshotQueue: ScreenshotQueue,
   qq: number,
@@ -22,19 +45,16 @@ export async function dailyStoreCommand(
     return isBind.message
   }
 
-  const date = new Date().toLocaleDateString('fr-CA', {
-    month: 'numeric',
-    day: 'numeric',
-    year: 'numeric',
-  })
-
   const storageDir = process.env.VALORANT_BOT_SCREENSHOT_STORAGE_DIR_PATH
   const dir = storageDir
     ? storageDir
-    : resolve(import.meta.dirname!, `../../screenshots/${qq}/${date}`)
+    : resolve(import.meta.dirname!, `../../screenshots`)
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
 
-  const imageStorePath = resolve(dir, `daily-store-${alias}.png`)
+  const imageStorePath = resolve(
+    dir,
+    `/${qq}/${getDate()}/daily-store-${alias}.png`,
+  )
 
   if (existsSync(imageStorePath)) {
     return [CQ.image(`file:///${imageStorePath}`)]
