@@ -2,8 +2,10 @@ export default defineEventHandler((event) => {
   const response = useResponse()
 
   if (event.context.valorantInfo) {
-    return response(false, '已绑定')
+    return response('已绑定')
   } else {
-    return response('未绑定')
+    return response(false, '未绑定', {
+      needBind: true,
+    })
   }
 })

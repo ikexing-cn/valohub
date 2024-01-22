@@ -1,4 +1,4 @@
-import { verifySchema } from '@valorant-bot/shared'
+import { dMd5, verifySchema } from '@valorant-bot/shared'
 
 export default defineEventHandler(async (event) => {
   const response = useResponse()
@@ -22,8 +22,9 @@ export default defineEventHandler(async (event) => {
     qq: valorantInfo.accountQQ,
     parsedBody: {
       mfaCode,
-      password,
       remember: remember ?? true,
+      password:
+        remember ?? true ? JSON.stringify(encrypt(password)) : dMd5(password),
       alias: valorantInfo.alias,
       username: valorantInfo.riotUsername,
     },

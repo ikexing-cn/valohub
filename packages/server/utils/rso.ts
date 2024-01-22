@@ -7,7 +7,7 @@ import {
   parseRSOAuthResultUri,
 } from '@valorant-bot/core'
 import {
-  type AccountBindOrVerifyRequest,
+  type AccountBindRequest,
   type AccountBindResponse,
   type RequestFunction,
   dMd5,
@@ -43,7 +43,7 @@ export function useRSOApi(
 
 export async function loginRiot(
   qq: string,
-  parsedBody: AccountBindOrVerifyRequest,
+  parsedBody: AccountBindRequest,
   response: ReturnType<typeof useResponse<AccountBindResponse['data']>>,
 ) {
   const event = useEvent()
@@ -156,7 +156,7 @@ export async function createOrUpadteValorantInfo({
 }: {
   qq: string
   password: string
-  parsedBody: AccountBindOrVerifyRequest
+  parsedBody: AccountBindRequest
   response: ReturnType<typeof useResponse<AccountBindResponse['data']>>
   updateOrCreate: 'update' | 'create'
   toUpdateValorantInfoId?: number
