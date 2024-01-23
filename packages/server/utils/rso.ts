@@ -1,45 +1,20 @@
 import {
-  type AuthResponse,
-  type ParsedRSOAuthResult,
-  type RSOApiResponse,
-  type RSOApis,
-  createRSOApi,
-  parseRSOAuthResultUri,
-} from '@valorant-bot/core'
-import {
   type AccountBindRequest,
   type AccountBindResponse,
-  type RequestFunction,
   dMd5,
   objectOmit,
 } from '@valorant-bot/shared'
+import {
+  type AuthTokenResponse,
+  type ValorantAuthResponse,
+  getEntitlementsToken,
+  getRegionAndShardFromPas,
+  isMfaResponse,
+  isTokenResponse,
+  parseTokensFromUri,
+} from '@tqman/valorant-api-client'
+
 import type { $Enums, Prisma } from '@valorant-bot/server-database'
-
-export function useRSOApi(
-  request: RequestFunction['request'],
-  initParsedAuthResult?: ParsedRSOAuthResult,
-) {
-  const event = useEvent()
-  const valorantInfo = event.context.valorantInfo
-
-  const rsoApis = createRSOApi(
-    initParsedAuthResult ??
-      (valorantInfo?.parsedAuthResult as ParsedRSOAuthResult),
-  )
-
-  return function <Api extends keyof RSOApis>(
-    api: Api,
-    ...params: Parameters<RSOApis[Api]> extends unknown[]
-      ? Parameters<RSOApis[Api]>
-      : never
-  ): Promise<RSOApiResponse[Api]> {
-    const { url, fetchConfig } = (rsoApis[api] as any)(...params) as {
-      url: string
-      fetchConfig: Omit<RequestInit, 'body'>
-    }
-    return request<RSOApiResponse[Api]>(url, fetchConfig)
-  }
-}
 
 export async function loginRiot(
   qq: string,
@@ -51,22 +26,19 @@ export async function loginRiot(
   let authLoginResult
   const { username, password, mfaCode, remember = false } = parsedBody
 
-  const { request } =
-    mfaCode != null ? useRequest(qq, true) : await useCleanRequest(qq)
-  const rsoApi = useRSOApi(request)
+  const vapic = await useVapic()
 
   if (mfaCode != null) {
-    authLoginResult = await rsoApi('getAuthMultiFactor', {
-      code: mfaCode,
-      rememberDevice: remember,
-    })
+    authLoginResult =
+      await vapic.auth.putMultiFactorAuthentication<ValorantAuthResponse>({
+        data: {
+          code: mfaCode,
+          rememberDevice: remember,
+          type: 'multifactor',
+        },
+      })
 
-    if (authLoginResult.type === 'auth') {
-      return [
-        false,
-        response(false, '邮箱验证码错误，请重试！', { needRetry: true }),
-      ] as const
-    } else if (authLoginResult.type === 'multifactor') {
+    if (isTokenResponse(authLoginResult)) {
       return [
         false,
         response(false, '邮箱验证码错误，请重试！', { needRetry: true }),
@@ -74,22 +46,26 @@ export async function loginRiot(
     }
   } else {
     const valorantInfo = event.context?.valorantInfo
-    await rsoApi('getAuthPing')
-    authLoginResult = await rsoApi('getAuthLogin', {
-      remember,
-      username,
-      password,
+    await vapic.auth.postAuthCookies({
+      data: {
+        client_id: 'play-valorant-web-prod',
+        nonce: '1',
+        redirect_uri: 'https://playvalorant.com/opt_in',
+        response_type: 'token id_token',
+        scope: 'account openid',
+      },
+    })
+    authLoginResult = await vapic.auth.putAuthRequest<ValorantAuthResponse>({
+      data: {
+        remember,
+        username,
+        password,
+        type: 'auth',
+        language: 'en_US',
+      },
     })
 
-    if (authLoginResult.type === 'auth') {
-      return [
-        false,
-        response(false, '此 Valorant 账号或密码错误，请重试！', {
-          needRetry: true,
-          riotUsername: valorantInfo?.riotUsername,
-        }),
-      ] as const
-    } else if (authLoginResult.type === 'multifactor') {
+    if (isMfaResponse(authLoginResult)) {
       return [
         false,
         response(
@@ -101,48 +77,48 @@ export async function loginRiot(
           },
         ),
       ] as const
+    } else if (!isTokenResponse(authLoginResult)) {
+      return [
+        false,
+        response(false, '此 Valorant 账号或密码错误，请重试！', {
+          needRetry: true,
+          riotUsername: valorantInfo?.riotUsername,
+        }),
+      ] as const
     }
   }
 
-  if (authLoginResult.type !== 'response') {
-    return [false, response(false, '未知错误！')] as const
-  }
-
-  const key = getLoginRiotRedisKey(qq)
-  const cookies = await useRedisStorage().getItem<string[]>(key)
-  await useRedisStorage().removeItem(key)
-
-  return [true, authLoginResult, cookies] as const
+  return [true, authLoginResult] as const
 }
 
-export function getEntitlementToken(rsoApis: ReturnType<typeof useRSOApi>) {
-  return rsoApis('getEntitlementToken')
-}
+export async function getRiotinfo(authResponse: AuthTokenResponse) {
+  const parsedAuthResult = parseTokensFromUri(
+    authResponse.response.parameters.uri,
+  )
+  const vapic = await useVapic()
 
-export async function getRiotinfo(authResponse: AuthResponse) {
-  const { request } = useRequest(false)
-  const parsedAuthResult = parseRSOAuthResultUri(authResponse)
-
-  const rsoApis = useRSOApi(request, parsedAuthResult)
-
-  const [region, playerInfo, entitlementToken] = await Promise.all([
-    rsoApis('getRegion'),
-    rsoApis('getPlayerInfo'),
-    getEntitlementToken(rsoApis),
-  ])
+  const [playerInfoResponse, regionResponse, entitlementsToken] =
+    await Promise.all([
+      vapic.auth.getPlayerInfo(),
+      getRegionAndShardFromPas(
+        parsedAuthResult.accessToken,
+        parsedAuthResult.idToken,
+      ),
+      getEntitlementsToken(vapic.auth, parsedAuthResult.accessToken),
+    ])
 
   const [gameName, tagLine] = [
-    playerInfo.acct.game_name,
-    playerInfo.acct.tag_line,
+    playerInfoResponse.data.acct.game_name,
+    playerInfoResponse.data.acct.tag_line,
   ]
 
   return {
     gameName,
     tagLine,
-    playerInfo,
-    entitlementToken,
-    parsedAuthResult,
-    region: region.affinities.live.toUpperCase() as $Enums.Region,
+    playerInfo: playerInfoResponse.data,
+    tokens: { entitlementsToken, ...parsedAuthResult },
+    shard: regionResponse.shard.toUpperCase() as $Enums.Shard,
+    region: regionResponse.region.toUpperCase() as $Enums.Region,
   }
 }
 
@@ -164,21 +140,15 @@ export async function createOrUpadteValorantInfo({
   const event = useEvent()
   const prisma = usePrisma()
 
-  const [isLoginSuccessful, authResponse, cookies] = await loginRiot(
+  const [isLoginSuccessful, authResponse] = await loginRiot(
     qq,
     { ...objectOmit(parsedBody, ['password']), password },
     response,
   )
   if (!isLoginSuccessful) return [false, authResponse] as const
 
-  const {
-    gameName,
-    tagLine,
-    playerInfo,
-    parsedAuthResult,
-    entitlementToken,
-    region,
-  } = await getRiotinfo(authResponse)
+  const { gameName, tagLine, playerInfo, shard, region, tokens } =
+    await getRiotinfo(authResponse.data as AuthTokenResponse)
 
   const riotPassword = parsedBody.remember
     ? JSON.stringify(encrypt(parsedBody.password))
@@ -191,9 +161,6 @@ export async function createOrUpadteValorantInfo({
     alias: parsedBody.alias || 'default',
     remember: parsedBody.remember ?? false,
 
-    cookies: cookies!,
-    parsedAuthResult: parsedAuthResult as Prisma.JsonObject,
-    entitlementsToken: entitlementToken.entitlements_token,
     riotPassword,
     riotUsername: parsedBody.username,
 
@@ -202,6 +169,9 @@ export async function createOrUpadteValorantInfo({
     tagLine,
     gameName,
 
+    tokens: tokens as Prisma.JsonObject,
+
+    shard,
     region,
     deleteStatus: false,
   }

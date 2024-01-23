@@ -1,26 +1,21 @@
-import { type AuthResponse, parseRSOAuthResultUri } from '@valorant-bot/core'
+import {
+  type AuthApiClient,
+  getEntitlementsToken,
+  getTokensUsingReauthCookies,
+} from '@tqman/valorant-api-client'
+import type { Prisma } from '@valorant-bot/server-database'
 
-async function reauth(cookies: string[]) {
-  const response = await fetch(
-    'https://auth.riotgames.com/authorize?redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&client_id=play-valorant-web-prod&response_type=token%20id_token&nonce=1',
-    {
-      method: 'GET',
-      redirect: 'manual',
-      headers: {
-        Cookie: cookies.join('; '),
-      },
-    },
-  )
-
-  return response
-}
-
-function isReauthSuccessful(response: Response) {
-  return (
-    response.headers
-      .get('location')
-      ?.startsWith('https://playvalorant.com/opt_in') === true
-  )
+function tryGetCookieReauth(authClient: AuthApiClient, counts = 0) {
+  try {
+    return getTokensUsingReauthCookies(authClient)
+  } catch {
+    if (counts > 3) {
+      return 'Riot 登录已过期, 请重新验证账户!'
+    }
+    tryGetCookieReauth(authClient, counts)
+  } finally {
+    counts++
+  }
 }
 
 export default defineEventHandler(async (event) => {
@@ -32,63 +27,33 @@ export default defineEventHandler(async (event) => {
   ) {
     const prisma = usePrisma()
     const response = useResponse()
-    const reauthResponse = await reauth(valorantInfo.cookies)
 
-    if (isReauthSuccessful(reauthResponse)) {
-      const authResponse: AuthResponse = {
-        type: 'response',
-        response: {
-          parameters: {
-            uri: reauthResponse.headers.get('location')!,
+    const vapic = await useVapic()
+
+    if (!getRequestURL(event).pathname.startsWith('/account/verify')) {
+      const cookieReauthResponse = await tryGetCookieReauth(vapic.auth)
+      if (typeof cookieReauthResponse === 'string') {
+        return response(false, cookieReauthResponse)
+      } else {
+        const { accessToken, idToken } = cookieReauthResponse!
+        const entitlementsToken = await getEntitlementsToken(
+          vapic.auth,
+          accessToken,
+        )
+        const tokens = {
+          accessToken,
+          idToken,
+          entitlementsToken,
+        }
+
+        event.context.valorantInfo = await prisma.valorantInfo.update({
+          data: {
+            tokens: tokens as Prisma.JsonObject,
           },
-        },
-      }
-
-      const parsedAuthResult = parseRSOAuthResultUri(authResponse)
-      const { entitlements_token } = await getEntitlementToken(
-        useRSOApi(useRequest(false).request),
-      )
-
-      const updatedValorantInfo = await prisma.valorantInfo.update({
-        where: {
-          id: valorantInfo.id,
-        },
-        data: {
-          parsedAuthResult,
-          entitlementsToken: entitlements_token,
-        },
-      })
-
-      event.context.valorantInfo = updatedValorantInfo
-    } else {
-      if (
-        !valorantInfo.remember ||
-        getRequestURL(event).pathname.startsWith('/account/is-bind')
-      ) {
-        return response(false, 'Riot 登录已过期, 请重新验证账户！', {
-          needReauth: true,
-          riotUsername: valorantInfo.riotUsername,
-        })
-      }
-
-      if (!getRequestURL(event).pathname.startsWith('/account/verify')) {
-        const password = decrypt(JSON.parse(valorantInfo.riotPassword))
-
-        const [isSuccess, result] = await createOrUpadteValorantInfo({
-          qq: valorantInfo.accountQQ,
-          parsedBody: {
-            password,
-            alias: valorantInfo.alias,
-            username: valorantInfo.riotUsername,
-            remember: true,
+          where: {
+            id: valorantInfo.id,
           },
-          password,
-          response,
-          updateOrCreate: 'update',
-          toUpdateValorantInfoId: valorantInfo.id,
         })
-
-        if (!isSuccess) return result
       }
     }
   }

@@ -19,27 +19,26 @@ model Account {
 }
 
 model ValorantInfo {
-  id                Int         @id @default(autoincrement())
-  accountQQ         String
-  alias             String      @default("default")
-  remember          Boolean
-  riotUsername      String      @unique
-  riotPassword      String
-  region            Region
-  parsedAuthResult  Json
-  entitlementsToken String
-  cookies           String[]
-  uuid              String      @unique
-  country           String
-  gameName          String
-  tagLine           String
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  deleteStatus      Boolean     @default(false)
-  accessoryStore    StoreList[] @relation("AccessoryStoreRelation")
-  bonusStore        StoreList[] @relation("BonusStoreRelation")
-  dailyStores       StoreList[] @relation("DailyStoresRelation")
-  account           Account     @relation(fields: [accountQQ], references: [qq])
+  id             Int         @id @default(autoincrement())
+  accountQQ      String
+  alias          String      @default("default")
+  remember       Boolean
+  riotUsername   String      @unique
+  riotPassword   String
+  shard          Shard
+  region         Region
+  uuid           String      @unique
+  country        String
+  gameName       String
+  tagLine        String
+  tokens         Json
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  deleteStatus   Boolean     @default(false)
+  accessoryStore StoreList[] @relation("AccessoryStoreRelation")
+  bonusStore     StoreList[] @relation("BonusStoreRelation")
+  dailyStores    StoreList[] @relation("DailyStoresRelation")
+  account        Account     @relation(fields: [accountQQ], references: [qq])
 }
 
 model StoreList {
@@ -76,7 +75,17 @@ enum Region {
   NA
   EU
   AP
-  KO
+  KR
+  LATAM
+  BR
+}
+
+enum Shard {
+  NA
+  EU
+  AP
+  KR
+  PBE
 }
 
 enum CostType {

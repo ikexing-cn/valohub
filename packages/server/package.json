@@ -8,7 +8,7 @@
     "preview": "node .output/server/index.mjs"
   },
   "dependencies": {
-    "@valorant-bot/core": "workspace:^",
+    "@tqman/valorant-api-client": "^1.3.4",
     "@valorant-bot/server-database": "workspace:^",
     "@valorant-bot/shared": "workspace:^",
     "nitro-cors": "^0.7.0",
@@ -16,6 +16,7 @@
     "unstorage": "^1.10.1"
   },
   "devDependencies": {
+    "axios": "^1.6.5",
     "h3": "npm:h3-nightly@latest"
   }
 }

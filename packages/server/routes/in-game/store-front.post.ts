@@ -1,8 +1,14 @@
-import { type InGameStoreFrontResponse, objectOmit } from '@valorant-bot/shared'
-import { type SkinsPanelLayout, StoreCostType } from '@valorant-bot/core'
-import type { Prisma, PrismaClient } from '@valorant-bot/server-database'
-
-import type * as runtime from '@valorant-bot/server-database/runtime/library'
+import {
+  type InGameStoreFrontResponse,
+  StoreCostType,
+  objectOmit,
+} from '@valorant-bot/shared'
+import type { StorefrontResponse } from '@tqman/valorant-api-client/types'
+import type {
+  Prisma,
+  PrismaClient,
+  runtime,
+} from '@valorant-bot/server-database'
 
 function transformStoreItems(
   storeItems: Prisma.$StoreItemPayload['scalars'][],
@@ -43,7 +49,7 @@ async function getDailyStore(
 
 function createStoreItems(
   db: Omit<PrismaClient, runtime.ITXClientDenyList>,
-  SkinsPanelLayout: SkinsPanelLayout,
+  SkinsPanelLayout: StorefrontResponse['SkinsPanelLayout'],
 ) {
   return Promise.all(
     SkinsPanelLayout.SingleItemStoreOffers.map(async (offer) => {
@@ -86,11 +92,10 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const { SkinsPanelLayout } = await useInGame(
-    valorantInfo,
-    'getStoreFront',
-    valorantInfo.uuid,
-  )
+  const vapic = await useVapic()
+  const {
+    data: { SkinsPanelLayout },
+  } = await vapic.remote.getStorefront({ data: { puuid: valorantInfo.uuid } })
 
   const storeItems = await prisma.$transaction(async (client) => {
     const storeItems = await createStoreItems(client, SkinsPanelLayout)
