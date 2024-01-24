@@ -85,7 +85,7 @@ importers:
         version: 0.7.0(patch_hash=27tu2dh4l4hl4z4cnphw2fsdk4)
       nitropack:
         specifier: npm:nitropack-nightly@latest
-        version: /nitropack-nightly@2.9.0-28432738.60eb9f6
+        version: /nitropack-nightly@2.9.0-28433475.f9a3fce
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -4913,8 +4913,8 @@ packages:
     dev: false
     patched: true
 
-  /nitropack-nightly@2.9.0-28432738.60eb9f6:
-    resolution: {integrity: sha512-h8SJ8O5zyIqc/mz9BwVF3TkmND6oJmcze1uwznA9ZXFfqMi2bTzn3R3KLc61bPiBWC0iEE+R8BOMhElFNN7yLw==}
+  /nitropack-nightly@2.9.0-28433475.f9a3fce:
+    resolution: {integrity: sha512-gCGeBIyuo9KG6+PIEtUSaojP4BHC3H9aHt8CTXjXR6ii3AzzvWKSTrRy+Wuyw1+hjIBaO1YzbSdo3w06oR6XTw==}
     engines: {node: ^16.11.0 || >=17.0.0}
     hasBin: true
     peerDependencies:
