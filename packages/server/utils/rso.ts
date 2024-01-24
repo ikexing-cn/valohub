@@ -93,12 +93,13 @@ export async function loginRiot(
 
 export async function getRiotinfo(
   authResponse: AuthTokenResponse,
-  qqWithAlias: string,
+  qq: string,
+  alias: string,
 ) {
   const parsedAuthResult = parseTokensFromUri(
     authResponse.response.parameters.uri,
   )
-  const vapic = await useVapic(qqWithAlias)
+  const vapic = await useVapic(qq, alias)
 
   const [playerInfoResponse, regionResponse, entitlementsToken] =
     await Promise.all([
@@ -157,7 +158,8 @@ export async function createOrUpadteValorantInfo({
   const { gameName, tagLine, playerInfo, shard, region, tokens } =
     await getRiotinfo(
       authResponse.data as AuthTokenResponse,
-      qq + parsedBody.alias,
+      qq,
+      parsedBody.alias ?? 'default',
     )
 
   const riotPassword = parsedBody.remember

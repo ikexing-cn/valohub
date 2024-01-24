@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
     const vapic = await useVapic(valorantInfo.accountQQ, valorantInfo.alias)
 
     if (!getRequestURL(event).pathname.startsWith('/account/verify')) {
-      vapic.reinitializeWithProviders({
+      await vapic.reinitializeWithProviders({
         remote: useProviders([
           provideClientVersionViaAuthApi(),
           provideRegion(
