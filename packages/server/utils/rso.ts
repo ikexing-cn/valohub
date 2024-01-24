@@ -26,7 +26,7 @@ export async function loginRiot(
   let authLoginResult
   const { username, password, mfaCode, remember = false } = parsedBody
 
-  const vapic = await useVapic(qq + parsedBody.alias ?? 'default')
+  const vapic = await useVapic(qq, parsedBody.alias ?? 'default')
 
   if (mfaCode != null) {
     authLoginResult =

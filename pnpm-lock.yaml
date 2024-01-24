@@ -77,12 +77,18 @@ importers:
       '@valorant-bot/shared':
         specifier: workspace:^
         version: link:../shared
+      fp-ts:
+        specifier: ^2.16.2
+        version: 2.16.2
       nitro-cors:
         specifier: ^0.7.0
         version: 0.7.0(patch_hash=27tu2dh4l4hl4z4cnphw2fsdk4)
       nitropack:
         specifier: npm:nitropack-nightly@latest
         version: /nitropack-nightly@2.9.0-28432738.60eb9f6
+      rxjs:
+        specifier: ^7.8.1
+        version: 7.8.1
       tough-cookie:
         specifier: ^4.1.3
         version: 4.1.3
@@ -5985,6 +5991,12 @@ packages:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
     dependencies:
       queue-microtask: 1.2.3
+
+  /rxjs@7.8.1:
+    resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
+    dependencies:
+      tslib: 2.6.2
+    dev: false
 
   /safe-buffer@5.1.2:
     resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
