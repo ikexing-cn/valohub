@@ -13,9 +13,11 @@
     "@valorant-bot/shared": "workspace:^",
     "nitro-cors": "^0.7.0",
     "nitropack": "npm:nitropack-nightly@latest",
+    "tough-cookie": "^4.1.3",
     "unstorage": "^1.10.1"
   },
   "devDependencies": {
+    "@types/tough-cookie": "^4.0.5",
     "axios": "^1.6.5",
     "h3": "npm:h3-nightly@latest"
   }

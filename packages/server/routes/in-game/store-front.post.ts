@@ -92,7 +92,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const vapic = await useVapic()
+  const vapic = await useVapic(valorantInfo.accountQQ + valorantInfo.alias)
   const {
     data: { SkinsPanelLayout },
   } = await vapic.remote.getStorefront({ data: { puuid: valorantInfo.uuid } })

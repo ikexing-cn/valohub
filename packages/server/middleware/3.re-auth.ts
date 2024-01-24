@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     const prisma = usePrisma()
     const response = useResponse()
 
-    const vapic = await useVapic()
+    const vapic = await useVapic(valorantInfo.accountQQ + valorantInfo.alias)
 
     if (!getRequestURL(event).pathname.startsWith('/account/verify')) {
       const cookieReauthResponse = await tryGetCookieReauth(vapic.auth)

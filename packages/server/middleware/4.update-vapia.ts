@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
       shard: valorantInfo.shard,
       region: valorantInfo.region,
       tokens: valorantInfo.tokens as unknown as Tokens,
+      qqWithAlias: valorantInfo.accountQQ + valorantInfo.alias,
     })
   }
 })

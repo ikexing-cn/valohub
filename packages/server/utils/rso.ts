@@ -26,7 +26,7 @@ export async function loginRiot(
   let authLoginResult
   const { username, password, mfaCode, remember = false } = parsedBody
 
-  const vapic = await useVapic()
+  const vapic = await useVapic(qq + parsedBody.alias ?? 'default')
 
   if (mfaCode != null) {
     authLoginResult =
@@ -38,7 +38,7 @@ export async function loginRiot(
         },
       })
 
-    if (isTokenResponse(authLoginResult)) {
+    if (!isTokenResponse(authLoginResult)) {
       return [
         false,
         response(false, '邮箱验证码错误，请重试！', { needRetry: true }),
@@ -91,15 +91,22 @@ export async function loginRiot(
   return [true, authLoginResult] as const
 }
 
-export async function getRiotinfo(authResponse: AuthTokenResponse) {
+export async function getRiotinfo(
+  authResponse: AuthTokenResponse,
+  qqWithAlias: string,
+) {
   const parsedAuthResult = parseTokensFromUri(
     authResponse.response.parameters.uri,
   )
-  const vapic = await useVapic()
+  const vapic = await useVapic(qqWithAlias)
 
   const [playerInfoResponse, regionResponse, entitlementsToken] =
     await Promise.all([
-      vapic.auth.getPlayerInfo(),
+      vapic.auth.getPlayerInfo({
+        headers: {
+          Authorization: `Bearer ${parsedAuthResult.accessToken}`,
+        },
+      }),
       getRegionAndShardFromPas(
         parsedAuthResult.accessToken,
         parsedAuthResult.idToken,
@@ -148,7 +155,10 @@ export async function createOrUpadteValorantInfo({
   if (!isLoginSuccessful) return [false, authResponse] as const
 
   const { gameName, tagLine, playerInfo, shard, region, tokens } =
-    await getRiotinfo(authResponse.data as AuthTokenResponse)
+    await getRiotinfo(
+      authResponse.data as AuthTokenResponse,
+      qq + parsedBody.alias,
+    )
 
   const riotPassword = parsedBody.remember
     ? JSON.stringify(encrypt(parsedBody.password))
