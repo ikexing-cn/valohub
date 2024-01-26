@@ -4,7 +4,6 @@ import 'dotenv/config'
 import { CQWebSocket } from 'go-cqwebsocket'
 import { registerEvent } from './event'
 import { ScreenshotQueue } from './utils/screenshot-queue'
-// eslint-disable-next-line sort-imports
 
 export const client = new CQWebSocket({
   host: process.env.VALORANT_BOT_HOST || 'localhost',
