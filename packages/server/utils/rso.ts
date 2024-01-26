@@ -26,7 +26,7 @@ export async function loginRiot(
   let authLoginResult
   const { username, password, mfaCode, remember = false } = parsedBody
 
-  const vapic = await useVapic(qq + parsedBody.alias ?? 'default')
+  const vapic = await useVapic(qq, parsedBody.alias ?? 'default')
 
   if (mfaCode != null) {
     authLoginResult =
@@ -93,12 +93,13 @@ export async function loginRiot(
 
 export async function getRiotinfo(
   authResponse: AuthTokenResponse,
-  qqWithAlias: string,
+  qq: string,
+  alias: string,
 ) {
   const parsedAuthResult = parseTokensFromUri(
     authResponse.response.parameters.uri,
   )
-  const vapic = await useVapic(qqWithAlias)
+  const vapic = await useVapic(qq, alias)
 
   const [playerInfoResponse, regionResponse, entitlementsToken] =
     await Promise.all([
@@ -154,21 +155,22 @@ export async function createOrUpadteValorantInfo({
   )
   if (!isLoginSuccessful) return [false, authResponse] as const
 
+  const alias = parsedBody.alias ?? 'default'
   const { gameName, tagLine, playerInfo, shard, region, tokens } =
-    await getRiotinfo(
-      authResponse.data as AuthTokenResponse,
-      qq + parsedBody.alias,
-    )
+    await getRiotinfo(authResponse.data as AuthTokenResponse, qq, alias)
 
   const riotPassword = parsedBody.remember
     ? JSON.stringify(encrypt(parsedBody.password))
     : dMd5(parsedBody.password)
 
+  const cookies = (await useRedisStorage().getItem(
+    getStoreCokiesRedisKey(qq, alias),
+  )) as string
+
   const data = {
     accountQQ: qq,
 
-    // idk why not setiing default value when zod parsed
-    alias: parsedBody.alias || 'default',
+    alias,
     remember: parsedBody.remember ?? false,
 
     riotPassword,
@@ -179,6 +181,7 @@ export async function createOrUpadteValorantInfo({
     tagLine,
     gameName,
 
+    cookies,
     tokens: tokens as Prisma.JsonObject,
 
     shard,

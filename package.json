@@ -2,7 +2,7 @@
   "name": "valorant-bot",
   "version": "0.0.1",
   "private": "true",
-  "packageManager": "pnpm@8.14.1",
+  "packageManager": "pnpm@8.14.3",
   "type": "module",
   "license": "MIT",
   "author": "ikx <ikexing.cn@gmail.com>",
@@ -16,12 +16,12 @@
     "deploy:bot": "turbo prune @valorant-bot/bot --out-dir .deploy-bot && cp tsconfig.json .deploy-bot/tsconfig.json"
   },
   "dependencies": {
-    "dotenv": "^16.3.2"
+    "dotenv": "^16.4.1"
   },
   "devDependencies": {
     "@sxzz/eslint-config": "^3.7.6",
     "@sxzz/prettier-config": "^2.0.0",
-    "@types/node": "^20.11.5",
+    "@types/node": "^20.11.6",
     "dotenv-cli": "^7.3.0",
     "eslint": "^8.56.0",
     "esno": "^4.0.0",

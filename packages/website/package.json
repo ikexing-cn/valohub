@@ -9,23 +9,23 @@
   },
   "dependencies": {
     "@kobalte/core": "^0.12.1",
-    "@unocss/reset": "^0.58.3",
+    "@unocss/reset": "^0.58.4",
     "@valorant-bot/shared": "workspace:^",
     "clsx": "^2.1.0",
     "solid-icons": "^1.1.0",
-    "solid-js": "^1.8.11",
+    "solid-js": "^1.8.12",
     "solid-toast": "^0.5.0",
-    "tailwind-merge": "^2.2.0"
+    "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
-    "@solidjs/router": "^0.10.9",
+    "@solidjs/router": "^0.10.10",
     "class-variance-authority": "^0.7.0",
     "typescript": "^5.3.3",
-    "unocss": "^0.58.3",
+    "unocss": "^0.58.4",
     "unocss-preset-animations": "^1.0.1",
     "unocss-preset-shadcn": "^0.2.3",
-    "unplugin-auto-import": "^0.17.3",
+    "unplugin-auto-import": "^0.17.5",
     "vite": "^5.0.12",
-    "vite-plugin-solid": "^2.8.2"
+    "vite-plugin-solid": "^2.9.1"
   }
 }

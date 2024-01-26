@@ -16,8 +16,6 @@ export default defineEventHandler(async (event) => {
     const parsedBody = await useValidatedBody(aliasOnlySchema)
 
     const prisma = usePrisma()
-    const response = useResponse()
-
     const valorantInfo = await prisma.valorantInfo.findFirst({
       where: {
         alias: parsedBody.alias,
@@ -28,12 +26,9 @@ export default defineEventHandler(async (event) => {
 
     if (!valorantInfo) {
       if (parsedBody.alias === 'default') {
-        return response(false, '请先进行 Valorant 账号绑定')
+        throw new Error('请先进行 Valorant 账号绑定')
       } else {
-        return response(
-          false,
-          `未找到 「${parsedBody.alias}」 绑定的 Valorant 账号`,
-        )
+        throw new Error(`未找到 「${parsedBody.alias}」 绑定的 Valorant 账号`)
       }
     }
 

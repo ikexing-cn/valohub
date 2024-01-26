@@ -1,20 +1,13 @@
 import {
-  type AuthApiClient,
-  getEntitlementsToken,
-  getTokensUsingReauthCookies,
+  provideClientVersionViaAuthApi,
+  provideRegion,
+  useProviders,
 } from '@tqman/valorant-api-client'
 import type { Prisma } from '@valorant-bot/server-database'
 
-function tryGetCookieReauth(authClient: AuthApiClient, counts = 0) {
-  try {
-    return getTokensUsingReauthCookies(authClient)
-  } catch {
-    if (counts > 3) {
-      return 'Riot 登录已过期, 请重新验证账户!'
-    }
-    tryGetCookieReauth(authClient, counts)
-  } finally {
-    counts++
+declare module 'h3' {
+  interface H3EventContext {
+    reauth: boolean
   }
 }
 
@@ -26,35 +19,42 @@ export default defineEventHandler(async (event) => {
     valorantInfo.updatedAt.getTime() + 1000 * 60 * 30 < Date.now()
   ) {
     const prisma = usePrisma()
-    const response = useResponse()
 
-    const vapic = await useVapic(valorantInfo.accountQQ + valorantInfo.alias)
+    const vapic = await useVapic(valorantInfo.accountQQ, valorantInfo.alias)
 
     if (!getRequestURL(event).pathname.startsWith('/account/verify')) {
-      const cookieReauthResponse = await tryGetCookieReauth(vapic.auth)
-      if (typeof cookieReauthResponse === 'string') {
-        return response(false, cookieReauthResponse)
-      } else {
-        const { accessToken, idToken } = cookieReauthResponse!
-        const entitlementsToken = await getEntitlementsToken(
-          vapic.auth,
-          accessToken,
-        )
-        const tokens = {
-          accessToken,
-          idToken,
-          entitlementsToken,
-        }
+      await vapic.reinitializeWithProviders({
+        remote: useProviders([
+          provideClientVersionViaAuthApi(),
+          provideRegion(
+            valorantInfo.region.toLowerCase(),
+            valorantInfo.shard.toLowerCase(),
+          ),
+          provideReauth({
+            password: valorantInfo.riotPassword,
+            username: valorantInfo.riotUsername,
+            remember: valorantInfo.remember,
+          }),
+        ]),
+      })
 
-        event.context.valorantInfo = await prisma.valorantInfo.update({
-          data: {
-            tokens: tokens as Prisma.JsonObject,
-          },
-          where: {
-            id: valorantInfo.id,
-          },
-        })
+      const { accessToken, entitlementsToken } = vapic.remote.options
+
+      const tokens = {
+        accessToken,
+        entitlementsToken,
       }
+
+      event.context.valorantInfo = await prisma.valorantInfo.update({
+        data: {
+          tokens: tokens as Prisma.JsonObject,
+        },
+        where: {
+          id: valorantInfo.id,
+        },
+      })
+
+      event.context.reauth = true
     }
   }
 })
