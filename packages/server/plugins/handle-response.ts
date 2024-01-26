@@ -2,13 +2,14 @@ function createResponse<
   Status extends number,
   Result = Status extends 200 ? object | string : Error,
 >(status: Status, errorOrBody: Result) {
+  console.error(errorOrBody)
+
   const result =
     status !== 200
       ? {
           success: false,
-          message: (errorOrBody as Error).message,
-          cause: (errorOrBody as Error).cause,
-          stack: (errorOrBody as Error).stack,
+          message:
+            (errorOrBody as Error).message ?? '出现内部错误, 请联系开发者',
         }
       : errorOrBody
 
