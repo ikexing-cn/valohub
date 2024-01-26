@@ -155,22 +155,22 @@ export async function createOrUpadteValorantInfo({
   )
   if (!isLoginSuccessful) return [false, authResponse] as const
 
+  const alias = parsedBody.alias ?? 'default'
   const { gameName, tagLine, playerInfo, shard, region, tokens } =
-    await getRiotinfo(
-      authResponse.data as AuthTokenResponse,
-      qq,
-      parsedBody.alias ?? 'default',
-    )
+    await getRiotinfo(authResponse.data as AuthTokenResponse, qq, alias)
 
   const riotPassword = parsedBody.remember
     ? JSON.stringify(encrypt(parsedBody.password))
     : dMd5(parsedBody.password)
 
+  const cookies = (await useRedisStorage().getItem(
+    getStoreCokiesRedisKey(qq, alias),
+  )) as string
+
   const data = {
     accountQQ: qq,
 
-    // idk why not setiing default value when zod parsed
-    alias: parsedBody.alias || 'default',
+    alias,
     remember: parsedBody.remember ?? false,
 
     riotPassword,
@@ -181,6 +181,7 @@ export async function createOrUpadteValorantInfo({
     tagLine,
     gameName,
 
+    cookies,
     tokens: tokens as Prisma.JsonObject,
 
     shard,

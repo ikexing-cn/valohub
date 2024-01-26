@@ -3,34 +3,13 @@ import {
   provideRegion,
   useProviders,
 } from '@tqman/valorant-api-client'
-import { defer, firstValueFrom, from, retry } from 'rxjs'
 import type { Prisma } from '@valorant-bot/server-database'
 
-// async function setTokens(
-//   idToken: string,
-//   accessToken: string,
-//   authClient: AuthApiClient,
-// ) {
-//   const event = useEvent()
-//   const prisma = usePrisma()
-//   const valorantInfo = event.context.valorantInfo
-
-//   const entitlementsToken = await getEntitlementsToken(authClient, accessToken)
-//   const tokens = {
-//     idToken,
-//     accessToken,
-//     entitlementsToken,
-//   }
-
-//   event.context.valorantInfo = await prisma.valorantInfo.update({
-//     data: {
-//       tokens: tokens as Prisma.JsonObject,
-//     },
-//     where: {
-//       id: valorantInfo.id,
-//     },
-//   })
-// }
+declare module 'h3' {
+  interface H3EventContext {
+    reauth: boolean
+  }
+}
 
 export default defineEventHandler(async (event) => {
   const valorantInfo = event.context.valorantInfo
@@ -52,8 +31,6 @@ export default defineEventHandler(async (event) => {
             valorantInfo.shard.toLowerCase(),
           ),
           provideReauth({
-            alias: valorantInfo.alias,
-            qq: valorantInfo.accountQQ,
             password: valorantInfo.riotPassword,
             username: valorantInfo.riotUsername,
             remember: valorantInfo.remember,
@@ -76,6 +53,8 @@ export default defineEventHandler(async (event) => {
           id: valorantInfo.id,
         },
       })
+
+      event.context.reauth = true
     }
   }
 })

@@ -19,6 +19,7 @@
     "unstorage": "^1.10.1"
   },
   "devDependencies": {
+    "@tqman/valorant-api-types": "^0.8.1",
     "@types/tough-cookie": "^4.0.5",
     "axios": "^1.6.5",
     "h3": "npm:h3-nightly@latest"

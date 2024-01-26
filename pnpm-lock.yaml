@@ -96,6 +96,9 @@ importers:
         specifier: ^1.10.1
         version: 1.10.1
     devDependencies:
+      '@tqman/valorant-api-types':
+        specifier: ^0.8.1
+        version: 0.8.1
       '@types/tough-cookie':
         specifier: ^4.0.5
         version: 4.0.5
@@ -1862,7 +1865,6 @@ packages:
     dependencies:
       iso-base64: 1.0.0
       zod: 3.22.4
-    dev: false
 
   /@trysound/sax@0.2.0:
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
@@ -4426,7 +4428,6 @@ packages:
 
   /iso-base64@1.0.0:
     resolution: {integrity: sha512-NLpU/X2IW5vjC0KW6cBXkvmxkGgSqkQu9lKMiRr8V7v6zK1p0+KnNLrHlgoaX63Y+MBAvyAkVvp7aUaL6vBbRQ==}
-    dev: false
 
   /jackspeak@2.3.6:
     resolution: {integrity: sha512-N3yCS/NegsOBokc8GAdM8UcmfsKiSS8cipheD/nivzr700H+nsMOxJjQnvwOcRYVuFkdH0wGUvW2WbXGmrZGbQ==}

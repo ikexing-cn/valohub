@@ -13,6 +13,8 @@ import {
   useProviders,
 } from '@tqman/valorant-api-client'
 
+import { authRequestEndpoint } from '@tqman/valorant-api-types'
+
 import { pipe } from 'fp-ts/function'
 import * as TE from 'fp-ts/TaskEither'
 
@@ -35,7 +37,11 @@ function parseUrl(_url: string) {
   return `${url.hostname}:${url.pathname.slice(1).replaceAll('/', '-')}`
 }
 
-export function getStoreCokiesRedisKey(qq: string, alias: string, url: string) {
+export function getStoreCokiesRedisKey(
+  qq: string,
+  alias: string,
+  url: string = authRequestEndpoint.suffix,
+) {
   return `valorant-bot:${qq}:${alias}:${parseUrl(url)}:cookies`
 }
 
@@ -86,24 +92,19 @@ export async function useVapic(qq: string, alias: string) {
   return vapic
 }
 
-const AUTHORIZATION_URL = 'https://auth.riotgames.com/api/v1/authorization'
 export function provideReauth(config: {
   username: string
   password: string
   remember: boolean
-  qq: string
-  alias: string
 }) {
   return (async ({ auth }) => {
-    const { qq, alias, username, password, remember } = config
-    const redisStorageCookieStr = await useRedisStorage().getItem<string>(
-      getStoreCokiesRedisKey(qq, alias, AUTHORIZATION_URL),
-    )
+    const valorantInfo = useEvent().context.valorantInfo
+    const { username, password, remember } = config
 
     const { idToken, accessToken } = await pipe(
       TE.tryCatch(
         () => {
-          if (redisStorageCookieStr?.includes('ssid:')) {
+          if (valorantInfo.cookies?.includes('ssid:')) {
             const retryGetTokens = defer(() =>
               getTokensUsingReauthCookies(auth),
             ).pipe(

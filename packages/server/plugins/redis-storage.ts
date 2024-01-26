@@ -6,7 +6,7 @@ export default defineNitroPlugin(() => {
   const driver = redisStorage({
     base: 'redis',
     url: process.env.REDIS_URI,
-    ttl: -1, // never expire
+    ttl: 60 * 60 * 1, // 1 hour
   })
 
   storage.mount('redis', driver)
