@@ -4,7 +4,4 @@ export default defineNitroConfig({
     asyncContext: true,
   },
   preset: 'zeabur',
-  externals: {
-    inline: ['fp-ts', 'fp-ts/TaskEither'],
-  },
 })

@@ -31,7 +31,9 @@ export default defineEventHandler(async (event) => {
             valorantInfo.shard.toLowerCase(),
           ),
           provideReauth({
-            password: valorantInfo.riotPassword,
+            password: valorantInfo.remember
+              ? decrypt(JSON.parse(valorantInfo.riotPassword))
+              : valorantInfo.riotPassword,
             username: valorantInfo.riotUsername,
             remember: valorantInfo.remember,
           }),

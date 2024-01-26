@@ -77,9 +77,6 @@ importers:
       '@valorant-bot/shared':
         specifier: workspace:^
         version: link:../shared
-      fp-ts:
-        specifier: ^2.16.2
-        version: 2.16.2
       nitro-cors:
         specifier: ^0.7.0
         version: 0.7.0(patch_hash=27tu2dh4l4hl4z4cnphw2fsdk4)

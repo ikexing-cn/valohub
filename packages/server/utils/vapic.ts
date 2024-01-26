@@ -13,10 +13,10 @@ import {
   useProviders,
 } from '@tqman/valorant-api-client'
 
-import { authRequestEndpoint } from '@tqman/valorant-api-types'
-
-import { pipe } from 'fp-ts/function'
-import * as TE from 'fp-ts/TaskEither'
+import {
+  authRequestEndpoint,
+  cookieReauthEndpoint,
+} from '@tqman/valorant-api-types'
 
 import { defer, firstValueFrom, retry } from 'rxjs'
 
@@ -73,11 +73,9 @@ export async function useVapic(qq: string, alias: string) {
           let Cookie =
             previousCookie + cookieJar.getCookieStringSync(config.url)
 
-          if (
-            new URL(config.url).pathname ===
-            new URL(authRequestEndpoint.suffix).pathname
-          )
+          if (config.url === cookieReauthEndpoint.suffix) {
             Cookie += cookieWithDatabase ?? ''
+          }
 
           config.headers = Object.assign(config.headers, { Cookie })
         }
@@ -114,53 +112,49 @@ export function provideReauth(config: {
     const { username, password, remember } = config
     const valorantInfo = useEvent().context.valorantInfo
 
-    const { idToken, accessToken } = await pipe(
-      TE.tryCatch(
-        async () => {
-          if (valorantInfo.cookies?.includes('ssid=')) {
-            const retryGetTokens = defer(() =>
-              getTokensUsingReauthCookies(auth),
-            ).pipe(
-              retry({
-                count: 3,
-                delay: 500,
-              }),
-            )
-            const result = await firstValueFrom(retryGetTokens)
-            return result
-          }
-          throw new Error('Riot 登录已过期, 请重新验证账户!')
-        },
-        (error) => {
-          if (remember) {
-            return getTokensUsingCredentials(auth, username, password)
-          } else {
-            return Promise.reject(error)
-          }
-        },
-      ),
-      TE.fold(
-        (error) => {
-          if (error instanceof MFAError) {
-            return TE.left(
-              new Error(
-                'Riot 登录已过期, 但检测到您的账户已开启二步验证所以仍需进行手动验证!',
-              ),
-            )
-          }
-          return TE.left(
-            new Error('Riot 登录已过期, 自动验证失败，请手动验证账户!'),
-          )
-        },
-        (result) => {
-          return TE.right(result)
-        },
-      ),
-      TE.getOrElse((error) => {
-        throw error
-      }),
-    )()
+    let tokenResult: { accessToken: string; idToken: string }
 
+    try {
+      if (valorantInfo.cookies?.includes('ssid=')) {
+        const retryGetTokens = defer(() =>
+          getTokensUsingReauthCookies(auth),
+        ).pipe(
+          retry({
+            count: 1,
+            delay: 500,
+          }),
+        )
+        const result = await firstValueFrom(retryGetTokens)
+        return result
+      }
+    } catch {
+      if (remember) {
+        tokenResult = await getTokensUsingCredentials(
+          auth,
+          username,
+          password,
+        ).catch((error) => {
+          if (error instanceof MFAError) {
+            throw new DataWithError(
+              'Riot 登录已过期, 但检测到您的账户已开启二步验证所以仍需进行手动验证!',
+              {
+                needMFA: true,
+                riotUsername: username,
+              },
+            )
+          }
+          throw new DataWithError(
+            'Riot 登录已过期, 自动验证失败，请手动验证账户!',
+            {
+              needReauth: true,
+              riotUsername: username,
+            },
+          )
+        })
+      }
+    }
+
+    const { idToken, accessToken } = tokenResult!
     const entitlementsToken = await getEntitlementsToken(auth, accessToken)
 
     return {

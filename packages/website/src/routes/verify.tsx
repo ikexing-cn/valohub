@@ -62,8 +62,8 @@ export default function Verify() {
 
   async function handleSubmit() {
     setFormControl({ loading: true })
-    if (!fields.username || !fields.password) {
-      return toast.error('请输入用户名和密码')
+    if (!fields.username) {
+      return toast.error('请输入用户名')
     } else if (!fields.riotAllowTerms) {
       return toast.error('请同意服务条款')
     }
@@ -119,7 +119,10 @@ export default function Verify() {
       return
     }
 
-    setFields({ username: authResponse.data.riotUsername! })
+    setFields({
+      username: authResponse.data.riotUsername!,
+      password: '*'.repeat(16),
+    })
     if (authResponse.data.needVerify) {
       // todo
       setFields({ riotAllowTerms: true })
@@ -155,6 +158,7 @@ export default function Verify() {
   return (
     <Form
       title="验证 Riot 账户"
+      fields={fields}
       formControl={formControl}
       setFields={setFields}
       handleSubmit={handleSubmit}

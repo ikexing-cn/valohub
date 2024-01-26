@@ -18,6 +18,10 @@ interface FormButtomProps {
       password: boolean
     }
   }
+  fields: {
+    username: string
+    password: string
+  }
   setFields: (fields: Record<string, unknown>) => void
   setFormControl: (fields: Record<string, unknown>) => void
   handleSubmit: () => Promise<string | undefined>
@@ -57,6 +61,7 @@ export default function Form(props: FormButtomProps) {
           }}
         >
           <FormMain
+            fields={props.fields}
             formControl={props.formControl}
             setFields={props.setFields}
           />

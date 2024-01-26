@@ -8,6 +8,10 @@ interface FormMainProps {
       password: boolean
     }
   }
+  fields: {
+    username: string
+    password: string
+  }
   setFields: (fields: Record<string, unknown>) => void
 }
 
@@ -24,6 +28,7 @@ export default function FormMain(props: FormMainProps) {
           type="text"
           autocomplete="username"
           placeholder="请输入用户名"
+          value={props.fields.username}
           onInput={(event) => props.setFields({ username: event.target.value })}
         />
       </div>
@@ -36,7 +41,7 @@ export default function FormMain(props: FormMainProps) {
           required
           type="password"
           autocomplete="current-password"
-          placeholder="请输入密码"
+          placeholder={props.fields.password ? '请输入密码' : '*'.repeat(16)}
           onInput={(event) => props.setFields({ password: event.target.value })}
         />
       </div>
