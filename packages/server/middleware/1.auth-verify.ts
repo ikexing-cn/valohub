@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
         where: { id: accountExist.id },
         data: { needVerify: true },
       })
-      return response(false, '验证失败，你输入的密码不正确')
+      throw new Error('验证失败，你输入的密码不正确')
     }
 
     if (!accountExist) {
