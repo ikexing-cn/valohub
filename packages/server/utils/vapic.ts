@@ -47,6 +47,9 @@ export function getStoreCokiesRedisKey(
 
 let vapic: ValorantApiClient
 export async function useVapic(qq: string, alias: string) {
+  const event = useEvent()
+  const valorantInfo = event.context.valorantInfo
+
   if (!vapic) {
     vapic = await createValorantApiClient({
       auth: useProviders(provideClientVersionViaVAPI()),
@@ -60,13 +63,23 @@ export async function useVapic(qq: string, alias: string) {
           getStoreCokiesRedisKey(qq, alias, config.url),
         )
 
+        const cookieWithDatabase = valorantInfo?.cookies
+
         if (config.url && cookies) {
           const cookieJar = new CookieJar()
           cookieJar.setCookieSync(cookies, config.url)
           const previousCookie = config.headers.Cookie ?? ''
-          config.headers = Object.assign(config.headers, {
-            Cookie: previousCookie + cookieJar.getCookieStringSync(config.url),
-          })
+
+          let Cookie =
+            previousCookie + cookieJar.getCookieStringSync(config.url)
+
+          if (
+            new URL(config.url).pathname ===
+            new URL(authRequestEndpoint.suffix).pathname
+          )
+            Cookie += cookieWithDatabase ?? ''
+
+          config.headers = Object.assign(config.headers, { Cookie })
         }
       }
 
@@ -98,13 +111,13 @@ export function provideReauth(config: {
   remember: boolean
 }) {
   return (async ({ auth }) => {
-    const valorantInfo = useEvent().context.valorantInfo
     const { username, password, remember } = config
+    const valorantInfo = useEvent().context.valorantInfo
 
     const { idToken, accessToken } = await pipe(
       TE.tryCatch(
-        () => {
-          if (valorantInfo.cookies?.includes('ssid:')) {
+        async () => {
+          if (valorantInfo.cookies?.includes('ssid=')) {
             const retryGetTokens = defer(() =>
               getTokensUsingReauthCookies(auth),
             ).pipe(
@@ -113,7 +126,8 @@ export function provideReauth(config: {
                 delay: 500,
               }),
             )
-            return firstValueFrom(retryGetTokens)
+            const result = await firstValueFrom(retryGetTokens)
+            return result
           }
           throw new Error('Riot 登录已过期, 请重新验证账户!')
         },
@@ -129,7 +143,9 @@ export function provideReauth(config: {
         (error) => {
           if (error instanceof MFAError) {
             return TE.left(
-              new Error('检测到您的账户已开启二步验证，请关闭后重试！'),
+              new Error(
+                'Riot 登录已过期, 但检测到您的账户已开启二步验证所以仍需进行手动验证!',
+              ),
             )
           }
           return TE.left(
