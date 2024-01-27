@@ -120,12 +120,11 @@ export function provideReauth(config: {
           getTokensUsingReauthCookies(auth),
         ).pipe(
           retry({
-            count: 1,
-            delay: 500,
+            count: 3,
+            delay: 1500,
           }),
         )
-        const result = await firstValueFrom(retryGetTokens)
-        return result
+        tokenResult = await firstValueFrom(retryGetTokens)
       }
     } catch {
       if (remember) {
