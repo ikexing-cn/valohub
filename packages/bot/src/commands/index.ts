@@ -27,6 +27,11 @@ export const commands = {
       desc: '查看命令帮助',
       usage: '帮助 <命令名>',
     },
+    info: {
+      aliases: ['i', 'info', '信息'],
+      desc: '查看 bot 信息',
+      usage: '信息',
+    },
     dailystore: {
       aliases: ['dailystore', '每日商店'],
       desc: '查看每日商店',

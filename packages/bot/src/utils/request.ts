@@ -26,6 +26,8 @@ export type RealResponse<Response extends VerifiedResponseWith> = Omit<
   cause?: string
 }
 
+const currentRequestQueue: number[] = []
+
 export function createRequest(qq: number) {
   async function request<
     Request extends object,
@@ -34,6 +36,15 @@ export function createRequest(qq: number) {
     url: string,
     options: Omit<RequestInit, 'body'> & { body?: Request } = {},
   ): Promise<RealResponse<Response>> {
+    if (currentRequestQueue.includes(qq)) {
+      return {
+        success: false,
+        message:
+          '您的请求正在处理, 请耐心等待且勿重复请求, 多次恶意重复请求会导致您的消息再也不被 Bot 回复',
+      } as any
+    }
+
+    currentRequestQueue.push(qq)
     const response = await fetch(`${baseUrl}${url}`, {
       ...objectOmit(options, ['headers', 'body']),
       method: 'POST',
@@ -42,6 +53,9 @@ export function createRequest(qq: number) {
         qq: String(qq),
         ...options.body,
       }),
+    }).finally(() => {
+      const index = currentRequestQueue.indexOf(qq)
+      if (index !== -1) currentRequestQueue.splice(index, 1)
     })
 
     const result = (await response.json()) as Response
@@ -78,12 +92,12 @@ export function createRequest(qq: number) {
       }
     }
 
-    if (result?.cause || result?.stack) {
-      return {
-        success: false,
-        message: `出现未知的错误, cause: ${JSON.stringify(result?.cause ?? {})}, stack: ${result?.stack}`,
-      } as any
-    }
+    // if (result?.cause || result?.stack) {
+    //   return {
+    //     success: false,
+    //     message: `出现未知的错误, cause: ${JSON.stringify(result?.cause ?? {})}, stack: ${result?.stack}`,
+    //   } as any
+    // }
 
     return result as RealResponse<Response>
   }

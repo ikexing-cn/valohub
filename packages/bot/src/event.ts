@@ -8,6 +8,7 @@ import { dailyStoreCommand } from './commands/daily-store'
 import { unbindCommand } from './commands/unbind'
 import { verifyCommand } from './commands/verify'
 
+import { infoCommand } from './commands/info'
 import type { ScreenshotQueue } from './utils/screenshot-queue'
 import type { Tag } from 'go-cqwebsocket/out/tags'
 import type { CQEvent, CQWebSocket } from 'go-cqwebsocket'
@@ -73,7 +74,10 @@ async function handleMessage(
       send(await unbindCommand(senderUserId, args?.[0]))
       break
     case 'verify':
-      send(await verifyCommand(senderUserId, args?.[0]))
+      send(verifyCommand(senderUserId, args?.[0]))
+      break
+    case 'info':
+      send(infoCommand())
       break
     default:
       send('未知指令')
