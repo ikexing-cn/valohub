@@ -139,7 +139,7 @@ export default function SignIn() {
         setFormControl({ loading: false })
         return res
       })
-      if (!isBind.success) {
+      if (!isBind.success || !isBind?.data?.needBind) {
         setFormControl({ disabled: true })
         toast('此 qq 已绑定, 请勿重新绑定')
       }
@@ -151,6 +151,7 @@ export default function SignIn() {
 
   return (
     <Form
+      fields={fields}
       title="绑定 Riot 账户"
       formControl={formControl}
       setFields={setFields}
