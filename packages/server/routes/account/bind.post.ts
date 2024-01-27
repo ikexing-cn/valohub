@@ -34,20 +34,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const isUpdate = valorantAccountExists && valorantAccountExists.deleteStatus
-  const [isBindSuccess, bindResponse] = await createOrUpadteValorantInfo({
+  const { gameName, tagLine } = await createOrUpadteValorantInfo({
     qq: account.qq,
     parsedBody,
     password: body.password,
-    response,
     updateOrCreate: isUpdate ? 'update' : 'create',
     toUpdateValorantInfoId: isUpdate ? valorantAccountExists.id : undefined,
   })
 
-  if (!isBindSuccess) {
-    return bindResponse
-  }
-
-  return response(
-    `已成功绑定 ${bindResponse.gameName}#${bindResponse.tagLine}, 欢迎使用!`,
-  )
+  return response(`已成功绑定 ${gameName}#${tagLine}, 欢迎使用!`)
 })

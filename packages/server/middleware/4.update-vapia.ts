@@ -1,5 +1,14 @@
-import type { Tokens } from '../utils/vapic'
+import {
+  provideAuthViaTokens,
+  provideClientVersionViaAuthApi,
+  provideRegion,
+  useProviders,
+} from '@tqman/valorant-api-client'
 
+export interface Tokens {
+  accessToken: string
+  entitlementsToken: string
+}
 export default defineEventHandler(async (event) => {
   const isReauth = event.context.reauth
   const valorantInfo = event.context.valorantInfo
@@ -9,12 +18,17 @@ export default defineEventHandler(async (event) => {
     !isReauth &&
     !getRequestURL(event).pathname.startsWith('/account')
   ) {
-    await updateVapic({
-      qq: valorantInfo.accountQQ,
-      alias: valorantInfo.alias,
-      shard: valorantInfo.shard,
-      region: valorantInfo.region,
-      tokens: valorantInfo.tokens as unknown as Tokens,
+    const tokens = valorantInfo.tokens as unknown as Tokens
+    const vapic = await useVapic(valorantInfo.accountQQ, valorantInfo.alias)
+    await vapic.reinitializeWithProviders({
+      remote: useProviders([
+        provideClientVersionViaAuthApi(),
+        provideRegion(
+          valorantInfo.region.toLowerCase(),
+          valorantInfo.shard.toLowerCase(),
+        ),
+        provideAuthViaTokens(tokens.accessToken, tokens.entitlementsToken),
+      ]),
     })
   }
 })

@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
       ? decrypt(JSON.parse(valorantInfo.riotPassword))
       : riotPassword
 
-  const [isSuccess, result] = await createOrUpadteValorantInfo({
+  const { gameName, tagLine } = await createOrUpadteValorantInfo({
     qq: valorantInfo.accountQQ,
     parsedBody: {
       mfaCode,
@@ -29,12 +29,9 @@ export default defineEventHandler(async (event) => {
       username: valorantInfo.riotUsername,
     },
     password,
-    response,
     updateOrCreate: 'update',
     toUpdateValorantInfoId: valorantInfo.id,
   })
 
-  if (!isSuccess) return result
-
-  return response('验证成功，欢迎继续使用!')
+  return response(`已成功验证 ${gameName}#${tagLine}, 欢迎继续使用!`)
 })

@@ -1,119 +1,71 @@
+import { type AccountBindRequest, dMd5, objectOmit } from '@valorant-bot/shared'
 import {
-  type AccountBindRequest,
-  type AccountBindResponse,
-  dMd5,
-  objectOmit,
-} from '@valorant-bot/shared'
-import {
-  type AuthTokenResponse,
-  type ValorantAuthResponse,
+  MFAError,
+  getAccessTokenHeader,
   getEntitlementsToken,
-  getRegionAndShardFromPas,
-  isMfaResponse,
-  isTokenResponse,
-  parseTokensFromUri,
+  provideAuthAutoRegion,
+  provideClientVersionViaVAPI,
+  useProviders,
 } from '@tqman/valorant-api-client'
 
 import type { $Enums, Prisma } from '@valorant-bot/server-database'
 
-export async function loginRiot(
-  qq: string,
-  parsedBody: AccountBindRequest,
-  response: ReturnType<typeof useResponse<AccountBindResponse['data']>>,
-) {
+export async function loginRiot(qq: string, parsedBody: AccountBindRequest) {
   const event = useEvent()
 
-  let authLoginResult
-  const { username, password, mfaCode, remember = false } = parsedBody
+  const { username, password, mfaCode } = parsedBody
 
   const vapic = await useVapic(qq, parsedBody.alias ?? 'default')
 
   if (mfaCode != null) {
-    authLoginResult =
-      await vapic.auth.putMultiFactorAuthentication<ValorantAuthResponse>({
-        data: {
-          code: mfaCode,
-          rememberDevice: remember,
-          type: 'multifactor',
-        },
+    await vapic
+      .reinitializeWithProviders({
+        remote: useProviders([
+          provideClientVersionViaVAPI(),
+          provideAuthMfaCode(() => ({ code: mfaCode })),
+        ]),
       })
-
-    if (!isTokenResponse(authLoginResult)) {
-      return [
-        false,
-        response(false, '邮箱验证码错误，请重试！', { needRetry: true }),
-      ] as const
-    }
+      .catch(() => {
+        throw new DataWithError('邮箱验证码错误，请重试！', { needRetry: true })
+      })
   } else {
     const valorantInfo = event.context?.valorantInfo
-    await vapic.auth.postAuthCookies({
-      data: {
-        client_id: 'play-valorant-web-prod',
-        nonce: '1',
-        redirect_uri: 'https://playvalorant.com/opt_in',
-        response_type: 'token id_token',
-        scope: 'account openid',
-      },
-    })
-    authLoginResult = await vapic.auth.putAuthRequest<ValorantAuthResponse>({
-      data: {
-        remember,
-        username,
-        password,
-        type: 'auth',
-        language: 'en_US',
-      },
-    })
-
-    if (isMfaResponse(authLoginResult)) {
-      return [
-        false,
-        response(
-          false,
-          '检测到此 Valorant 账号已启用二步验证，请输入邮箱验证码',
-          {
-            needMFA: true,
+    await vapic
+      .reinitializeWithProviders({
+        remote: useProviders([
+          provideClientVersionViaVAPI(),
+          provideAuthAutoRegion(username, password),
+        ]),
+      })
+      .catch((error) => {
+        if (error instanceof MFAError) {
+          throw new DataWithError(
+            '检测到此 Valorant 账号已启用二步验证，请输入邮箱验证码',
+            {
+              needMFA: true,
+              riotUsername: valorantInfo?.riotUsername,
+            },
+          )
+        } else {
+          throw new DataWithError('此 Valorant 账号或密码错误，请重试！', {
+            needRetry: true,
             riotUsername: valorantInfo?.riotUsername,
-          },
-        ),
-      ] as const
-    } else if (!isTokenResponse(authLoginResult)) {
-      return [
-        false,
-        response(false, '此 Valorant 账号或密码错误，请重试！', {
-          needRetry: true,
-          riotUsername: valorantInfo?.riotUsername,
-        }),
-      ] as const
-    }
+          })
+        }
+      })
   }
-
-  return [true, authLoginResult] as const
 }
 
-export async function getRiotinfo(
-  authResponse: AuthTokenResponse,
-  qq: string,
-  alias: string,
-) {
-  const parsedAuthResult = parseTokensFromUri(
-    authResponse.response.parameters.uri,
-  )
+export async function getRiotinfo(qq: string, alias: string) {
   const vapic = await useVapic(qq, alias)
+  const remoteOptions = vapic.remote.options
 
-  const [playerInfoResponse, regionResponse, entitlementsToken] =
-    await Promise.all([
-      vapic.auth.getPlayerInfo({
-        headers: {
-          Authorization: `Bearer ${parsedAuthResult.accessToken}`,
-        },
-      }),
-      getRegionAndShardFromPas(
-        parsedAuthResult.accessToken,
-        parsedAuthResult.idToken,
-      ),
-      getEntitlementsToken(vapic.auth, parsedAuthResult.accessToken),
-    ])
+  const [playerInfoResponse, entitlementsToken] = await Promise.all([
+    vapic.auth.getPlayerInfo({
+      headers: getAccessTokenHeader(remoteOptions.accessToken),
+    }),
+    getEntitlementsToken(vapic.auth, remoteOptions.accessToken),
+  ])
 
   const [gameName, tagLine] = [
     playerInfoResponse.data.acct.game_name,
@@ -124,9 +76,12 @@ export async function getRiotinfo(
     gameName,
     tagLine,
     playerInfo: playerInfoResponse.data,
-    tokens: { entitlementsToken, ...parsedAuthResult },
-    shard: regionResponse.shard.toUpperCase() as $Enums.Shard,
-    region: regionResponse.region.toUpperCase() as $Enums.Region,
+    tokens: {
+      entitlementsToken,
+      accessToken: remoteOptions.accessToken,
+    },
+    shard: remoteOptions.shard.toUpperCase() as $Enums.Shard,
+    region: remoteOptions.region.toUpperCase() as $Enums.Region,
   }
 }
 
@@ -134,30 +89,23 @@ export async function createOrUpadteValorantInfo({
   qq,
   password,
   parsedBody,
-  response,
   updateOrCreate,
   toUpdateValorantInfoId,
 }: {
   qq: string
   password: string
   parsedBody: AccountBindRequest
-  response: ReturnType<typeof useResponse<AccountBindResponse['data']>>
   updateOrCreate: 'update' | 'create'
   toUpdateValorantInfoId?: number
 }) {
   const event = useEvent()
   const prisma = usePrisma()
 
-  const [isLoginSuccessful, authResponse] = await loginRiot(
-    qq,
-    { ...objectOmit(parsedBody, ['password']), password },
-    response,
-  )
-  if (!isLoginSuccessful) return [false, authResponse] as const
+  await loginRiot(qq, { ...objectOmit(parsedBody, ['password']), password })
 
   const alias = parsedBody.alias ?? 'default'
   const { gameName, tagLine, playerInfo, shard, region, tokens } =
-    await getRiotinfo(authResponse.data as AuthTokenResponse, qq, alias)
+    await getRiotinfo(qq, alias)
 
   const riotPassword = parsedBody.remember
     ? JSON.stringify(encrypt(parsedBody.password))
@@ -202,11 +150,8 @@ export async function createOrUpadteValorantInfo({
     })
   }
 
-  return [
-    true,
-    {
-      gameName,
-      tagLine,
-    },
-  ] as const
+  return {
+    gameName,
+    tagLine,
+  }
 }
