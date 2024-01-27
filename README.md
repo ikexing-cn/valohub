@@ -1,6 +1,6 @@
 <div align="center">
     <h1 align="center"><i><b>Valorant Bot</b></i></h1>
-    <p>用于查询 Valorant<i><sup>无畏契约、特戰英豪</sup><i> 相关详情信息(每日商店、MMR、等)的 QQ 机器人服务</p>
+    <p>用于查询 Valorant<i><sup>无畏契约、特戰英豪</sup></i> 相关详情信息(每日商店、MMR、等)的 QQ 机器人服务</p>
 </p>
     <a herf="https://github.com/ikexing-cn/valorant-bot/issues"> <img src="https://img.shields.io/github/issues/ikexing-cn/valorant-bot?color=orange&logo=github&style=flat-square"></a>
     <a herf="https://github.com/ikexing-cn/valorant-bot/network/members"> <img src="https://img.shields.io/github/forks/ikexing-cn/valorant-bot?color=red&logo=github&style=flat-square"></a>
@@ -17,33 +17,33 @@
 ## 主要功能
 此项目仍在紧锣密鼓的开发中，但是基础建设基本完成，可以正常使用。
 
-[x] 支持 Riot 账户管理
+1. 支持 Riot 账户管理
   - [x] 登录
   - [x] 二步验证
   - [x] 自动保活
   - [x] 多账户统一管理
 
-[x] 支持 Valorant 每日商店查询
+2. 支持 Valorant 每日商店查询
   - [x] 获取每日商店信息
   - [x] 自动解析武器信息成单独的图片
 
 ## TODO
 欢迎 Pull Request！
 
-[ ] 商店计划
+1. 商店计划
   - [ ] 支持夜市功能
   - [ ] 支持每周饰品商店
   - [ ] 更好的图片展示方式
 
-[ ] MMR
+2. MMR计划
   - [ ] 最新战绩
   - [ ] 近期战绩 (10 - 15 局游戏)
   - [ ] 赛季/全局 数据统计
   - 更多其他...
 
-[ ] 国际化语言
+3. 国际化语言
 
-[ ] 国服支持 (毫无思路，低优先级)
+4. 国服支持 (毫无思路，低优先级)
 
 ## 部署指南
 
