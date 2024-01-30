@@ -2,6 +2,7 @@ import { resolve } from 'node:path'
 import { existsSync, mkdirSync } from 'node:fs'
 
 import { CQ } from 'go-cqwebsocket'
+import { calcDailyTime } from '@valorant-bot/shared'
 import { createRequest } from '../utils/request'
 import type { ScreenshotQueue } from '../utils/screenshot-queue'
 
@@ -12,24 +13,10 @@ async function fetchIsBind(qq: number, alias: string) {
 }
 
 function getDate() {
-  const now = new Date()
-  const eightTenAM = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-    8,
-    10,
-    0,
-  )
-
-  // Check if the current time is greater than or equal to 8:10 AM
-  const dateToUse =
-    now >= eightTenAM ? now : new Date(now.setDate(now.getDate() - 1))
-
-  // Format the date as YYYY-MM-DD
-  const year = dateToUse.getFullYear()
-  const month = (dateToUse.getMonth() + 1).toString().padStart(2, '0')
-  const day = dateToUse.getDate().toString().padStart(2, '0')
+  const date = calcDailyTime()
+  const year = date.getFullYear()
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const day = date.getDate().toString().padStart(2, '0')
 
   return `${year}-${month}-${day}`
 }

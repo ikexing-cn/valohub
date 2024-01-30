@@ -43,23 +43,30 @@ model ValorantInfo {
 }
 
 model StoreList {
-  id                      Int                      @id @default(autoincrement())
+  id    Int       @id @default(autoincrement())
+  type  StoreType
+  useAt DateTime
+
+  updateAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+
   bonusValorantInfoId     Int?
   dailyValorantInfoId     Int?
   accessoryValorantInfoId Int?
-  createdAt               DateTime                 @default(now())
-  updateAt                DateTime                 @updatedAt
-  ValorantInfoAccessory   ValorantInfo?            @relation("AccessoryStoreRelation", fields: [accessoryValorantInfoId], references: [id])
-  ValorantInfoBonus       ValorantInfo?            @relation("BonusStoreRelation", fields: [bonusValorantInfoId], references: [id])
-  ValorantInfoDaily       ValorantInfo?            @relation("DailyStoresRelation", fields: [dailyValorantInfoId], references: [id])
-  storeListStoreItem      StoreListWithStoreItem[]
+  ValorantInfoAccessory   ValorantInfo? @relation("AccessoryStoreRelation", fields: [accessoryValorantInfoId], references: [id])
+  ValorantInfoBonus       ValorantInfo? @relation("BonusStoreRelation", fields: [bonusValorantInfoId], references: [id])
+  ValorantInfoDaily       ValorantInfo? @relation("DailyStoresRelation", fields: [dailyValorantInfoId], references: [id])
+
+  storeListStoreItem StoreListWithStoreItem[]
 }
 
 model StoreItem {
-  id                 Int                      @id @default(autoincrement())
-  cost               Int
-  costType           CostType
-  uuid               String                   @unique
+  id              Int      @id @default(autoincrement())
+  cost            Int
+  costType        CostType
+  discountPercent Int      @default(0)
+  uuid            String   @unique
+
   storeListStoreItem StoreListWithStoreItem[]
 }
 
@@ -93,4 +100,10 @@ enum CostType {
   VP
   RP
   KC
+}
+
+enum StoreType {
+  BONUS
+  DAILY
+  ACCESSORY
 }

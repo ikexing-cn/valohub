@@ -27,18 +27,23 @@ export type VerifiedResponseWith<T extends object = {}> = IResponse<
 >
 
 // =====
+export type CostType = 'VP' | 'RP' | 'KC'
 
 export type AccountBindResponse = VerifiedResponseWith<{
   isBinded: boolean
 }>
 
+export interface ResponseStoreItem<T extends CostType> {
+  uuid: string
+  cost: number
+  costType: T
+  discountPercent?: number
+}
+
 export type InGameStoreFrontResponse = VerifiedResponseWith<{
   tagLine: string
   gameName: string
 
-  items: {
-    uuid: string
-    cost: number
-    costType: string
-  }[]
+  dailyStoreItems: ResponseStoreItem<'VP'>[]
+  accessoryStoreItems: ResponseStoreItem<'KC'>[]
 }>
