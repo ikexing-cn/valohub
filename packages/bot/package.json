@@ -15,6 +15,6 @@
   "dependencies": {
     "@valorant-bot/shared": "workspace:^",
     "go-cqwebsocket": "^6.2.14",
-    "puppeteer": "^21.9.0"
+    "puppeteer": "^21.10.0"
   }
 }
