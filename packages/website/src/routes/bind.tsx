@@ -139,11 +139,13 @@ export default function SignIn() {
         setFormControl({ loading: false })
         return res
       })
-      if (!isBind.success || !isBind?.data?.needBind) {
+      if (isBind.success || isBind?.data?.needBind === true) {
         setFormControl({ disabled: true })
         toast('此 qq 已绑定, 请勿重新绑定')
       }
-    } catch {
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error)
       setFormControl({ disabled: true })
       toast.error('请在 ValoranBot 处申请链接打开本页面')
     }

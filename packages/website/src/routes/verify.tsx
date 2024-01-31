@@ -120,7 +120,7 @@ export default function Verify() {
     }
 
     setFields({
-      username: authResponse.data.riotUsername!,
+      username: authResponse.data.riotUsername ?? '',
       password: '*'.repeat(16),
     })
     if (authResponse.data.needVerify) {
