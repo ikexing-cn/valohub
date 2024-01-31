@@ -11,6 +11,8 @@ declare module 'h3' {
   }
 }
 
+const skipPaths = ['/account/verify', '/storage']
+
 export default defineEventHandler(async (event) => {
   const valorantInfo = event.context.valorantInfo
 
@@ -21,8 +23,9 @@ export default defineEventHandler(async (event) => {
     const prisma = usePrisma()
 
     const vapic = await useVapic(valorantInfo.accountQQ, valorantInfo.alias)
+    const pathname = getRequestURL(event).pathname
 
-    if (!getRequestURL(event).pathname.startsWith('/account/verify')) {
+    if (!skipPaths.some((path) => pathname.startsWith(path))) {
       await vapic.reinitializeWithProviders({
         remote: useProviders([
           provideClientVersionViaAuthApi(),

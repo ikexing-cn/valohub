@@ -12,6 +12,7 @@
     "lint": "eslint . --cache && prettier --cache -c .",
     "lint:fix": "eslint . --cache --fix && prettier --cache -w .",
     "db:generate": "dotenv -- turbo db:generate",
+    "db:view": "dotenv -- turbo db:view",
     "db:push": "dotenv -- turbo db:push",
     "deploy:bot": "turbo prune @valorant-bot/bot --out-dir .deploy-bot && cp tsconfig.json .deploy-bot/tsconfig.json"
   },

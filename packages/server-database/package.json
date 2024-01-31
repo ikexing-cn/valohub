@@ -8,6 +8,7 @@
     ".": "./index.ts"
   },
   "scripts": {
+    "db:view": "prisma studio",
     "db:generate": "prisma generate",
     "db:push": "prisma db push --skip-generate"
   },

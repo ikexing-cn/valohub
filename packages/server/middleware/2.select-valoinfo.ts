@@ -7,7 +7,7 @@ declare module 'h3' {
   }
 }
 
-const skipPaths = ['/account/bind']
+const skipPaths = ['/account/bind', '/storage']
 
 export default defineEventHandler(async (event) => {
   const account = event.context.account

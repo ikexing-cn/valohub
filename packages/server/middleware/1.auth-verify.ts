@@ -9,7 +9,10 @@ declare module 'h3' {
 }
 
 export default defineEventHandler(async (event) => {
-  if (event.method === 'POST') {
+  if (
+    event.method === 'POST' &&
+    !getRequestURL(event).pathname.startsWith('/storage')
+  ) {
     const parsedBody = await useValidatedBody(accountSchema)
 
     const prisma = usePrisma()

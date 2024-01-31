@@ -15,6 +15,9 @@
     },
     "db:push": {
       "cache": false
+    },
+    "db:view": {
+      "cache": false
     }
   }
 }

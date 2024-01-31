@@ -83,3 +83,7 @@ export const verifySchema = z.object({
 
 export const aliasOnlySchema = z.object({ alias })
 export type AliasOnlyRequest = typeof aliasOnlySchema._input
+
+export const storageSecretKeySchema = z.object({
+  secretKey: z.string().trim(),
+})

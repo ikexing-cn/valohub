@@ -79,6 +79,18 @@ model StoreListWithStoreItem {
   @@id([storeListId, storeItemId])
 }
 
+model Storage {
+  id        Int         @id @default(autoincrement())
+  type      StorageType
+  content   Json
+  language  String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([type, language])
+  @@index([type, language])
+}
+
 enum Region {
   NA
   EU
@@ -106,4 +118,9 @@ enum StoreType {
   BONUS
   DAILY
   ACCESSORY
+}
+
+enum StorageType {
+  WEAPON
+  VERSION
 }
