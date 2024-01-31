@@ -6,21 +6,17 @@ import {
 
 import VP from '~/assets/images/icons/vp.webp'
 import Logo from '~/assets/images/icons/white_icon.png'
+import type { ResponseStoreItem } from '@valorant-bot/shared'
 
-type ItemWeaponProps = {
-  uuid: string
-  price: number
-}
-
-export function ItemWeapon({ price, uuid }: ItemWeaponProps) {
+export function ItemWeapon({ cost, weaponInfo }: ResponseStoreItem<'VP'>) {
   const priceTier = createMemo<PriceTier>(() => {
-    if (price === 875) {
+    if (cost === 875) {
       return 'select'
-    } else if (price === 1275) {
+    } else if (cost === 1275) {
       return 'deluxe'
-    } else if (price === 1775) {
+    } else if (cost === 1775) {
       return 'premium'
-    } else if ([2475, 2975].includes(price)) {
+    } else if ([2475, 2975].includes(cost)) {
       return 'ultra'
     } else {
       return 'exclusive'
@@ -29,15 +25,6 @@ export function ItemWeapon({ price, uuid }: ItemWeaponProps) {
 
   const icon = createMemo(() => getPriceTierIcon(priceTier()))
   const colors = createMemo(() => getPriceTierColor(priceTier()))
-
-  const [weaponInfo, setWeaponInfo] = createSignal<any>({})
-
-  fetch(
-    `https://valorant-api.com/v1/weapons/skinlevels/${uuid}?language=zh-TW`,
-  ).then(async (item) => {
-    const info = await item.json()
-    setWeaponInfo(info)
-  })
 
   return (
     <div
@@ -65,21 +52,18 @@ export function ItemWeapon({ price, uuid }: ItemWeaponProps) {
         flex="~ items-center justify-center"
       >
         <img src={VP} width="18" />
-        <span mr-2>&nbsp;{price}</span>
+        <span mr-2>&nbsp;{cost}</span>
       </div>
 
       <div text="3.5" absolute top-2 right-2 flex>
         <span>
-          {(weaponInfo()?.data?.displayName as string)
-            ?.split(' ')
-            ?.reverse()
-            ?.join(' | ')}
+          {weaponInfo.displayName?.split(' ')?.reverse()?.join(' | ')}
         </span>
         <img src={icon()} w-6 ml />
       </div>
 
       <div mt relative>
-        <img src={weaponInfo()?.data?.displayIcon} h-15 />
+        <img src={weaponInfo.displayIcon!} h-15 />
       </div>
     </div>
   )

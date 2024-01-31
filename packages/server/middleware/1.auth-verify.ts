@@ -4,6 +4,7 @@ import type { Prisma } from '@valorant-bot/server-database'
 
 declare module 'h3' {
   interface H3EventContext {
+    language: string
     account: Prisma.$AccountPayload['scalars']
   }
 }
@@ -17,6 +18,8 @@ export default defineEventHandler(async (event) => {
 
     const prisma = usePrisma()
     const response = useResponse()
+
+    event.context.language = parsedBody.language ?? 'zh-TW'
 
     let accountExist = await prisma.account.findFirst({
       where: { qq: parsedBody.qq },

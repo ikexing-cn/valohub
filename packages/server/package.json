@@ -8,7 +8,6 @@
     "preview": "node .output/server/index.mjs"
   },
   "dependencies": {
-    "@tqman/valoffi-api-client": "^1.1.0",
     "@tqman/valorant-api-client": "^1.3.5",
     "@valorant-bot/server-database": "workspace:^",
     "@valorant-bot/shared": "workspace:^",

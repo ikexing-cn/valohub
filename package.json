@@ -22,6 +22,7 @@
   "devDependencies": {
     "@sxzz/eslint-config": "^3.7.6",
     "@sxzz/prettier-config": "^2.0.0",
+    "@tqman/valoffi-api-client": "^1.1.0",
     "@types/node": "^20.11.13",
     "dotenv-cli": "^7.3.0",
     "eslint": "^8.56.0",

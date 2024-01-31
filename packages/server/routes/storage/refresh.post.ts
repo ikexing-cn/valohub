@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { OffiApiClient, type Version } from '@tqman/valoffi-api-client'
+import { OffiApiClient } from '@tqman/valoffi-api-client'
 import type { StorageType } from '@valorant-bot/server-database'
 
 const languages = {

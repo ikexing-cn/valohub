@@ -72,9 +72,7 @@ export default function DailyStore() {
 
       <div my grid="~ cols-2 rows-2 gap-4">
         <For each={response()?.data?.dailyStoreItems ?? []}>
-          {(item) => {
-            return <ItemWeapon uuid={item.uuid} price={item.cost} />
-          }}
+          {(item) => <ItemWeapon {...item} />}
         </For>
       </div>
 

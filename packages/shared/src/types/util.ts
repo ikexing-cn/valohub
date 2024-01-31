@@ -8,3 +8,5 @@ export type NotNull<T extends unknown | null | undefined> =
   T extends IsNull<T> ? never : T
 
 export type Unpromisify<T> = T extends Promise<infer U> ? U : T
+
+export type UnArray<T> = T extends Array<infer U> ? U : T

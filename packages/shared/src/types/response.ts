@@ -1,3 +1,5 @@
+import type { Weapons } from '@tqman/valoffi-api-client'
+import type { UnArray } from './util'
 export interface IResponse<Data extends object> {
   data: Data
   success: boolean
@@ -33,10 +35,13 @@ export type AccountBindResponse = VerifiedResponseWith<{
   isBinded: boolean
 }>
 
+export type WeaponType = UnArray<UnArray<UnArray<Weapons>['skins']>['levels']>
+
 export interface ResponseStoreItem<T extends CostType> {
   uuid: string
   cost: number
   costType: T
+  weaponInfo: WeaponType
   discountPercent?: number
 }
 
