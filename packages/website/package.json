@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@bitpatty/imgproxy-url-builder": "^1.5.0",
     "@kobalte/core": "^0.12.1",
     "@unocss/reset": "^0.58.4",
     "@valorant-bot/shared": "workspace:^",

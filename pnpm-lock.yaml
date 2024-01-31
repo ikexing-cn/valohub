@@ -127,6 +127,9 @@ importers:
 
   packages/website:
     dependencies:
+      '@bitpatty/imgproxy-url-builder':
+        specifier: ^1.5.0
+        version: 1.5.0
       '@kobalte/core':
         specifier: ^0.12.1
         version: 0.12.1(solid-js@1.8.12)
@@ -534,6 +537,10 @@ packages:
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
     dev: true
+
+  /@bitpatty/imgproxy-url-builder@1.5.0:
+    resolution: {integrity: sha512-cYQTMnjatL0bFkj3SimPgwFGAwa6hakj5ZU8r0Dqx3Ca2WbFW2KwEosJuYqiJJq+pBc1s4278oBvGR5VmatzGQ==}
+    dev: false
 
   /@cloudflare/kv-asset-handler@0.3.0:
     resolution: {integrity: sha512-9CB/MKf/wdvbfkUdfrj+OkEwZ5b7rws0eogJ4293h+7b6KX5toPwym+VQKmILafNB9YiehqY0DlNrDcDhdWHSQ==}

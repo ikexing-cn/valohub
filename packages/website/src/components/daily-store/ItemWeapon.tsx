@@ -1,3 +1,5 @@
+import pb, { ResizeType } from '@bitpatty/imgproxy-url-builder'
+
 import {
   type PriceTier,
   getPriceTierColor,
@@ -25,6 +27,20 @@ export function ItemWeapon({ cost, weaponInfo }: ResponseStoreItem<'VP'>) {
 
   const icon = createMemo(() => getPriceTierIcon(priceTier()))
   const colors = createMemo(() => getPriceTierColor(priceTier()))
+
+  const proxyDisplayIcon = createMemo(() => {
+    return pb()
+      .resize({
+        type: ResizeType.FIT,
+        width: 300,
+        height: 60,
+      })
+      .build({
+        plain: false,
+        path: weaponInfo.displayIcon ?? '',
+        baseUrl: import.meta.env.IMG_PROXY_URL,
+      })
+  })
 
   return (
     <div
@@ -63,7 +79,7 @@ export function ItemWeapon({ cost, weaponInfo }: ResponseStoreItem<'VP'>) {
       </div>
 
       <div mt relative>
-        <img src={weaponInfo.displayIcon!} h-15 />
+        <img src={proxyDisplayIcon()} h-15 />
       </div>
     </div>
   )
