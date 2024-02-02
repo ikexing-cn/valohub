@@ -10,7 +10,7 @@ import VP from '~/assets/images/icons/vp.webp'
 import Logo from '~/assets/images/icons/white_icon.png'
 import type { ResponseStoreItem } from '@valorant-bot/shared'
 
-export function ItemWeapon({ cost, weaponInfo }: ResponseStoreItem<'VP'>) {
+export function ItemWeapon({ cost, weaponInfo }: ResponseStoreItem) {
   const priceTier = createMemo<PriceTier>(() => {
     if (cost === 875) {
       return 'select'

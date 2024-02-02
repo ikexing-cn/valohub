@@ -4,4 +4,5 @@ export default defineNitroConfig({
     asyncContext: true,
   },
   preset: 'zeabur',
+  debug: true,
 })

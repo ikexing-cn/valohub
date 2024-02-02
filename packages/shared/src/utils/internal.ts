@@ -22,3 +22,7 @@ export function dMd5(str: string) {
 export function md5(str: string) {
   return createHash('md5').update(str).digest('hex')
 }
+
+export function isEmptyArray<T extends any[]>(arr?: T): boolean {
+  return arr ? arr.length <= 0 : false
+}

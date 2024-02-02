@@ -47,6 +47,8 @@ model StoreList {
   type  StoreType
   useAt DateTime
 
+  items String[]
+
   updateAt  DateTime @updatedAt
   createdAt DateTime @default(now())
 
@@ -56,27 +58,6 @@ model StoreList {
   ValorantInfoAccessory   ValorantInfo? @relation("AccessoryStoreRelation", fields: [accessoryValorantInfoId], references: [id])
   ValorantInfoBonus       ValorantInfo? @relation("BonusStoreRelation", fields: [bonusValorantInfoId], references: [id])
   ValorantInfoDaily       ValorantInfo? @relation("DailyStoresRelation", fields: [dailyValorantInfoId], references: [id])
-
-  storeListStoreItem StoreListWithStoreItem[]
-}
-
-model StoreItem {
-  id              Int      @id @default(autoincrement())
-  cost            Int
-  costType        CostType
-  discountPercent Int      @default(0)
-  uuid            String   @unique
-
-  storeListStoreItem StoreListWithStoreItem[]
-}
-
-model StoreListWithStoreItem {
-  storeListId Int
-  storeItemId Int
-  storeItem   StoreItem @relation(fields: [storeItemId], references: [id])
-  storeList   StoreList @relation(fields: [storeListId], references: [id])
-
-  @@id([storeListId, storeItemId])
 }
 
 model Storage {
@@ -122,5 +103,6 @@ enum StoreType {
 
 enum StorageType {
   WEAPON
+  WEAPON_PRICE
   VERSION
 }
