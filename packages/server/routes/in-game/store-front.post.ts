@@ -51,10 +51,10 @@ function transformWeaponItems(type: StoreType, items: string[]) {
       `
 
       return {
-        cost,
         category,
         weaponInfo,
         discountPercent: 0,
+        cost: Number(cost),
         costType: type === 'ACCESSORY' ? 'KC' : 'VP',
       } satisfies ResponseStoreItem
     }),
