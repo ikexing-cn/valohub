@@ -32,23 +32,24 @@ export function getResponse<T extends object>(
   if (typeof paramA === 'boolean') {
     success = paramA
 
-    if (typeof paramB === 'string') {
+    if (typeof paramB === 'string')
       message = paramB
-    } else {
+    else
       data = paramB as T
-    }
-  } else {
+  }
+  else {
     success = true
-    if (typeof paramA === 'string') {
+    if (typeof paramA === 'string')
       message = paramA
-    } else {
+    else
       data = paramA
-    }
   }
 
   return { success, message, data }
 }
 
-export const useResponse = <
+export function useResponse<
   T extends object = AccountVerifyResponse['data'],
->() => getResponse<T>
+>() {
+  return getResponse<T>
+}

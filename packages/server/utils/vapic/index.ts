@@ -13,13 +13,12 @@ import {
 import { CookieJar } from 'tough-cookie'
 
 function ensureArray<T>(input: T | T[] | undefined) {
-  if (!input) {
+  if (!input)
     return []
-  } else if (Array.isArray(input)) {
+  else if (Array.isArray(input))
     return input
-  } else {
+  else
     return [input]
-  }
 }
 
 function parseUrl(_url: string) {
@@ -60,12 +59,11 @@ export async function useVapic(qq: string, alias: string) {
           cookieJar.setCookieSync(cookies, config.url)
           const previousCookie = config.headers.Cookie ?? ''
 
-          let Cookie =
-            previousCookie + cookieJar.getCookieStringSync(config.url)
+          let Cookie
+            = previousCookie + cookieJar.getCookieStringSync(config.url)
 
-          if (config.url === cookieReauthEndpoint.suffix) {
+          if (config.url === cookieReauthEndpoint.suffix)
             Cookie += cookieWithDatabase ?? ''
-          }
 
           config.headers = Object.assign(config.headers, { Cookie })
         }
@@ -80,7 +78,7 @@ export async function useVapic(qq: string, alias: string) {
         if (url) {
           const redisKey = getStoreCokiesRedisKey(qq, alias, url)
           const cookies = ensureArray(response.headers['set-cookie'])
-          cookies.forEach((cookie) => cookieJar.setCookieSync(cookie, url))
+          cookies.forEach(cookie => cookieJar.setCookieSync(cookie, url))
           await redisStorage.setItem(
             redisKey,
             cookieJar.getCookieStringSync(url),

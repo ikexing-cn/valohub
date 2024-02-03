@@ -24,7 +24,7 @@ function transformWeaponItems(type: StoreType, items: string[]) {
   return Promise.all(
     items.map(async (item) => {
       const [{ category, weapon_info: weaponInfo }]: [
-        { category: TCategory; weapon_info: TWeapon },
+        { category: TCategory, weapon_info: TWeapon },
       ] = await prisma.$queryRaw`
         SELECT 
           content_element - 'skins' - 'weaponStats' - 'shopData' AS category,
@@ -123,11 +123,10 @@ export default defineEventHandler(async (event) => {
   const checkIfResultIsNotEmpty$ = zip(
     of(toResult.dailyStoreItems),
     // of(toResult.accessoryStoreItems),
-  ).pipe(map((result) => result.every((arr) => !isEmptyArray(arr))))
+  ).pipe(map(result => result.every(arr => !isEmptyArray(arr))))
 
-  if (await lastValueFrom(checkIfResultIsNotEmpty$)) {
+  if (await lastValueFrom(checkIfResultIsNotEmpty$))
     return response(toResult)
-  }
 
   // ==============================================================================
 
@@ -138,7 +137,7 @@ export default defineEventHandler(async (event) => {
 
   if (isEmptyArray(toResult.dailyStoreItems)) {
     const items = SkinsPanelLayout.SingleItemStoreOffers.map(
-      (offer) => offer.Rewards[0].ItemID,
+      offer => offer.Rewards[0].ItemID,
     )
     await prisma.storeList.create({
       data: {

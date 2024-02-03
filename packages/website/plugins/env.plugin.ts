@@ -1,3 +1,4 @@
+import { env } from 'node:process'
 import type { Plugin } from 'vite'
 
 export function EnvReplacePlugin(): Plugin {
@@ -6,7 +7,6 @@ export function EnvReplacePlugin(): Plugin {
     enforce: 'pre',
     transform(code) {
       if (code.includes('import.meta.env')) {
-        const env = process.env
         const replacements = Object.keys(env).reduce(
           (acc, key) => {
             acc[`import.meta.env.${key}`] = `'${env[key]!}'`

@@ -8,5 +8,5 @@ export function infoCommand() {
     '如果此项目对你有所帮助, 欢迎给我一个 star',
   ]
 
-  return toReturnMessages.map((item) => CQ.text(`${item}\n`))
+  return toReturnMessages.map(item => CQ.text(`${item}\n`))
 }

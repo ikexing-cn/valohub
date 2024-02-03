@@ -41,29 +41,27 @@ async function getWeaponPrices(
 
         const table = document.querySelector(
           'table.sortable',
-        )! as HTMLTableElement
+        )!
 
-        table.querySelectorAll('tr')!.forEach((row) => {
+        table.querySelectorAll('tr').forEach((row) => {
           const cells = Array.from(row.querySelectorAll('td'))
-          if (isEmptyArray(cells)) {
+          if (isEmptyArray(cells))
             return
-          }
 
-          const content = cells.map((cell) => cell?.textContent?.trim() ?? '')
+          const content = cells.map(cell => cell?.textContent?.trim() ?? '')
           let collection: string, cost: number
 
           if (
             content?.[0].includes(
               'For each weapon with upgrade levels and/or variants',
             )
-          ) {
+          )
             return
-          }
 
           const parseToNumber = (price: string) => {
-            if (!price) {
+            if (!price)
               return 0
-            }
+
             return Number.parseInt(price.replaceAll(',', ''))
           }
 
@@ -71,34 +69,34 @@ async function getWeaponPrices(
             if (/^(?:\d+,?)+$/.test(content[2])) {
               collection = content[1]
               cost = parseToNumber(content[2])
-            } else {
+            }
+            else {
               collection = content[2]
               cost = parseToNumber(content[3])
             }
-          } else {
+          }
+          else {
             collection = content[2]
             cost = parseToNumber(content[4])
-            if (cost === 0 || Number.isNaN(cost) || !cost) {
+            if (cost === 0 || Number.isNaN(cost) || !cost)
               cost = parseToNumber(content[3])
-            }
           }
 
-          const wepaonSkinUUID =
-            weaponSkins.find((skin) => {
-              const skinName = skin.displayName.toLowerCase()
+          const wepaonSkinUUID = weaponSkins.find((skin) => {
+            const skinName = skin.displayName.toLowerCase()
 
-              const matches = skinName.includes(collection.toLowerCase())
+            const matches = skinName.includes(collection.toLowerCase())
 
-              const regex = /Level\s?1:\s?([\s\w]+)Level/
-              if (!matches && regex.test(collection)) {
-                const extractSkinName = regex.exec(collection)
-                return skinName.includes(
-                  extractSkinName?.[1]?.trim()?.toLowerCase() ?? '',
-                )
-              }
+            const regex = /Level\s?1:\s?([\s\w]+)Level/
+            if (!matches && regex.test(collection)) {
+              const extractSkinName = regex.exec(collection)
+              return skinName.includes(
+                extractSkinName?.[1]?.trim()?.toLowerCase() ?? '',
+              )
+            }
 
-              return matches
-            })?.uuid ?? ''
+            return matches
+          })?.uuid ?? ''
 
           records.has(uuid) || records.set(uuid, [])
           records.get(uuid)!.push({
@@ -120,7 +118,7 @@ export default defineEventHandler(async () => {
   const api = new OffiApiClient({ parseResponseData: true })
 
   const toStorage: {
-    weapons: { language: string; type: StorageType; content: object }[]
+    weapons: { language: string, type: StorageType, content: object }[]
   } = {
     weapons: [],
   }

@@ -1,3 +1,4 @@
+import { env } from 'node:process'
 import redisStorage from 'unstorage/drivers/redis'
 
 export default defineNitroPlugin(() => {
@@ -5,7 +6,7 @@ export default defineNitroPlugin(() => {
 
   const driver = redisStorage({
     base: 'redis',
-    url: process.env.REDIS_URI,
+    url: env.REDIS_URI,
     ttl: 60 * 60 * 1, // 1 hour
   })
 

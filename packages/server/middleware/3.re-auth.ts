@@ -16,16 +16,13 @@ const skipPaths = ['/account/verify', '/storage']
 export default defineEventHandler(async (event) => {
   const valorantInfo = event.context.valorantInfo
 
-  if (
-    valorantInfo &&
-    valorantInfo.updatedAt.getTime() + 1000 * 60 * 30 < Date.now()
-  ) {
+  if (valorantInfo && valorantInfo.updatedAt.getTime() + 1000 * 60 * 30 < Date.now()) {
     const prisma = usePrisma()
 
     const vapic = await useVapic(valorantInfo.accountQQ, valorantInfo.alias)
     const pathname = getRequestURL(event).pathname
 
-    if (!skipPaths.some((path) => pathname.startsWith(path))) {
+    if (!skipPaths.some(path => pathname.startsWith(path))) {
       await vapic.reinitializeWithProviders({
         remote: useProviders([
           provideClientVersionViaAuthApi(),

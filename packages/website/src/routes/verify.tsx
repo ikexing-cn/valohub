@@ -1,7 +1,8 @@
 import toast from 'solid-toast'
+import type { AccountVerifyResponse } from '@valorant-bot/shared'
+
 import Form from '~/components/riot/Form'
 import { baseUrl } from '~/utils/request'
-import type { AccountVerifyResponse } from '@valorant-bot/shared'
 import type { SignInDialogType } from '~/components/riot/InputDialog'
 
 async function fetchAuth(qq: string, alias: string) {
@@ -62,11 +63,10 @@ export default function Verify() {
 
   async function handleSubmit() {
     setFormControl({ loading: true })
-    if (!fields.username) {
+    if (!fields.username)
       return toast.error('请输入用户名')
-    } else if (!fields.riotAllowTerms) {
+    else if (!fields.riotAllowTerms)
       return toast.error('请同意服务条款')
-    }
 
     const response = await fetchVerify({
       ...fields,
@@ -83,7 +83,8 @@ export default function Verify() {
           })
           toast(response.message)
           return
-        } else if (response.data.needRetry) {
+        }
+        else if (response.data.needRetry) {
           setFormControl({ dialogOpen: true })
         }
       }
@@ -98,11 +99,11 @@ export default function Verify() {
 
   async function handleInputEnter(type: SignInDialogType, value: string) {
     setFormControl({ dialogOpen: false })
-    if (type === 'initial' || type === 'verify') {
+    if (type === 'initial' || type === 'verify')
       setFields({ verifyPassword: value })
-    } else {
+    else
       setFields({ mfaCode: value })
-    }
+
     await handleSubmit().finally(() => setFormControl({ loading: false }))
   }
 
@@ -126,11 +127,12 @@ export default function Verify() {
     if (authResponse.data.needVerify) {
       // todo
       setFields({ riotAllowTerms: true })
-      return
-    } else if (authResponse.data.needRetry) {
+    }
+    else if (authResponse.data.needRetry) {
       setFields({ riotAllowTerms: true, remember: true })
       setFormControl({ inputDisabled: { username: true, password: false } })
-    } else if (authResponse.data.needMFA) {
+    }
+    else if (authResponse.data.needMFA) {
       setFields({
         riotAllowTerms: true,
         remember: true,
@@ -144,12 +146,12 @@ export default function Verify() {
   onMount(async () => {
     try {
       const qq = searchParams?.qq
-      if (!qq || !Number.isInteger(Number(atob(qq)))) {
+      if (!qq || !Number.isInteger(Number(atob(qq))))
         throw new Error('无效的 qq')
-      }
 
       await beforeReauth(qq)
-    } catch {
+    }
+    catch {
       setFormControl({ disabled: true })
       toast.error('请在 ValoranBot 处申请链接打开本页面')
     }

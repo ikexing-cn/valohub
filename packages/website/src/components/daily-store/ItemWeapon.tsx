@@ -1,28 +1,24 @@
 import pb, { ResizeType } from '@bitpatty/imgproxy-url-builder'
 
-import {
-  type PriceTier,
-  getPriceTierColor,
-  getPriceTierIcon,
-} from '~/utils/price-tier'
+import type { ResponseStoreItem } from '@valorant-bot/shared'
+import type { PriceTier } from '~/utils/price-tier'
+import { getPriceTierColor, getPriceTierIcon } from '~/utils/price-tier'
 
 import VP from '~/assets/images/icons/vp.webp'
 import Logo from '~/assets/images/icons/white_icon.png'
-import type { ResponseStoreItem } from '@valorant-bot/shared'
 
 export function ItemWeapon({ cost, weaponInfo }: ResponseStoreItem) {
   const priceTier = createMemo<PriceTier>(() => {
-    if (cost === 875) {
+    if (cost === 875)
       return 'select'
-    } else if (cost === 1275) {
+    else if (cost === 1275)
       return 'deluxe'
-    } else if (cost === 1775) {
+    else if (cost === 1775)
       return 'premium'
-    } else if ([2475, 2975].includes(cost)) {
+    else if ([2475, 2975].includes(cost))
       return 'ultra'
-    } else {
+    else
       return 'exclusive'
-    }
   })
 
   const icon = createMemo(() => getPriceTierIcon(priceTier()))
@@ -68,7 +64,10 @@ export function ItemWeapon({ cost, weaponInfo }: ResponseStoreItem) {
         flex="~ items-center justify-center"
       >
         <img src={VP} width="18" />
-        <span mr-2>&nbsp;{cost}</span>
+        <span mr-2>
+&nbsp;
+          {cost}
+        </span>
       </div>
 
       <div text="3.5" absolute top-2 right-2 flex>

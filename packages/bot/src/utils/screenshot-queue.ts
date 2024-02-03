@@ -20,7 +20,7 @@ export class ScreenshotQueue {
     this.browser = await puppeteer.launch({ headless: 'new' })
 
     for (let i = 0; i < this.pageCacheSize; ++i) {
-      const page = await this.browser!.newPage()
+      const page = await this.browser.newPage()
       this.pages.set(page, true)
     }
   }
@@ -31,10 +31,11 @@ export class ScreenshotQueue {
   }
 
   private async churnQueue() {
-    const item = this.queue.find((item) => item.status === 'pending')
+    const item = this.queue.find(item => item.status === 'pending')
     const page = Array.from(this.pages).find(([, isIdle]) => isIdle)?.[0]
 
-    if (!item || !page) return
+    if (!item || !page)
+      return
 
     item.status = 'processing'
     this.pages.set(page, false)
@@ -50,17 +51,17 @@ export class ScreenshotQueue {
       },
     })
 
-    this.queue = this.queue.filter((i) => i !== item)
+    this.queue = this.queue.filter(i => i !== item)
 
     this.pages.set(page, true)
 
-    if (this.queue.length > 0) {
+    if (this.queue.length > 0)
       await this.churnQueue()
-    }
   }
 
   public async beforceExit() {
     for (const page of this.pages.keys()) await page.close()
-    if (this.browser) this.browser.close()
+    if (this.browser)
+      this.browser.close()
   }
 }

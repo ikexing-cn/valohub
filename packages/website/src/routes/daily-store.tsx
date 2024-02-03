@@ -1,12 +1,12 @@
 import toast from 'solid-toast'
 
+import type { InGameStoreFrontResponse } from '@valorant-bot/shared'
 import { baseUrl } from '~/utils/request'
 import { ItemWeapon } from '~/components/daily-store/ItemWeapon'
 
 import BackgroundImage from '~/assets/images/background/daily-store.jpg'
 
 import { cn } from '~/lib/utils'
-import type { InGameStoreFrontResponse } from '@valorant-bot/shared'
 
 async function fetchData(
   qq: string,
@@ -28,8 +28,7 @@ export default function DailyStore() {
 
   const [searchParams] = useSearchParams()
   const [response] = createResource(searchParams, ({ qq, alias }) =>
-    fetchData(qq!, alias || 'default'),
-  )
+    fetchData(qq!, alias || 'default'))
 
   createEffect(() => {
     if (response()?.success === false) {
@@ -42,10 +41,10 @@ export default function DailyStore() {
   onMount(() => {
     try {
       const qq = searchParams?.qq
-      if (!qq || !Number.isInteger(Number(atob(qq)))) {
+      if (!qq || !Number.isInteger(Number(atob(qq))))
         throw new Error('无效的 qq')
-      }
-    } catch {
+    }
+    catch {
       setDisabled(true)
       toast.error('出现错误, 请重新尝试', { position: 'top-left' })
     }
@@ -66,13 +65,15 @@ export default function DailyStore() {
       <div relative>
         <span>每日商店: </span>
         <span text="2.8">
-          {response()?.data?.gameName}#{response()?.data?.tagLine}
+          {response()?.data?.gameName}
+          #
+          {response()?.data?.tagLine}
         </span>
       </div>
 
       <div my grid="~ cols-2 rows-2 gap-4">
         <For each={response()?.data?.dailyStoreItems ?? []}>
-          {(item) => <ItemWeapon {...item} />}
+          {item => <ItemWeapon {...item} />}
         </For>
       </div>
 

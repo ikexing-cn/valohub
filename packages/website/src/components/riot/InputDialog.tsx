@@ -40,24 +40,27 @@ export default function SignInDialog(props: SignInDialogProps) {
     <Dialog open={props.open}>
       {/* <DialogTrigger as={Button} ref={props.ref} hidden /> */}
       <DialogContent
-        onEscapeKeyDown={(event) => event.preventDefault()}
-        onPointerDownOutside={(event) => event.preventDefault()}
+        onEscapeKeyDown={event => event.preventDefault()}
+        onPointerDownOutside={event => event.preventDefault()}
       >
         <DialogHeader>
           <DialogTitle>
-            请{props.type === 'verify' ? '验证' : '输入'}你的{typeName}
+            请
+            {props.type === 'verify' ? '验证' : '输入'}
+            你的
+            {typeName}
           </DialogTitle>
           <DialogDescription>
             <Input
               class="my"
               placeholder={`请输入你的${typeName}`}
-              onInput={(event) => setText(event.target.value)}
+              onInput={event => setText(event.target.value)}
             />
             {props.type === 'verify' && (
               <Input
                 class="my"
                 placeholder={`请重复输入你的${typeName}`}
-                onInput={(event) => setRePassword(event.target.value)}
+                onInput={event => setRePassword(event.target.value)}
               />
             )}
           </DialogDescription>

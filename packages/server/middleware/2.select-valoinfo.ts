@@ -12,7 +12,7 @@ const skipPaths = ['/account/bind', '/storage']
 export default defineEventHandler(async (event) => {
   const account = event.context.account
   const pathname = getRequestURL(event).pathname
-  if (account && !skipPaths.some((path) => pathname.startsWith(path))) {
+  if (account && !skipPaths.some(path => pathname.startsWith(path))) {
     const parsedBody = await useValidatedBody(aliasOnlySchema)
 
     const prisma = usePrisma()
@@ -25,11 +25,10 @@ export default defineEventHandler(async (event) => {
     })
 
     if (!valorantInfo) {
-      if (parsedBody.alias === 'default') {
+      if (parsedBody.alias === 'default')
         throw new Error('请先进行 Valorant 账号绑定')
-      } else {
+      else
         throw new Error(`未找到 「${parsedBody.alias}」 绑定的 Valorant 账号`)
-      }
     }
 
     event.context.valorantInfo = valorantInfo

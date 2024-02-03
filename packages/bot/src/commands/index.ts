@@ -55,7 +55,8 @@ export function parseCommand(command: string) {
       command: nameWithArgs[0],
       args: nameWithArgs.slice(1),
     }
-  } else {
+  }
+  else {
     return {
       command,
     }
@@ -66,9 +67,9 @@ export function findCommandBase(isGroup: boolean, command: string) {
   for (const [group, config] of Object.entries(commands)) {
     for (const [name, cmdOptions] of Object.entries(config)) {
       if (cmdOptions.aliases.includes(command.toLowerCase())) {
-        if (isGroup && group === 'pravite') {
+        if (isGroup && group === 'pravite')
           return null
-        }
+
         return name as AllCommandKeys
       }
     }

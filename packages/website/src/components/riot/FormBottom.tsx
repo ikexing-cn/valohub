@@ -27,7 +27,7 @@ export default function FormButtom(props: FormButtomProps) {
           <Checkbox
             name="allow-terms"
             id="allow-terms"
-            onChange={(checked) => props.setFields({ riotAllowTerms: checked })}
+            onChange={checked => props.setFields({ riotAllowTerms: checked })}
           />
           <Label class="text-sm" htmlFor="terms">
             我同意
@@ -46,7 +46,7 @@ export default function FormButtom(props: FormButtomProps) {
               <Checkbox
                 id="remember"
                 name="remember"
-                onChange={(checked) => props.setFields({ remember: checked })}
+                onChange={checked => props.setFields({ remember: checked })}
               />
               <Label
                 htmlFor="remember"

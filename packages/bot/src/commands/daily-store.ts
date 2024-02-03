@@ -1,6 +1,7 @@
 import { resolve } from 'node:path'
 import { existsSync, mkdirSync } from 'node:fs'
 
+import { env } from 'node:process'
 import { CQ } from 'go-cqwebsocket'
 import { calcDailyTime } from '@valorant-bot/shared'
 import { createRequest } from '../utils/request'
@@ -28,23 +29,22 @@ export async function dailyStoreCommand(
 ) {
   const isBind = await fetchIsBind(qq, alias)
 
-  if (!isBind.success) {
+  if (!isBind.success)
     return isBind.message
-  }
 
-  const storageDir = process.env.VALORANT_BOT_SCREENSHOT_STORAGE_DIR_PATH
+  const storageDir = env.VALORANT_BOT_SCREENSHOT_STORAGE_DIR_PATH
   const dir = storageDir
     ? resolve(storageDir, `${qq}/${getDate()}/`)
-    : resolve(import.meta.dirname!, `../../screenshots/${qq}/${getDate()}/`)
-  if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
+    : resolve(import.meta.dirname, `../../screenshots/${qq}/${getDate()}/`)
+  if (!existsSync(dir))
+    mkdirSync(dir, { recursive: true })
 
   const imageStorePath = resolve(dir, `daily-store-${alias}.png`)
 
-  if (existsSync(imageStorePath)) {
+  if (existsSync(imageStorePath))
     return [CQ.image(`file:///${imageStorePath}`)]
-  }
 
-  const url = `${process.env.VALORANT_WEBSITE_URL}/daily-store?qq=${btoa(qq.toString())}&alias=${alias}`
+  const url = `${env.VALORANT_WEBSITE_URL}/daily-store?qq=${btoa(qq.toString())}&alias=${alias}`
   await screenshotQueue.addToQueue(url, imageStorePath)
 
   return [CQ.image(`file:///${imageStorePath}`)]

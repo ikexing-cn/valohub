@@ -5,7 +5,8 @@ export default defineEventHandler((event) => {
     return response(true, '已绑定', {
       needBind: false,
     })
-  } else {
+  }
+  else {
     return response(false, '未绑定', {
       needBind: true,
     })

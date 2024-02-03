@@ -2,8 +2,8 @@ function createResponse<
   Status extends number,
   Result = Status extends 200 ? object | string : Error,
 >(status: Status, errorOrBody: Result) {
-  const result =
-    status !== 200
+  const result
+    = status !== 200
       ? {
           success: false,
           message:

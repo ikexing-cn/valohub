@@ -31,7 +31,7 @@ export const accountSchema = z.object({
       message: '密码长度必须大于6',
     })
     .trim()
-    .transform((v) => dMd5(v))
+    .transform(v => dMd5(v))
     .optional(),
 })
 

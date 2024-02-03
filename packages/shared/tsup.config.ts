@@ -1,3 +1,4 @@
+import { env } from 'node:process'
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
@@ -5,8 +6,8 @@ export default defineConfig({
   format: ['cjs', 'esm'],
   splitting: true,
   cjsInterop: true,
-  watch: !!process.env.DEV,
-  dts: process.env.DEV
+  watch: !!env.DEV,
+  dts: env.DEV
     ? false
     : {
         compilerOptions: {
@@ -15,7 +16,6 @@ export default defineConfig({
       },
   tsconfig: './tsconfig.json',
   clean: true,
-  minify: !process.env.DEV,
   treeshake: true,
   bundle: true,
   external: ['zod'],

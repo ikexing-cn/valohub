@@ -24,7 +24,7 @@ export function provideReauth(config: {
     const { username, password, remember } = config
     const valorantInfo = useEvent().context.valorantInfo
 
-    let tokenResult: { accessToken: string; idToken: string }
+    let tokenResult: { accessToken: string, idToken: string }
 
     try {
       if (valorantInfo.cookies?.includes('ssid=')) {
@@ -38,7 +38,8 @@ export function provideReauth(config: {
         )
         tokenResult = await firstValueFrom(retryGetTokens)
       }
-    } catch {
+    }
+    catch {
       if (remember) {
         tokenResult = await getTokensUsingCredentials(
           auth,

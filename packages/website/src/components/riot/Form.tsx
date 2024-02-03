@@ -1,10 +1,8 @@
-import { cn } from '~/lib/utils'
-import SignInDialog, {
-  type SignInDialogType,
-} from '~/components/riot/InputDialog'
-
-import FormButtom from './FormBottom'
 import FormMain from './FormMain'
+import FormButtom from './FormBottom'
+
+import { cn } from '~/lib/utils'
+import SignInDialog, { type SignInDialogType } from '~/components/riot/InputDialog'
 
 interface FormButtomProps {
   title: string
@@ -35,8 +33,7 @@ export default function Form(props: FormButtomProps) {
     <div
       class={cn([
         'flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900',
-        (props.formControl.disabled || props.formControl.loading) &&
-          'pointer-events-none opacity-50',
+        (props.formControl.disabled || props.formControl.loading) && 'pointer-events-none opacity-50',
       ])}
     >
       <SignInDialog
@@ -46,7 +43,7 @@ export default function Form(props: FormButtomProps) {
         disabled={props.formControl.loading}
       />
 
-      <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+      <div class="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
         <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-gray-100">
           {props.title}
         </h2>

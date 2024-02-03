@@ -29,7 +29,7 @@ export default function FormMain(props: FormMainProps) {
           autocomplete="username"
           placeholder="请输入用户名"
           value={props.fields.username}
-          onInput={(event) => props.setFields({ username: event.target.value })}
+          onInput={event => props.setFields({ username: event.target.value })}
         />
       </div>
       <div class="space-y-2">
@@ -42,7 +42,7 @@ export default function FormMain(props: FormMainProps) {
           type="password"
           autocomplete="current-password"
           placeholder={props.fields.password ? '请输入密码' : '*'.repeat(16)}
-          onInput={(event) => props.setFields({ password: event.target.value })}
+          onInput={event => props.setFields({ password: event.target.value })}
         />
       </div>
     </>

@@ -1,3 +1,5 @@
+import { env } from 'node:process'
+import { Buffer } from 'node:buffer'
 import {
   createCipheriv,
   createDecipheriv,
@@ -6,13 +8,11 @@ import {
 } from 'node:crypto'
 
 const algorithm: string = 'aes-256-cbc'
-const secretKey =
-  process.env.VALORANT_SERVER_SECRET_KEY?.trim() ||
-  'YOUR_SECRET_STRING_HAVING_32_CHARS'
+const secretKey = env.VALORANT_SERVER_SECRET_KEY?.trim() || 'YOUR_SECRET_STRING_HAVING_32_CHARS'
 
 const hashSecretKey = createHash('sha256').update(secretKey).digest()
 
-export function encrypt(text: string): { iv: string; content: string } {
+export function encrypt(text: string): { iv: string, content: string } {
   const iv: Buffer = randomBytes(16)
 
   const cipher = createCipheriv(algorithm, hashSecretKey, iv)
@@ -23,7 +23,7 @@ export function encrypt(text: string): { iv: string; content: string } {
   }
 }
 
-export function decrypt(hash: { iv: string; content: string }): string {
+export function decrypt(hash: { iv: string, content: string }): string {
   const decipher = createDecipheriv(
     algorithm,
     hashSecretKey,

@@ -9,14 +9,12 @@ export default defineEventHandler(async (event) => {
   } = await useValidatedBody(verifySchema)
   const valorantInfo = event.context.valorantInfo
 
-  if (!valorantInfo) {
+  if (!valorantInfo)
     return response(false, '未绑定 Valorant 账号')
-  }
 
-  const password =
-    !riotPassword || riotPassword === '*'.repeat(16)
-      ? decrypt(JSON.parse(valorantInfo.riotPassword))
-      : riotPassword
+  const password = !riotPassword || riotPassword === '*'.repeat(16)
+    ? decrypt(JSON.parse(valorantInfo.riotPassword))
+    : riotPassword
 
   const { gameName, tagLine } = await createOrUpadteValorantInfo({
     qq: valorantInfo.accountQQ,

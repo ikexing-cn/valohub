@@ -1,4 +1,6 @@
-/* eslint-disable no-console */
+import type { Tag } from 'go-cqwebsocket/out/tags'
+import type { CQEvent, CQWebSocket } from 'go-cqwebsocket'
+
 import { findCommandBase, parseCommand } from './commands'
 import { sendMessage } from './utils/chat'
 import { helpCommand } from './commands/help'
@@ -10,8 +12,6 @@ import { verifyCommand } from './commands/verify'
 
 import { infoCommand } from './commands/info'
 import type { ScreenshotQueue } from './utils/screenshot-queue'
-import type { Tag } from 'go-cqwebsocket/out/tags'
-import type { CQEvent, CQWebSocket } from 'go-cqwebsocket'
 
 async function handleMessage(
   client: CQWebSocket,
@@ -23,17 +23,14 @@ async function handleMessage(
   const isGroup = context.message_type === 'group'
 
   if (
-    isGroup &&
-    (typeof message === 'string' ||
-      !message.some(
-        (item) => item.type === 'at' && item.data.qq === '149384916',
-      ))
+    isGroup
+    && (typeof message === 'string' || !message.some(item => item.type === 'at' && item.data.qq === '149384916'))
   )
     return
 
-  const textMessage = (message as Tag[])?.find((item) => item.type === 'text')
-    ?.data?.text as string
-  if (!textMessage) return
+  const textMessage = (message as Tag[])?.find(item => item.type === 'text')?.data?.text as string
+  if (!textMessage)
+    return
 
   const { command, args } = parseCommand(textMessage.trim())
   const commandBase = findCommandBase(isGroup, command)
@@ -47,9 +44,7 @@ async function handleMessage(
 
   if (isGroup) {
     const friendList = await client.get_friend_list()
-    if (
-      !friendList.some((friend) => friend.user_id === context.sender.user_id)
-    ) {
+    if (!friendList.some(friend => friend.user_id === context.sender.user_id)) {
       send('避免腾讯风控，请先添加 Bot 好友才可以正常使用 「申请会自动通过」')
       return
     }
@@ -99,5 +94,5 @@ export function registerEvent(
     }, Math.random() * 2000)
   })
 
-  client.on('message', (event) => handleMessage(client, screenshotQueue, event))
+  client.on('message', event => handleMessage(client, screenshotQueue, event))
 }

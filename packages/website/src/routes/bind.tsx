@@ -3,14 +3,11 @@
  * @see https://v0.dev/t/hqfOoow3NuH
  */
 import toast from 'solid-toast'
+import type { AccountBindResponse, AccountVerifyResponse } from '@valorant-bot/shared'
+
 import { baseUrl } from '~/utils/request'
 import Form from '~/components/riot/Form'
 import type { SignInDialogType } from '~/components/riot/InputDialog'
-
-import type {
-  AccountBindResponse,
-  AccountVerifyResponse,
-} from '@valorant-bot/shared'
 
 async function fetchBind(fields: {
   qq: string
@@ -69,11 +66,10 @@ export default function SignIn() {
 
   async function handleSubmit() {
     setFormControl({ loading: true })
-    if (!fields.username || !fields.password) {
+    if (!fields.username || !fields.password)
       return toast.error('请输入用户名和密码')
-    } else if (!fields.riotAllowTerms) {
+    else if (!fields.riotAllowTerms)
       return toast.error('请同意服务条款')
-    }
 
     const response = await fetchBind({
       ...fields,
@@ -84,9 +80,9 @@ export default function SignIn() {
     if (!response.success) {
       if (response.data) {
         if (
-          response.data?.needInit ||
-          response.data?.needVerify ||
-          response.data?.needMFA
+          response.data?.needInit
+          || response.data?.needVerify
+          || response.data?.needMFA
         ) {
           setFormControl({
             dialogOpen: true,
@@ -98,9 +94,10 @@ export default function SignIn() {
           })
           toast(response.message)
           return
-        } else if (
-          response.data.needRetry &&
-          formControl.dialogType === 'mfaCode'
+        }
+        else if (
+          response.data.needRetry
+          && formControl.dialogType === 'mfaCode'
         ) {
           setFormControl({ dialogOpen: true })
         }
@@ -116,34 +113,32 @@ export default function SignIn() {
 
   async function handleInputEnter(type: SignInDialogType, value: string) {
     setFormControl({ dialogOpen: false })
-    if (type === 'initial' || type === 'verify') {
+    if (type === 'initial' || type === 'verify')
       setFields({ verifyPassword: value })
-    } else {
+    else
       setFields({ mfaCode: value })
-    }
+
     await handleSubmit().finally(() => setFormControl({ loading: false }))
   }
 
   onMount(async () => {
     try {
       const qq = searchParams?.qq
-      if (!qq || !Number.isInteger(Number(atob(qq)))) {
+      if (!qq || !Number.isInteger(Number(atob(qq))))
         throw new Error('无效的 qq')
-      }
 
       setFormControl({ loading: true })
-      const isBind = await fetchIsBind(
-        qq,
-        searchParams?.alias || 'default',
-      ).then((res) => {
-        setFormControl({ loading: false })
-        return res
-      })
+      const isBind = await fetchIsBind(qq, searchParams?.alias || 'default')
+        .then((res) => {
+          setFormControl({ loading: false })
+          return res
+        })
       if (isBind.success || isBind?.data?.needBind === true) {
         setFormControl({ disabled: true })
         toast('此 qq 已绑定, 请勿重新绑定')
       }
-    } catch (error) {
+    }
+    catch (error) {
       // eslint-disable-next-line no-console
       console.log(error)
       setFormControl({ disabled: true })

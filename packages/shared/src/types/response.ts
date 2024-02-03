@@ -1,5 +1,6 @@
-import type { UnArray } from './util'
 import type { Weapons } from '@tqman/valoffi-api-client'
+import type { UnArray } from './util'
+
 export interface IResponse<Data extends object> {
   data: Data
   success: boolean
@@ -24,7 +25,7 @@ export type AccountVerifyResponse = IResponse<
 
 // ===== with middleware =====
 
-export type VerifiedResponseWith<T extends object = {}> = IResponse<
+export type VerifiedResponseWith<T extends object = object> = IResponse<
   AccountVerifyResponse['data'] & Partial<T>
 >
 
@@ -43,7 +44,7 @@ export type TWeapon = UnArray<UnArray<UnArray<Weapons>['skins']>['levels']>
 
 export interface ResponseStoreItem {
   cost: number
-  costType: String
+  costType: string
   category: TCategory
   weaponInfo: TWeapon
   discountPercent?: number

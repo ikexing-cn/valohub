@@ -28,7 +28,8 @@ export async function loginRiot(qq: string, parsedBody: AccountBindRequest) {
       .catch(() => {
         throw new DataWithError('邮箱验证码错误，请重试！', { needRetry: true })
       })
-  } else {
+  }
+  else {
     const valorantInfo = event.context?.valorantInfo
     await vapic
       .reinitializeWithProviders({
@@ -46,7 +47,8 @@ export async function loginRiot(qq: string, parsedBody: AccountBindRequest) {
               riotUsername: valorantInfo?.riotUsername,
             },
           )
-        } else {
+        }
+        else {
           throw new DataWithError('此 Valorant 账号或密码错误，请重试！', {
             needRetry: true,
             riotUsername: valorantInfo?.riotUsername,
@@ -104,8 +106,8 @@ export async function createOrUpadteValorantInfo({
   await loginRiot(qq, { ...objectOmit(parsedBody, ['password']), password })
 
   const alias = parsedBody.alias ?? 'default'
-  const { gameName, tagLine, playerInfo, shard, region, tokens } =
-    await getRiotinfo(qq, alias)
+  const { gameName, tagLine, playerInfo, shard, region, tokens }
+    = await getRiotinfo(qq, alias)
 
   const riotPassword = parsedBody.remember
     ? JSON.stringify(encrypt(parsedBody.password))
@@ -143,7 +145,8 @@ export async function createOrUpadteValorantInfo({
       include: { account: true },
       where: { id: toUpdateValorantInfoId },
     })
-  } else {
+  }
+  else {
     event.context.valorantInfo = await prisma.valorantInfo.create({
       data,
       include: { account: true },

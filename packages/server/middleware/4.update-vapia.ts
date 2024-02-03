@@ -14,9 +14,9 @@ export default defineEventHandler(async (event) => {
   const valorantInfo = event.context.valorantInfo
 
   if (
-    valorantInfo &&
-    !isReauth &&
-    !getRequestURL(event).pathname.startsWith('/account')
+    valorantInfo
+    && !isReauth
+    && !getRequestURL(event).pathname.startsWith('/account')
   ) {
     const tokens = valorantInfo.tokens as unknown as Tokens
     const vapic = await useVapic(valorantInfo.accountQQ, valorantInfo.alias)

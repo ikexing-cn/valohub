@@ -10,10 +10,7 @@ declare module 'h3' {
 }
 
 export default defineEventHandler(async (event) => {
-  if (
-    event.method === 'POST' &&
-    !getRequestURL(event).pathname.startsWith('/storage')
-  ) {
+  if (event.method === 'POST' && !getRequestURL(event).pathname.startsWith('/storage')) {
     const parsedBody = await useValidatedBody(accountSchema)
 
     const prisma = usePrisma()
@@ -26,9 +23,9 @@ export default defineEventHandler(async (event) => {
     })
 
     if (
-      parsedBody.verifyPassword &&
-      accountExist &&
-      accountExist.verifyPassword !== parsedBody.verifyPassword
+      parsedBody.verifyPassword
+      && accountExist
+      && accountExist.verifyPassword !== parsedBody.verifyPassword
     ) {
       await prisma.account.update({
         where: { id: accountExist.id },
@@ -57,8 +54,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // check verify password per 10 day
-    const updateTime =
-      accountExist.updatedAt.getTime() + 1000 * 60 * 60 * 24 * 10
+    const updateTime = accountExist.updatedAt.getTime() + 1000 * 60 * 60 * 24 * 10
     if (updateTime < Date.now() || accountExist.needVerify) {
       if (!parsedBody.verifyPassword) {
         return response(

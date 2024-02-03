@@ -18,9 +18,10 @@ export function sendMessage({
         auto_escape: false,
         message_type: 'group',
         group_id: sender,
-        message: [CQ.reply(messageId!), ...msg],
+        message: [CQ.reply(messageId), ...msg],
       })
-    } else {
+    }
+    else {
       client.send_private_msg(sender, msg)
     }
   }
