@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom'
 
+import type { Endpoints } from '@tqman/valoffi-api-client'
 import { OffiApiClient } from '@tqman/valoffi-api-client'
 import { type TWeapon, isEmptyArray } from '@valorant-bot/shared'
 import type { StorageType } from '@valorant-bot/server-database'
@@ -117,21 +118,28 @@ export default defineEventHandler(async () => {
   const prisma = usePrisma()
   const api = new OffiApiClient({ parseResponseData: true })
 
-  const toStorage: {
-    weapons: { language: string, type: StorageType, content: object }[]
-  } = {
-    weapons: [],
-  }
-
   await prisma.$transaction(
     async (client) => {
       await client.storage.deleteMany({})
 
-      for (const language of Object.keys(languages)) {
-        const { data: weapon } = await api.fetch('weapons', { language })
-        toStorage.weapons.push({ language, type: 'WEAPON', content: weapon })
+      async function fetchDataAndStore(type: Endpoints, dataType: StorageType, language: string) {
+        const { data } = await api.fetch(type, { language })
+        return { language, type: dataType, content: data }
       }
-      await client.storage.createMany({ data: toStorage.weapons })
+
+      const dataTypes = {
+        weapons: 'WEAPON',
+        buddies: 'BUDDIE',
+        playercards: 'PLAYER_CARD',
+        playertitles: 'PLAYER_TITLE',
+      } as Record<Endpoints, StorageType>
+
+      const toStorages = await Promise.all(
+        Object.keys(languages).flatMap(language =>
+          Object.entries(dataTypes).map(([type, dataType]) => fetchDataAndStore(type as Endpoints, dataType, language)),
+        ),
+      )
+      await client.storage.createMany({ data: toStorages })
 
       const { data: version } = await api.fetch('version')
       await client.storage.create({
@@ -140,6 +148,9 @@ export default defineEventHandler(async () => {
           content: version,
         },
       })
+
+      const { data: contenttiers } = await api.fetch('contenttiers')
+      await client.storage.create({ data: { type: 'CONTENT_TIER', content: contenttiers } })
 
       const weapons: {
         uuid: string
