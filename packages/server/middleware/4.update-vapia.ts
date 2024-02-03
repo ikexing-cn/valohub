@@ -1,6 +1,5 @@
 import {
   provideAuthViaTokens,
-  provideClientVersionViaAuthApi,
   provideRegion,
   useProviders,
 } from '@tqman/valorant-api-client'
@@ -22,7 +21,7 @@ export default defineEventHandler(async (event) => {
     const vapic = await useVapic(valorantInfo.accountQQ, valorantInfo.alias)
     await vapic.reinitializeWithProviders({
       remote: useProviders([
-        provideClientVersionViaAuthApi(),
+        provideClientVersionViaDatabase(),
         provideRegion(
           valorantInfo.region.toLowerCase(),
           valorantInfo.shard.toLowerCase(),

@@ -1,5 +1,4 @@
 import {
-  provideClientVersionViaAuthApi,
   provideRegion,
   useProviders,
 } from '@tqman/valorant-api-client'
@@ -25,7 +24,7 @@ export default defineEventHandler(async (event) => {
     if (!skipPaths.some(path => pathname.startsWith(path))) {
       await vapic.reinitializeWithProviders({
         remote: useProviders([
-          provideClientVersionViaAuthApi(),
+          provideClientVersionViaDatabase(),
           provideRegion(
             valorantInfo.region.toLowerCase(),
             valorantInfo.shard.toLowerCase(),

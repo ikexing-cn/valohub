@@ -8,8 +8,28 @@ import {
   getTokensUsingMfaCode,
   getTokensUsingReauthCookies,
 } from '@tqman/valorant-api-client'
+import type { Version } from '@tqman/valoffi-api-client'
 
 import { defer, firstValueFrom, retry } from 'rxjs'
+
+/**
+ * @client remote
+ * @provides client-version
+ */
+export function provideClientVersionViaDatabase() {
+  return (async () => {
+    const prisma = usePrisma()
+    const version = await prisma.storage.findFirst({ where: { type: 'VERSION' } })
+    if (!version)
+      throw new Error('No version found in database!')
+
+    const content = version!.content as Version
+
+    return {
+      clientVersion: content.riotClientVersion,
+    } as const
+  }) satisfies VapicProvider
+}
 
 /**
  * @client remote
