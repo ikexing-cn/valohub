@@ -1,0 +1,21 @@
+{
+  "name": "@valorant-bot/server-database",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "db:view": "prisma studio",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push --skip-generate"
+  },
+  "dependencies": {
+    "@prisma/client": "5.8.1"
+  },
+  "devDependencies": {
+    "prisma": "5.8.1"
+  }
+}

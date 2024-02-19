@@ -1,0 +1,20 @@
+{
+  "name": "@valorant-bot/server",
+  "private": true,
+  "scripts": {
+    "prepare": "nitropack prepare",
+    "dev": "nitropack dev",
+    "build": "nitropack build",
+    "preview": "node .output/server/index.mjs"
+  },
+  "dependencies": {
+    "@valorant-bot/server-database": "workspace:^",
+    "@valorant-bot/shared": "workspace:^",
+    "nitro-cors": "^0.7.0",
+    "nitropack": "latest"
+  },
+  "devDependencies": {
+    "h3": "^1.10.1",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

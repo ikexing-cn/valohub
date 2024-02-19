@@ -1,0 +1,127 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URI")
+}
+
+model Account {
+  id Int @id @default(autoincrement())
+
+  qq       String @unique
+  email    String @unique
+  username String @unique
+
+  avatar       String
+  password     String
+  
+  valorantInfo ValorantInfo[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email, qq, username])
+}
+
+model ValorantInfo {
+  id        Int     @id @default(autoincrement())
+  accountQQ String
+  account   Account @relation(fields: [accountQQ], references: [qq])
+
+  alias String @default("default")
+
+  remember     Boolean
+  mfaEnabled   Boolean
+  riotUsername String  @unique
+  riotPassword String
+
+  shard  Shard
+  region Region
+
+  uuid     String @unique
+  country  String
+  gameName String
+  tagLine  String
+
+  tokens  Json
+  cookies String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bonusStore     StoreList[] @relation("BonusStoreRelation")
+  dailyStore     StoreList[] @relation("DailyStoresRelation")
+  accessoryStore StoreList[] @relation("AccessoryStoreRelation")
+}
+
+model StoreList {
+  id    Int       @id @default(autoincrement())
+  type  StoreType
+  useAt DateTime
+
+  items String[]
+
+  updateAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  bonusValorantInfoId     Int?
+  dailyValorantInfoId     Int?
+  accessoryValorantInfoId Int?
+  ValorantInfoAccessory   ValorantInfo? @relation("AccessoryStoreRelation", fields: [accessoryValorantInfoId], references: [id])
+  ValorantInfoBonus       ValorantInfo? @relation("BonusStoreRelation", fields: [bonusValorantInfoId], references: [id])
+  ValorantInfoDaily       ValorantInfo? @relation("DailyStoresRelation", fields: [dailyValorantInfoId], references: [id])
+}
+
+model Storage {
+  id        Int         @id @default(autoincrement())
+  type      StorageType
+  content   Json
+  language  String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([type, language])
+  @@index([type, language])
+}
+
+enum Region {
+  NA
+  EU
+  AP
+  KR
+  LATAM
+  BR
+}
+
+enum Shard {
+  NA
+  EU
+  AP
+  KR
+  PBE
+}
+
+enum CostType {
+  VP
+  RP
+  KC
+}
+
+enum StoreType {
+  BONUS
+  DAILY
+  ACCESSORY
+}
+
+enum StorageType {
+  WEAPON
+  WEAPON_PRICE
+  VERSION
+  CONTENT_TIER
+  BUDDIE
+  PLAYER_CARD
+  PLAYER_TITLE
+}

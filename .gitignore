@@ -1,0 +1,11 @@
+node_modules
+dist
+screenshots
+
+.DS_Store
+.env
+.eslintcache
+.out
+.turbo
+.deploy*
+.zeabur
