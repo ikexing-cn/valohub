@@ -48,8 +48,8 @@ export function readTypeSafeBody<T, Event extends H3Event = H3Event, _T = InferE
   return event.context.body as _T
 }
 
-type ExtractData<T> = 'data' extends keyof T ? T['data'] : never
-type ExtractMessage<T> = 'message' extends keyof T ? string : never
+type ExtractData<T> = 'data' extends keyof T ? ('message' extends keyof T ? never : T['data']) : never
+type ExtractMessage<T> = 'message' extends keyof T ? ('data' extends keyof T ? never : string) : never
 
 export function createTypeSafeResponse<T extends StatusResponse>(event: H3Event) {
   function throwOrReturn(status: number, data: ResponseReturned) {
