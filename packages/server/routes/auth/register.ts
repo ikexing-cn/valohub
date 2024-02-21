@@ -1,3 +1,4 @@
+import { useTranslation } from '@intlify/h3'
 import { registerRequest } from '@valorant-bot/shared'
 import type { RegisterTypeDefinitions } from '@valorant-bot/shared'
 
@@ -5,8 +6,10 @@ type Response = RegisterTypeDefinitions['response']
 
 export default defineTypeSafeEvent<RegisterTypeDefinitions>(registerRequest, async (event) => {
   const dbClient = useDBClient()
-  const response = createTypeSafeResponse<Response>(event)
   const { email, username } = readTypeSafeBody(event)
+  const response = createTypeSafeResponse<Response>(event)
+
+  const t = await useTranslation(event)
 
   const foundAccount = await dbClient.account.findFirst({
     where: {
@@ -15,7 +18,7 @@ export default defineTypeSafeEvent<RegisterTypeDefinitions>(registerRequest, asy
   })
 
   if (foundAccount)
-    return response.message(400, '用户已存在, 请重新注册')
+    return response.message(400, t('account.exist'))
 
-  return response.message(400, '未知错误？')
+  return response.message(400, t('global.unknown'))
 })

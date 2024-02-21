@@ -8,6 +8,7 @@
     "preview": "node .output/server/index.mjs"
   },
   "dependencies": {
+    "@intlify/h3": "^0.5.0",
     "@valorant-bot/server-database": "workspace:^",
     "@valorant-bot/shared": "workspace:^",
     "nitro-cors": "^0.7.0",

@@ -1,3 +1,5 @@
+import { useTranslation } from '@intlify/h3'
+
 import type { ZodSchema } from 'zod'
 import type { EventHandler, EventHandlerRequest, H3Event, InferEventInput } from 'h3'
 import type { ExtractRequest, ResponseReturned, StatusResponse } from '@valorant-bot/shared'
@@ -52,15 +54,16 @@ type ExtractData<T> = 'data' extends keyof T ? ('message' extends keyof T ? neve
 type ExtractMessage<T> = 'message' extends keyof T ? ('data' extends keyof T ? never : string) : never
 
 export function createTypeSafeResponse<T extends StatusResponse>(event: H3Event) {
-  function throwOrReturn(status: number, data: ResponseReturned) {
+  async function throwOrReturn(status: number, data: ResponseReturned) {
     if (status >= 200 && status <= 299) {
       return data
     }
     else {
+      const t = await useTranslation(event)
       throw createError({
         data,
         status,
-        statusMessage: data.message,
+        statusMessage: data?.message ?? t('global.unknownError'),
       })
     }
   }
