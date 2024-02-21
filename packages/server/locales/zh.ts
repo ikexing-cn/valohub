@@ -5,6 +5,7 @@ const locales: ResourceSchema = {
   },
   global: {
     unknown: '发生了未知错误，请联系开发者',
+    invalidToken: '令牌无效，请重新登录',
   },
 }
 

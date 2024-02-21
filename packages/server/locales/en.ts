@@ -5,6 +5,7 @@ const locales: ResourceSchema = {
   },
   global: {
     unknown: 'An unknown error occurred, please contact the developer',
+    invalidToken: 'Invalid token, please login again',
   },
 }
 

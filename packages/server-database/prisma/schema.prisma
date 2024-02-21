@@ -11,13 +11,13 @@ datasource db {
 model Account {
   id Int @id @default(autoincrement())
 
-  qq       String @unique
+  avatar   String
+  password String
   email    String @unique
   username String @unique
 
-  avatar       String
-  password     String
-  
+  qq String? @unique
+
   valorantInfo ValorantInfo[]
 
   createdAt DateTime @default(now())
