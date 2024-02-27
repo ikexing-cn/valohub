@@ -13,13 +13,12 @@ export default defineEventHandler(async (event) => {
     return
 
   const dbClient = useDbClient()
-  const response = createTypeSafeResponse(event)
   const email = await validateAndExtractTokenFromHeader(event)
 
   const foundAccount = await dbClient.account.findUnique({ where: { email } })
   if (!foundAccount) {
     const t = await useTranslation(event)
-    return response.message(401, t('global.invalidToken'))
+    throw createError(t('global.invalidToken'))
   }
 
   event.context.user = foundAccount

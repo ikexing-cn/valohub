@@ -1,31 +1,23 @@
 import { type ZodSchema, z } from 'zod'
-import type { EventHandlerRequest } from 'h3'
+import type { EventHandlerRequest, EventHandlerResponse } from 'h3'
 import { calculateMd5 } from '../utils/crypto'
-
-export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> & U[keyof U]
-export type ResponseReturned<T = unknown> = AtLeastOne<{ data: T, message: string }>
-export type StatusResponse<Status extends number = number> = { 200: ResponseReturned } & GlobalStatusResponse & { [
-  Key in Exclude<Status, keyof GlobalStatusResponse>]: ResponseReturned
-}
-
-export interface GlobalStatusResponse {
-  401: { message: string }
-  500: { message: string }
-}
 
 export interface GenerateTypeDefinitions<
   Request extends ZodSchema<EventHandlerRequest>,
-  Response extends ZodSchema<Omit<StatusResponse, keyof GlobalStatusResponse>>,
+  Response = any,
 > {
   request: Request['_type']
-  response: Response['_type'] & GlobalStatusResponse
+  response: MaybePromise<Response>
 }
 
 export type ExtractRequest<T extends { request: EventHandlerRequest }> = T['request']
+export type ExtractResponse<T extends { response: EventHandlerResponse }> = T['response']
 
 export type ExtractRequestBody<T extends { request: EventHandlerRequest }> = ExtractRequest<T>['body']
 export type ExtractRequestQuery<T extends { request: EventHandlerRequest }> = ExtractRequest<T>['query']
 export type ExtractRequestRouterParams<T extends { request: EventHandlerRequest }> = ExtractRequest<T>['routerParams']
+
+export type MaybePromise<T> = T | Promise<T>
 
 // ==============================================================================
 
