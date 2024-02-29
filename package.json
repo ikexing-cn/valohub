@@ -1,0 +1,32 @@
+{
+  "name": "valohub",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint . --cache",
+    "lint:fix": "eslint . --cache --fix"
+  },
+  "dependencies": {
+    "@trpc/client": "^10.45.1",
+    "@trpc/server": "^10.45.1",
+    "nuxt": "^3.10.3",
+    "prisma": "^5.10.2",
+    "trpc-nuxt": "^0.10.19",
+    "vue": "^3.4.19",
+    "vue-router": "^4.3.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^2.6.4",
+    "@nuxtjs/i18n": "latest",
+    "@unocss/nuxt": "latest",
+    "@vueuse/nuxt": "latest",
+    "eslint": "^8.57.0",
+    "eslint-plugin-format": "^0.1.0"
+  }
+}

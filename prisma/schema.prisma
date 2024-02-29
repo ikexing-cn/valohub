@@ -1,0 +1,118 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+generator pothos {
+  provider    = "prisma-pothos-types"
+  prismaUtils = true
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URI")
+}
+
+model Account {
+  id           String         @id @default(uuid())
+  qq           String?        @unique
+  email        String         @unique
+  username     String
+  avatar       String
+  password     String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  valorantInfo ValorantInfo[]
+
+  @@index([email, qq, username])
+}
+
+model ValorantInfo {
+  id             String      @id @default(uuid())
+  accountQQ      String
+  alias          String      @default("default")
+  remember       Boolean
+  mfaEnabled     Boolean
+  uuid           String      @unique
+  riotUsername   String      @unique
+  riotPassword   String
+  shard          Shard
+  region         Region
+  country        String
+  gameName       String
+  tagLine        String
+  tokens         Json
+  cookies        String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  accessoryStore StoreList[] @relation("AccessoryStoreRelation")
+  bonusStore     StoreList[] @relation("BonusStoreRelation")
+  dailyStore     StoreList[] @relation("DailyStoresRelation")
+  account        Account     @relation(fields: [accountQQ], references: [qq])
+}
+
+model StoreList {
+  id                      String        @id @default(uuid())
+  type                    StoreType
+  useAt                   DateTime
+  items                   String[]
+  updateAt                DateTime      @updatedAt
+  createdAt               DateTime      @default(now())
+  bonusValorantInfoId     String?
+  dailyValorantInfoId     String?
+  accessoryValorantInfoId String?
+  ValorantInfoAccessory   ValorantInfo? @relation("AccessoryStoreRelation", fields: [accessoryValorantInfoId], references: [id])
+  ValorantInfoBonus       ValorantInfo? @relation("BonusStoreRelation", fields: [bonusValorantInfoId], references: [id])
+  ValorantInfoDaily       ValorantInfo? @relation("DailyStoresRelation", fields: [dailyValorantInfoId], references: [id])
+}
+
+model Storage {
+  id        String      @id @default(uuid())
+  type      StorageType
+  content   Json
+  language  String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([type, language])
+  @@index([type, language])
+}
+
+enum Region {
+  NA
+  EU
+  AP
+  KR
+  LATAM
+  BR
+}
+
+enum Shard {
+  NA
+  EU
+  AP
+  KR
+  PBE
+}
+
+enum CostType {
+  VP
+  RP
+  KC
+}
+
+enum StoreType {
+  BONUS
+  DAILY
+  ACCESSORY
+}
+
+enum StorageType {
+  WEAPON
+  WEAPON_PRICE
+  VERSION
+  CONTENT_TIER
+  BUDDIE
+  PLAYER_CARD
+  PLAYER_TITLE
+}
