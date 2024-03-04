@@ -4,6 +4,5 @@ export default defineNuxtConfig({
     '@unocss/nuxt',
     '@nuxtjs/i18n',
     '@vueuse/nuxt',
-    'nuxt-graphql-client',
   ],
 })

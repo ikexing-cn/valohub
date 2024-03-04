@@ -14,6 +14,7 @@
   "dependencies": {
     "@trpc/client": "^10.45.1",
     "@trpc/server": "^10.45.1",
+    "jsonwebtoken": "^9.0.2",
     "nuxt": "^3.10.3",
     "prisma": "^5.10.2",
     "trpc-nuxt": "^0.10.19",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^2.6.4",
     "@nuxtjs/i18n": "latest",
+    "@types/jsonwebtoken": "^9.0.6",
     "@unocss/nuxt": "latest",
     "@vueuse/nuxt": "latest",
     "eslint": "^8.57.0",
