@@ -18,12 +18,12 @@
     "nuxt": "^3.10.3",
     "prisma": "^5.10.2",
     "trpc-nuxt": "^0.10.19",
-    "vue": "^3.4.19",
+    "vue": "^3.4.21",
     "vue-router": "^4.3.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.6.4",
+    "@antfu/eslint-config": "^2.7.0",
     "@nuxtjs/i18n": "latest",
     "@types/jsonwebtoken": "^9.0.6",
     "@unocss/nuxt": "latest",
