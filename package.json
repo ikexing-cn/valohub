@@ -12,6 +12,7 @@
     "lint:fix": "eslint . --cache --fix"
   },
   "dependencies": {
+    "@prisma/client": "5.10.2",
     "@trpc/client": "^10.45.1",
     "@trpc/server": "^10.45.1",
     "jsonwebtoken": "^9.0.2",
