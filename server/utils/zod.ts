@@ -2,8 +2,8 @@ import { createHash } from 'node:crypto'
 import { z } from 'zod'
 
 export function calculateMd5(content: string, pure: boolean = false) {
-  const { extraMdtStr } = useRuntimeConfig()
-  return createHash('md5').update(content).update(pure ? '' : extraMdtStr).digest('hex')
+  const { extraMd5Str } = useRuntimeConfig()
+  return createHash('md5').update(content).update(pure ? '' : extraMd5Str).digest('hex')
 }
 
 export const emptyParser = z.literal(undefined)

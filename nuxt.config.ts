@@ -16,9 +16,9 @@ export default defineNuxtConfig({
     },
   },
   runtimeConfig: {
-    postgresUri: '',
-    jwtSecret: 'valohub',
-    extraMdtStr: 'this_is_a_password_ascill_str',
+    // postgresUri: '',
+    jwtSecret: '',
+    extraMd5Str: '',
     reCaptchaSecret: '',
   },
   css: [
