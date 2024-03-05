@@ -20,7 +20,7 @@ const isDev = computed(() => import.meta.env.DEV)
         color="gray"
         variant="ghost"
         aria-label="Theme"
-        class="hover:bg-primary hover:text-white dark:hover:text-primary transition-colors duration-100"
+        class="hover:bg-primary hover:text-white hover:text-opacity-85 dark:hover:text-primary transition-colors duration-100"
         @click="isDark = !isDark"
       />
     </div>

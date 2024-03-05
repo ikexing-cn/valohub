@@ -10,6 +10,9 @@ export default defineNuxtConfig({
   ui: {
     icons: ['carbon'],
   },
+  colorMode: {
+
+  },
   nitro: {
     experimental: {
       asyncContext: true,

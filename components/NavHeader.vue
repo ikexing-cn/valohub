@@ -75,11 +75,11 @@ const dropdownItems = computed<DropdownItem[][]>(() => {
 </script>
 
 <template>
-  <header class="w-full px-2 lg-px-0">
-    <div class="container mx-auto py-2">
+  <header class="w-full flex justify-center absolute top-4">
+    <div class="container py-2 shadow-2xl px-4 lg:px-8 rounded-full sticky z-10 bg-white bg-opacity-85 dark:bg-gray-800">
       <div class="flex items-center justify-between">
-        <h1 class="font-sans text-3xl font-medium tracking-wide">
-          Valo<span class="text-primary">hub</span>
+        <h1 class="font-sans text-3xl font-medium tracking-wide dark:text-gray-500">
+          Valo<span class="text-primary dark:text-gray-400">hub</span>
         </h1>
 
         <!-- <div>
@@ -105,6 +105,5 @@ const dropdownItems = computed<DropdownItem[][]>(() => {
         </div>
       </div>
     </div>
-    <UDivider />
   </header>
 </template>
