@@ -40,7 +40,7 @@ const { execute, status } = useLazyFetch('/api/auth/register', {
     token.value = data
 
     navigateTo('/')
-    toast.success('登录成功')
+    toast.success('注册成功')
   },
 })
 
@@ -89,7 +89,7 @@ definePageMeta({
     <UButton
       :loading="isFetchPending" :disabled="isFetchPending" type="submit" block class="g-recaptcha" data-sitekey="6LdgbIopAAAAABpGIO_vheaw6AMNhcflLl6EjJe0"
     >
-      登录
+      注册
     </UButton>
   </UForm>
 </template>

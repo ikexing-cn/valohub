@@ -3,8 +3,10 @@
 </script>
 
 <template>
-  <div class="relative h-full">
-    <slot />
-    <DebugButtonGroup />
+  <div>
+    <NavHeader />
+    <div class="w-full container mx-auto px-4 overflow-x-hidden">
+      <slot />
+    </div>
   </div>
 </template>

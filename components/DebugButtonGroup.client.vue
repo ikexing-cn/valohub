@@ -14,7 +14,7 @@ const isDev = computed(() => import.meta.env.DEV)
 
 <template>
   <ClientOnly v-if="isDev">
-    <div class="absolute top-8 right-8 md:top-16 md:right-16">
+    <div class="absolute bottom-8 right-8 md:bottom-16 md:right-16">
       <UButton
         :icon="isDark ? 'i-carbon-moon' : 'i-carbon-sun'"
         color="gray"

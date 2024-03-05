@@ -15,6 +15,7 @@
     "@nuxt/ui": "^2.14.1",
     "@pinia/nuxt": "^0.5.1",
     "@prisma/client": "5.10.2",
+    "js-md5": "^0.8.3",
     "jsonwebtoken": "^9.0.2",
     "nuxt": "^3.10.3",
     "pinia": "^2.1.7",

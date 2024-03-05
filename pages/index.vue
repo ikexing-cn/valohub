@@ -5,9 +5,6 @@ const authStore = useAuthStore()
 <template>
   <div>
     page
-    <br>
-    <pre>
-      token: {{ authStore.token }}
-    </pre>
+    <pre>{{ JSON.stringify(authStore.details, null, 2).trim() }}</pre>
   </div>
 </template>
