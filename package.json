@@ -12,22 +12,28 @@
     "lint:fix": "eslint . --cache --fix"
   },
   "dependencies": {
+    "@nuxt/ui": "^2.14.1",
+    "@pinia/nuxt": "^0.5.1",
     "@prisma/client": "5.10.2",
     "@trpc/client": "^10.45.1",
     "@trpc/server": "^10.45.1",
     "jsonwebtoken": "^9.0.2",
     "nuxt": "^3.10.3",
+    "pinia": "^2.1.7",
     "prisma": "^5.10.2",
     "trpc-nuxt": "^0.10.19",
     "vue": "^3.4.21",
+    "vue-recaptcha-v3": "^2.0.1",
     "vue-router": "^4.3.0",
+    "vue-toastification": "next",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.7.0",
+    "@iconify-json/carbon": "^1.1.31",
     "@nuxtjs/i18n": "latest",
+    "@pinia-plugin-persistedstate/nuxt": "^1.2.0",
     "@types/jsonwebtoken": "^9.0.6",
-    "@unocss/nuxt": "latest",
     "@vueuse/nuxt": "latest",
     "eslint": "^8.57.0",
     "eslint-plugin-format": "^0.1.0"

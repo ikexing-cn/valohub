@@ -1,9 +1,9 @@
 import { createHash } from 'node:crypto'
 import { z } from 'zod'
 
-export function calculateMd5(content: string) {
-  // TODO: append extra string
-  return createHash('md5').update(content).digest('hex')
+export function calculateMd5(content: string, pure: boolean = false) {
+  const { extraMdtStr } = useRuntimeConfig()
+  return createHash('md5').update(content).update(pure ? '' : extraMdtStr).digest('hex')
 }
 
 export const emptyParser = z.literal(undefined)

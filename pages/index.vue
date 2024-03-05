@@ -1,6 +1,13 @@
 <script lang="ts" setup>
+const authStore = useAuthStore()
 </script>
 
 <template>
-  <div>Page</div>
+  <div>
+    page
+    <br>
+    <pre>
+      token: {{ authStore.token }}
+    </pre>
+  </div>
 </template>
