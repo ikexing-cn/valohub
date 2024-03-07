@@ -20,6 +20,9 @@ export default defineNuxtConfig({
     jwtSecret: '',
     extraMd5Str: '',
     reCaptchaSecret: '',
+    public: {
+      clientReCaptchaSecret: '6LdgbIopAAAAABpGIO_vheaw6AMNhcflLl6EjJe0',
+    },
   },
   css: [
     '~/styles/global.css',
