@@ -38,7 +38,5 @@ if (authStore.token) {
         </div>
       </template>
     </UCard>
-
-    <DebugButtonGroup />
   </div>
 </template>

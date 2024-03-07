@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #__nuxt {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background-color: var(--background-color);
+}
+
+html.light {
+  --background-color: white;
+}
+
+html.dark {
+  --background-color: #171717;
+
+}
+
+@layer utilities {
+  .text-base-color {
+    @apply text-white text-opacity-85 dark:text-gray-800;
+  }
+
+  .bg-base-color {
+    @apply bg-white bg-opacity-85 dark:bg-gray-800;
+  }
+}

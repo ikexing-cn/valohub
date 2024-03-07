@@ -10,9 +10,6 @@ export default defineNuxtConfig({
   ui: {
     icons: ['carbon'],
   },
-  colorMode: {
-
-  },
   nitro: {
     experimental: {
       asyncContext: true,
@@ -25,6 +22,7 @@ export default defineNuxtConfig({
     reCaptchaSecret: '',
   },
   css: [
+    '~/styles/global.css',
     'vue-toastification/dist/index.css',
   ],
   build: {

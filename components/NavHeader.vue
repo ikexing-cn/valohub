@@ -76,7 +76,7 @@ const dropdownItems = computed<DropdownItem[][]>(() => {
 
 <template>
   <header class="w-full flex justify-center absolute top-4">
-    <div class="container py-2 shadow-2xl px-4 lg:px-8 rounded-full sticky z-10 bg-white bg-opacity-85 dark:bg-gray-800">
+    <div class="container py-2 shadow-2xl px-4 lg:px-8 rounded-full sticky z-10 bg-base-color">
       <div class="flex items-center justify-between">
         <h1 class="font-sans text-3xl font-medium tracking-wide dark:text-gray-500">
           Valo<span class="text-primary dark:text-gray-400">hub</span>
